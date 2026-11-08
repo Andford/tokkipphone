@@ -168,7 +168,8 @@ class Preferences(context: Context) {
             val defaults = Appearance()
             val safeTheme = theme?.takeIf { it in VALID_THEMES } ?: defaults.theme
             val safeMode = mode?.takeIf { it in VALID_MODES } ?: defaults.mode
-            val safeSeed = seed?.takeIf { it == "artwork" || it in Tokens.bloomSeeds } ?: defaults.seed
+            // "honey" (NectarLink's colour) left the picker: whoever had it gets Tokkip's.
+            val safeSeed = seed?.takeIf { it != "honey" && (it == "artwork" || it in Tokens.bloomSeeds) } ?: defaults.seed
             return Appearance(
                 theme = safeTheme,
                 mode = safeMode,

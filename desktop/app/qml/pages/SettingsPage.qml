@@ -609,7 +609,8 @@ Item {
 
                                     // Preset seeds
                                     Repeater {
-                                        model: Object.keys(Tokens.data.themes.bloom.seeds)
+                                        // "honey" (NectarLink's colour) stays in the tokens for old settings, not in the picker.
+                                        model: Object.keys(Tokens.data.themes.bloom.seeds).filter(k => k !== "honey")
                                         delegate: Rectangle {
                                             id: swatch
                                             required property string modelData

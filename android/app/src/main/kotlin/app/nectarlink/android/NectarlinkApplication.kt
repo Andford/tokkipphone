@@ -59,10 +59,12 @@ class NectarlinkApplication : Application(), DefaultLifecycleObserver {
         Elevated.onClipboardChanged = { text, html -> core.onElevatedClipboardChanged(text, html) }
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        // Received files moved from Download/Nectarlink to Download/Tokkip Phone (once).
+        scope.launch(Dispatchers.IO) { app.nectarlink.android.files.ReceivedFiles.moveOldFolder(this@NectarlinkApplication) }
         getSharedPreferences("appearance", Context.MODE_PRIVATE)
             .registerOnSharedPreferenceChangeListener(prefListener)
 
-        if (Preferences.isBackgroundServiceEnabled(this)) {
+        if (Preferences.isBackgroundServiceEnabled(this) && !app.nectarlink.android.service.Rest.resting(this)) {
             android.view.Choreographer.getInstance().postFrameCallback {
                 scope.launch { core.start() }
             }
@@ -76,11 +78,12 @@ class NectarlinkApplication : Application(), DefaultLifecycleObserver {
     override fun onStart(owner: LifecycleOwner) {
         pendingStopJob?.cancel()
         pendingStopJob = null
-        core.start()
+        // Opening the app wakes it from resting ("Salir" or no PC around).
+        if (!app.nectarlink.android.service.Rest.wake(this)) core.start()
     }
 
     override fun onStop(owner: LifecycleOwner) {
-        if (!Preferences.isBackgroundServiceEnabled(this)) {
+        if (!Preferences.isBackgroundServiceEnabled(this) || app.nectarlink.android.service.Rest.resting(this)) {
             scheduleStop()
         }
     }
@@ -95,7 +98,7 @@ class NectarlinkApplication : Application(), DefaultLifecycleObserver {
         ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
 
     private fun isStopEligible(): Boolean =
-        !isInForeground() && !Preferences.isBackgroundServiceEnabled(this)
+        !isInForeground() && (!Preferences.isBackgroundServiceEnabled(this) || app.nectarlink.android.service.Rest.resting(this))
 
     private fun scheduleStop() {
         pendingStopJob?.cancel()

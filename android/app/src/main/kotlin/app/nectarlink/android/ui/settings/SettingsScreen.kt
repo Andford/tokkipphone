@@ -370,7 +370,7 @@ fun SettingsScreen(
                                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Tokens.bloomSeeds.forEach { (name, seed) ->
+                                Tokens.bloomSeeds.filterKeys { it != "honey" }.forEach { (name, seed) ->
                                     val isSelected = (!appearance.dynamicColor || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) && appearance.seed == name
                                     val seedLabel = stringResource(
                                         when (name) {
@@ -618,6 +618,27 @@ fun SettingsScreen(
                             onCheckedChange = onToggleBackgroundService,
                             colors = app.nectarlink.android.ui.theme.nectarSwitchColors(),
                             modifier = Modifier.semantics { contentDescription = runInBackgroundTitle },
+                        )
+                    }
+                    SettingRowDivider()
+                    // Resting by itself when no PC is around (the PC is off, you left the office).
+                    val restContext = LocalContext.current
+                    var autoRest by remember { mutableStateOf(app.nectarlink.android.service.Rest.autoEnabled(restContext)) }
+                    val autoRestTitle = stringResource(R.string.settings_auto_rest)
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+                            Text(autoRestTitle, style = MaterialTheme.typography.titleSmall)
+                            Text(
+                                stringResource(R.string.settings_auto_rest_hint),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Switch(
+                            checked = autoRest,
+                            onCheckedChange = { autoRest = it; app.nectarlink.android.service.Rest.setAuto(restContext, it) },
+                            colors = app.nectarlink.android.ui.theme.nectarSwitchColors(),
+                            modifier = Modifier.semantics { contentDescription = autoRestTitle },
                         )
                     }
                     SettingRowDivider()

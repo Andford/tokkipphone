@@ -1227,4 +1227,8 @@
     <string name="device_name_in_profile">%1$s (%2$s)</string>
     <string name="profile_work">Trabajo</string>
     <string name="profile_other">Segundo perfil</string>
+    <string name="action_leave">Salir</string>
+    <string name="leave_toast">Tokkip Phone descansa. Vuelve cuando lo abras o cuando tu PC esté cerca.</string>
+    <string name="settings_auto_rest">Descansar cuando no haya PC</string>
+    <string name="settings_auto_rest_hint">Si en 30 minutos no aparece ninguna PC y no estás usando la app, Tokkip Phone se detiene y quita su notificación. Vuelve cuando lo abras o cuando tu PC esté cerca (con «Despertar cuando la PC esté cerca» activado).</string>
 </resources>

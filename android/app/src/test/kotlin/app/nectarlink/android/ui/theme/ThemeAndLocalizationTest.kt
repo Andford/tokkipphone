@@ -18,7 +18,7 @@ class ThemeAndLocalizationTest {
     fun `sanitizeAppearance accepts valid themes, modes, and seeds and falls back on unknown or null values`() {
         val themes = listOf("hive", "bloom", "graphite", "glass")
         val modes = listOf("system", "light", "dark")
-        val seeds = Tokens.bloomSeeds.keys + "artwork"
+        val seeds = Tokens.bloomSeeds.keys - "honey" + "artwork"
 
         for (theme in themes) {
             for (mode in modes) {
@@ -32,6 +32,9 @@ class ThemeAndLocalizationTest {
                 }
             }
         }
+
+        // "honey" (NectarLink's colour) left the picker: it becomes Tokkip's.
+        assertEquals(Appearance().seed, Preferences.sanitizeAppearance(Appearance(seed = "honey")).seed)
 
         val defaults = Appearance()
 

@@ -80,6 +80,27 @@ class ConnectionService : LifecycleService() {
                     }
                 }
         }
+        // Resting by itself: no PC online for a while (it's off, you left) and the app closed.
+        // It wakes when you open the app or a paired PC's beacon appears (see Rest).
+        var lastSeen = System.currentTimeMillis()
+        lifecycleScope.launch {
+            core.state.collect { s -> if (s.devices.any { it.online }) lastSeen = System.currentTimeMillis() }
+        }
+        lifecycleScope.launch {
+            while (true) {
+                delay(AUTO_REST_CHECK_MS)
+                val s = core.state.value
+                val inFront = androidx.lifecycle.ProcessLifecycleOwner.get().lifecycle.currentState
+                    .isAtLeast(androidx.lifecycle.Lifecycle.State.STARTED)
+                if (Rest.autoEnabled(this@ConnectionService) && s.devices.isNotEmpty() && s.devices.none { it.online } &&
+                    System.currentTimeMillis() - lastSeen >= Rest.AUTO_MS && !inFront && !core.busy.value
+                ) {
+                    Log.i(TAG, "no PC for a while: resting")
+                    Rest.sleep(this@ConnectionService)
+                    break
+                }
+            }
+        }
         // Updates while the app is in the background (they install by themselves when
         // allowed). AppUpdater checks at most once a day, so waking now and then is cheap.
         lifecycleScope.launch {
@@ -125,6 +146,12 @@ class ConnectionService : LifecycleService() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        if (intent?.action == ACTION_LEAVE) {
+            // "Salir" from the notification: rest until the app opens or a PC is near.
+            getSystemService(NotificationManager::class.java)?.cancel(ONGOING_ID)
+            Rest.sleep(this)
+            return START_NOT_STICKY
+        }
         if (intent?.action == ACTION_STOP_SERVICE) {
             Preferences.setBackgroundServiceEnabled(this, false)
             stopSelf()
@@ -228,11 +255,12 @@ class ConnectionService : LifecycleService() {
             builder.addAction(0, getString(R.string.action_send_clipboard), sendClip)
             builder.addAction(0, getString(R.string.action_send_files), sendFiles)
         }
-        val stopService = PendingIntent.getService(
-            this, 4, Intent(this, ConnectionService::class.java).setAction(ACTION_STOP_SERVICE),
+        // "Salir": rests until you open the app or your PC is near (turning off for good is in Ajustes).
+        val leave = PendingIntent.getService(
+            this, 4, Intent(this, ConnectionService::class.java).setAction(ACTION_LEAVE),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
-        builder.addAction(0, getString(R.string.action_stop_service), stopService)
+        builder.addAction(0, getString(R.string.action_leave), leave)
         return builder.build()
     }
 
@@ -271,10 +299,12 @@ class ConnectionService : LifecycleService() {
         private const val CHANNEL_RINGING = "ringing"
         private const val ACTION_STOP_RINGING = "app.nectarlink.action.STOP_RINGING"
         internal const val ACTION_STOP_SERVICE = "app.nectarlink.action.STOP_SERVICE"
+        internal const val ACTION_LEAVE = "app.nectarlink.action.LEAVE"
+        private const val AUTO_REST_CHECK_MS = 60_000L
 
         /** Starts the service when allowed by Android's foreground-service rules. */
         fun start(context: Context) {
-            if (!Preferences.isBackgroundServiceEnabled(context)) return
+            if (!Preferences.isBackgroundServiceEnabled(context) || Rest.resting(context)) return
             runCatching {
                 ContextCompat.startForegroundService(context, Intent(context, ConnectionService::class.java))
             }.onFailure {

@@ -146,9 +146,9 @@ object InputServer {
             val text = decode(parts[0])
             val html = parts.getOrNull(1)?.takeIf(String::isNotEmpty)?.let(decode)
             val clip = if (html != null) {
-                android.content.ClipData.newHtmlText("Nectarlink", text, html)
+                android.content.ClipData.newHtmlText("Tokkip Phone", text, html)
             } else {
-                android.content.ClipData.newPlainText("Nectarlink", text)
+                android.content.ClipData.newPlainText("Tokkip Phone", text)
             }
             clip.description.extras = android.os.PersistableBundle().apply {
                 putBoolean("com.android.systemui.SUPPRESS_CLIPBOARD_OVERLAY", true)
@@ -246,7 +246,8 @@ object InputServer {
                     extras?.getBoolean("com.android.systemui.SUPPRESS_CLIPBOARD_OVERLAY") == true ||
                     extras?.getBoolean("android.content.extra.IS_REMOTE_DEVICE") == true
                 val isSensitive = extras?.getBoolean("android.content.extra.IS_SENSITIVE") == true
-                if (isHostPipe || isSensitive || label == "Nectarlink") {
+                // Our own copies (from the PC): not sent back. The old label too, for clips made before the rename.
+                if (isHostPipe || isSensitive || label == "Tokkip Phone" || label == "Nectarlink") {
                     lastSentClipKey = null
                     return@runCatching
                 }

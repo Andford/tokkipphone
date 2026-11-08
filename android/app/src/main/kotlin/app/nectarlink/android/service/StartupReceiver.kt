@@ -27,7 +27,8 @@ class StartupReceiver : BroadcastReceiver() {
             else -> return
         }
         val app = context.applicationContext as NectarlinkApplication
-        if (!Preferences.isBackgroundServiceEnabled(context)) {
+        // Off, or resting ("Salir" / no PC around): it stays so until you open the app or a PC is near.
+        if (!Preferences.isBackgroundServiceEnabled(context) || Rest.resting(context)) {
             if (updated) app.updater.onUpdated()
             return
         }

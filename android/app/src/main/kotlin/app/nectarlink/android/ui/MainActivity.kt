@@ -826,6 +826,11 @@ private fun App(
                                     onPairNew = { pairing = true },
                                     onRefresh = core::refresh,
                                     onPower = core::pcPower,
+                                    onLeave = {
+                                        app.nectarlink.android.service.Rest.leave(this@MainActivity)
+                                        android.widget.Toast.makeText(this@MainActivity, getString(R.string.leave_toast), android.widget.Toast.LENGTH_LONG).show()
+                                        finishAndRemoveTask()
+                                    },
                                     onWake = core::wake,
                                     onSetReconnect = core::setReconnect,
                                     onRemote = { id ->

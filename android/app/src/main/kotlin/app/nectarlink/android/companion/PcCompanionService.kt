@@ -47,6 +47,8 @@ class PcCompanionService : CompanionDeviceService() {
         if (!app.nectarlink.android.ui.Preferences.isBackgroundServiceEnabled(appContext)) {
             return
         }
+        // Your PC is near: back from resting, if it was.
+        app.nectarlink.android.service.Rest.wake(appContext)
         ConnectionService.start(appContext)
         (appContext as? NectarlinkApplication)?.core?.reconnectNow()
     }

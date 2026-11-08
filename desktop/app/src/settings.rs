@@ -567,6 +567,10 @@ impl Settings {
 
     pub fn sanitized(mut self) -> Self {
         self.webcam_camera = normalize_webcam_camera(&self.webcam_camera);
+        // "Miel" (honey) was NectarLink's colour and left the picker: it becomes Tokkip's.
+        if self.seed == "honey" {
+            self.seed = "tokkip".into();
+        }
         self.walkthrough_step = self.walkthrough_step.min(6);
         self.window_screen = self.window_screen.map(|s| s.trim().to_owned()).filter(|s| !s.is_empty());
         self.window_width = self.window_width.clamp(MIN_WINDOW_WIDTH, MAX_WINDOW_WIDTH);
@@ -769,7 +773,7 @@ mod tests {
         fs::write(dir.path().join(FILE_NAME), snap_d16a106).unwrap();
         let s = Settings::load(dir.path());
         assert_eq!(s.theme, Theme::Bloom);
-        assert_eq!(s.seed, "honey");
+        assert_eq!(s.seed, "tokkip", "honey moves to Tokkip's own seed");
         assert_eq!(s.color_mode, ColorMode::Dark);
         assert!(!s.backdrop);
         assert!(!s.close_to_tray);

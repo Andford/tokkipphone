@@ -179,6 +179,8 @@ fun HomeScreen(
     onPairNew: () -> Unit,
     onRefresh: () -> Unit,
     onPower: (pcId: String, sleep: Boolean) -> Unit,
+    /** "Salir": Tokkip Phone rests until you open it or your PC is near. */
+    onLeave: () -> Unit = {},
     onWake: (pcId: String) -> Unit,
     onSetReconnect: (pcId: String, on: Boolean) -> Unit,
     onRemote: (pcId: String) -> Unit,
@@ -337,6 +339,9 @@ fun HomeScreen(
                 }
                 FilledTonalIconButton(onClick = onPairNew) {
                     Icon(painterResource(R.drawable.ic_qr), contentDescription = stringResource(R.string.action_pair_new))
+                }
+                IconButton(onClick = onLeave) {
+                    Icon(painterResource(R.drawable.ic_leave), contentDescription = stringResource(R.string.action_leave))
                 }
             }
         }

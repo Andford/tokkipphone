@@ -258,7 +258,7 @@ class AppDisplay(
         // Some of the flags are hidden ones (TRUSTED, OWN_FOCUS...), which
         // the shell may use.
         @SuppressLint("WrongConstant")
-        return manager.createVirtualDisplay("Nectarlink", w, h, d, surface, flags)
+        return manager.createVirtualDisplay("Tokkip Phone", w, h, d, surface, flags)
     }
 
     /** Hides the soft keyboard on this virtual display so typing from the PC never pops it up on the phone. */

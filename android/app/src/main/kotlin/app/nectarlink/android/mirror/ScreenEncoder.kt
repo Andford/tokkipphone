@@ -88,7 +88,7 @@ internal class ScreenEncoder(
                 val current = display
                 if (current == null) {
                     display = projection.createVirtualDisplay(
-                        "Nectarlink", size.width, size.height, size.dpi,
+                        "Tokkip Phone", size.width, size.height, size.dpi,
                         DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, null,
                     )
                 } else {
