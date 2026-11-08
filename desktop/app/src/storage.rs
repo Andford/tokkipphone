@@ -2,7 +2,7 @@
 //! Phone storage in File Explorer (`docs/protocol/storage.md`, `PLAN.md` §3.6).
 //!
 //! Registers a Windows Cloud Files (`cfapi`) sync root per paired phone under
-//! `%USERPROFILE%\Nectarlink\<Phone name>` when the phone's `storage` toggle is
+//! `%USERPROFILE%\Tokkip Phone\<Phone name>` when the phone's `storage` toggle is
 //! enabled. Placeholders are populated on demand when folders are opened
 //! (`CF_CALLBACK_TYPE_FETCH_PLACEHOLDERS`) and hydrated on open via ranged
 //! reads (`CF_CALLBACK_TYPE_FETCH_DATA`). Renames, deletes, and new or modified
@@ -278,7 +278,7 @@ mod imp {
                     }
                 }
             }
-            if let Some(base) = base_sync_dir() {
+            for base in [base_sync_dir(), old_base_sync_dir()].into_iter().flatten() {
                 let _ = std::fs::remove_dir(&base);
             }
         });
@@ -289,7 +289,7 @@ mod imp {
         win::storage::unregister_all();
     }
 
-    /// Returns the local sync root path for a paired phone (`%USERPROFILE%\Nectarlink\<Phone name>`).
+    /// Returns the local sync root path for a paired phone (`%USERPROFILE%\Tokkip Phone\<Phone name>`).
     pub fn sync_root_path_for(device: DeviceId) -> Option<PathBuf> {
         #[cfg(windows)]
         if let Some(active) = get_active_root(&device) {
@@ -321,7 +321,35 @@ mod imp {
     }
 
     pub(crate) fn base_sync_dir() -> Option<PathBuf> {
+        dirs::home_dir().map(|h| h.join("Tokkip Phone"))
+    }
+
+    /// Where 0.x put the phones' folders, under NectarLink's name. Its sync roots are
+    /// moved to [base_sync_dir] the next time each phone connects ([register_and_connect]).
+    #[cfg(windows)]
+    pub(crate) fn old_base_sync_dir() -> Option<PathBuf> {
         dirs::home_dir().map(|h| h.join("Nectarlink"))
+    }
+
+    /// A phone still registered under `%USERPROFILE%\Nectarlink`: that registration and
+    /// its folder go (they only hold placeholders of the phone's files), so the phone
+    /// comes back under `%USERPROFILE%\Tokkip Phone`.
+    #[cfg(windows)]
+    fn forget_old_root(device: DeviceId) {
+        let Some(old) = old_base_sync_dir() else { return };
+        let id = sync_root_id(device);
+        let path = StorageProviderSyncRootManager::GetSyncRootInformationForId(&id)
+            .ok()
+            .and_then(|info| info.Path().ok())
+            .and_then(|f| f.Path().ok())
+            .map(|p| PathBuf::from(p.to_string_lossy()));
+        if let Some(path) = path
+            && path.starts_with(&old)
+        {
+            let _ = StorageProviderSyncRootManager::Unregister(&id);
+            cleanup_sync_root_dir(&path);
+            let _ = std::fs::remove_dir(&old);
+        }
     }
 
     #[cfg(windows)]
@@ -473,6 +501,7 @@ mod imp {
 
     #[cfg(windows)]
     fn register_and_connect(device: DeviceId, name: &str, online: bool) -> Result<(), String> {
+        forget_old_root(device);
         let base = base_sync_dir().ok_or_else(|| "no user home directory".to_owned())?;
         let folder_name = sanitize_folder_name(name);
         let root_path = base.join(&folder_name);

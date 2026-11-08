@@ -223,7 +223,8 @@ pub fn fix_firewall(exe: &Path) -> windows::core::Result<bool> {
     let script = format!(
         "/c netsh advfirewall firewall delete rule name=all dir=in program=\"{clean_exe}\" & \
          netsh advfirewall firewall delete rule name=\"Nectarlink\" dir=in & \
-         netsh advfirewall firewall add rule name=\"Nectarlink\" dir=in action=allow program=\"{clean_exe}\" \
+         netsh advfirewall firewall delete rule name=\"Tokkip Phone\" dir=in & \
+         netsh advfirewall firewall add rule name=\"Tokkip Phone\" dir=in action=allow program=\"{clean_exe}\" \
          enable=yes profile=any"
     );
     let parameters = HSTRING::from(script);

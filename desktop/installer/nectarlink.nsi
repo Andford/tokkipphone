@@ -39,7 +39,9 @@ SetCompressor /SOLID zlib
 !define EXE "nectarlink-desktop.exe"
 !define SETUP_EXE "Nectarlink Setup.exe"
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP}"
-!define FIREWALL_RULE "Nectarlink"
+!define FIREWALL_RULE "Tokkip Phone"
+; The rule's name before Tokkip Phone (0.x): removed on install and uninstall.
+!define OLD_FIREWALL_RULE "Nectarlink"
 
 Name "${DISPLAY}"
 OutFile "${OUTFILE}"
@@ -191,6 +193,7 @@ Section "Install"
 
   ; Phones reach this PC over UDP (QUIC) and find it with mDNS.
   !insertmacro Progress "step firewall"
+  nsExec::Exec 'netsh advfirewall firewall delete rule name="${OLD_FIREWALL_RULE}"'
   nsExec::Exec 'netsh advfirewall firewall delete rule name="${FIREWALL_RULE}"'
   nsExec::Exec 'netsh advfirewall firewall add rule name="${FIREWALL_RULE}" dir=in action=allow program="$INSTDIR\${EXE}" enable=yes profile=private,domain description="Lets paired phones connect to Tokkip Phone."'
 
@@ -247,6 +250,7 @@ Section "Uninstall"
   !insertmacro Progress "step cleanup"
   nsExec::Exec 'powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "try { Get-AppxPackage -Name \"Nectarlink.Desktop\" -ErrorAction SilentlyContinue | Remove-AppxPackage -ErrorAction SilentlyContinue } catch {}"'
   nsExec::Exec 'netsh advfirewall firewall delete rule name="${FIREWALL_RULE}"'
+  nsExec::Exec 'netsh advfirewall firewall delete rule name="${OLD_FIREWALL_RULE}"'
   nsExec::Exec 'schtasks /Delete /TN "Nectarlink Update" /F'
   Delete "$SMPROGRAMS\${DISPLAY}.lnk"
   Delete "$DESKTOP\${DISPLAY}.lnk"

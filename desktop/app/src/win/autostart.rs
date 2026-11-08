@@ -17,7 +17,9 @@ use windows::{
 };
 
 const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
-const VALUE: &str = "Nectarlink";
+const VALUE: &str = "Tokkip Phone";
+/// The name 0.x wrote under NectarLink's name: removed whenever startup is set.
+const OLD_VALUE: &str = "Nectarlink";
 
 /// The command the `Run` value holds.
 pub fn command(exe: &Path) -> String {
@@ -30,6 +32,9 @@ pub fn set(enabled: bool, exe: &Path) -> windows::core::Result<()> {
     // SAFETY: opens a key under HKCU with a valid path; closed below.
     unsafe { RegOpenKeyExW(HKEY_CURRENT_USER, &HSTRING::from(RUN_KEY), None, KEY_SET_VALUE, &mut key) }
         .ok()?;
+    // The value under the old name goes either way: one entry, with Tokkip Phone's name.
+    let old = unsafe { RegDeleteValueW(key, &HSTRING::from(OLD_VALUE)) };
+    let _ = old;
     let result = if enabled {
         let wide: Vec<u16> = command(exe).encode_utf16().chain(std::iter::once(0)).collect();
         // SAFETY: the data is a null-terminated UTF-16 string of the given size.
