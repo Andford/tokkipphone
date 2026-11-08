@@ -30,7 +30,8 @@ function Check($what, [bool]$ok) {
     if (-not $ok) { throw "FAILED: $what" }
     Write-Host "ok: $what"
 }
-function FirewallRule { (netsh advfirewall firewall show rule name=Nectarlink) -match 'Nectarlink' }
+function FirewallRule { (netsh advfirewall firewall show rule name="Tokkip Phone") -match 'Tokkip Phone' }
+function OldFirewallRule { (netsh advfirewall firewall show rule name=Nectarlink) -match 'Nectarlink' }
 
 Write-Host "Installing $Setup"
 Start-Process $Setup -ArgumentList '/S' -Wait
@@ -58,6 +59,7 @@ Check "the app folder is gone" (-not (Test-Path $dir))
 Check "the uninstall entry is gone" (-not (Test-Path $uninstallKey))
 Check "the Start menu shortcut is gone" (-not (Test-Path $shortcut))
 Check "the firewall rule is gone" (-not (FirewallRule))
+Check "no rule left under the old name" (-not (OldFirewallRule))
 Write-Host "Installer smoke test passed."
 # netsh reports "no rules match" with a failing exit code; that was the point.
 exit 0
