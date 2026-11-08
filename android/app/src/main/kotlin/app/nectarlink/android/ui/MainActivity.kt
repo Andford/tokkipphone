@@ -819,6 +819,7 @@ private fun App(
                     ) { shownTab ->
                         when (shownTab) {
                             Tab.Home -> saveableStateHolder.SaveableStateProvider("tab_home") {
+                                val leaveToast = androidx.compose.ui.res.stringResource(R.string.leave_toast)
                                 HomeScreen(
                                     state = state,
                                     onRing = core::ring,
@@ -828,7 +829,7 @@ private fun App(
                                     onPower = core::pcPower,
                                     onLeave = {
                                         app.nectarlink.android.service.Rest.leave(context)
-                                        android.widget.Toast.makeText(context, context.getString(R.string.leave_toast), android.widget.Toast.LENGTH_LONG).show()
+                                        android.widget.Toast.makeText(context, leaveToast, android.widget.Toast.LENGTH_LONG).show()
                                         (context as? android.app.Activity)?.finishAndRemoveTask()
                                     },
                                     onWake = core::wake,
