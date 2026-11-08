@@ -1364,4 +1364,8 @@
     <string name="profile_work">Arbeit</string>
     <string name="profile_other">Zweites Profil</string>
     <string name="about_credit">Gemacht von Andy (LoperStack), mit Tokkip. Basiert auf NectarLink von Bee (github.com/thtbee/nectarlink), unter der GPL 3.0. Quellcode: github.com/Andford/tokkiphone.</string>
+    <string name="action_leave">Beenden</string>
+    <string name="leave_toast">Tokkip Phone ruht. Es kommt zurück, wenn du es öffnest oder dein PC in der Nähe ist.</string>
+    <string name="settings_auto_rest">Ruhen, wenn kein PC da ist</string>
+    <string name="settings_auto_rest_hint">Wenn 30 Minuten lang kein PC auftaucht und du die App nicht benutzt, hält Tokkip Phone an und blendet seine Benachrichtigung aus. Es kommt zurück, wenn du es öffnest oder dein PC in der Nähe ist (mit „Aufwecken, wenn der PC in der Nähe ist“).</string>
 </resources>

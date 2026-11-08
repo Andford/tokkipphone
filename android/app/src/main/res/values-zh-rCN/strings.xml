@@ -1223,4 +1223,8 @@
     <string name="profile_work">工作</string>
     <string name="profile_other">第二资料</string>
     <string name="about_credit">由 Andy（LoperStack）与 Tokkip 制作。基于 Bee 的 NectarLink（github.com/thtbee/nectarlink），采用 GPL 3.0 许可。源代码：github.com/Andford/tokkiphone。</string>
+    <string name="action_leave">退出</string>
+    <string name="leave_toast">Tokkip Phone 正在休息。打开应用或电脑在附近时会自动恢复。</string>
+    <string name="settings_auto_rest">没有电脑时休息</string>
+    <string name="settings_auto_rest_hint">如果 30 分钟内没有电脑出现且你没有使用应用，Tokkip Phone 会停止并隐藏通知。打开应用或电脑在附近时（需开启“电脑靠近时唤醒”）会自动恢复。</string>
 </resources>
