@@ -41,6 +41,8 @@ import mx.loperstack.tokkiphone.toggles.PhoneToggles
 import mx.loperstack.tokkiphone.webcam.WebcamRequests
 import mx.loperstack.tokkiphone.webcam.WebcamService
 import mx.loperstack.tokkiphone.ffi.FfiQueueStatus
+import mx.loperstack.tokkiphone.ffi.DeviceKind
+import mx.loperstack.tokkiphone.ffi.PairedDevice
 import mx.loperstack.tokkiphone.ffi.Event
 import mx.loperstack.tokkiphone.ffi.EventListener
 import mx.loperstack.tokkiphone.ffi.FileToSend
@@ -287,6 +289,11 @@ class Core(context: Context, private val scope: CoroutineScope) : EventListener 
             node?.let { scope.launch { runCatching { it.networkChanged() } } }
         }
     }
+    /** The Tokkip app's Tokkip, for paired PCs (tokkip/TokkipLink.kt). */
+    fun updateTokkip(json: String?) {
+        node?.let { scope.launch { runCatching { it.updateTokkip(json) } } }
+    }
+
     private val accent = AccentMonitor(this.context) { seed ->
         node?.let { scope.launch { runCatching { it.updateAccent(seed) } } }
     }
@@ -464,6 +471,9 @@ class Core(context: Context, private val scope: CoroutineScope) : EventListener 
             }
             NotificationListener.instance?.refreshActive()
             refreshDataRetention()
+            // Tokkip: ours for the PCs, and the newest PC's for the Tokkip app.
+            mx.loperstack.tokkiphone.tokkip.TokkipLink.mine(context)?.let { json -> runCatching { started.updateTokkip(json) } }
+            newestPcTokkip(devices)?.let { mx.loperstack.tokkiphone.tokkip.TokkipLink.fromPc(context, it) }
             mx.loperstack.tokkiphone.clipboard.DirectShareTargets.sync(context, _state.value.devices)
             mx.loperstack.tokkiphone.widget.PcWidgetProvider.refreshAll(context, _state.value)
             currentRunScope.launch(Dispatchers.IO) {
@@ -792,6 +802,11 @@ class Core(context: Context, private val scope: CoroutineScope) : EventListener 
         }
         when (event) {
             is Event.Transfer -> onTransfer(event.transfer)
+            is Event.PeerInfoChanged -> {
+                if (event.info.kind == DeviceKind.DESKTOP || event.info.kind == DeviceKind.LAPTOP) {
+                    mx.loperstack.tokkiphone.tokkip.TokkipLink.fromPc(context, event.info.tokkip)
+                }
+            }
             is Event.MediaChanged -> {
                 val pcName = _state.value.nameOf(event.id).orEmpty()
                 scope.launch(Dispatchers.Default) {
@@ -2452,6 +2467,12 @@ class Core(context: Context, private val scope: CoroutineScope) : EventListener 
     }
 
     enum class RemoteAccess { Allowed, Denied, Offline, Unsupported }
+
+    /** The newest Tokkip among the paired PCs (by `changedAt`). */
+    private fun newestPcTokkip(devices: List<PairedDevice>): String? = devices
+        .filter { it.info.kind == DeviceKind.DESKTOP || it.info.kind == DeviceKind.LAPTOP }
+        .mapNotNull { it.info.tokkip?.takeIf(mx.loperstack.tokkiphone.tokkip.TokkipLink::isTokkip) }
+        .maxByOrNull { runCatching { org.json.JSONObject(it).optLong("changedAt") }.getOrDefault(0L) }
 
     private companion object {
         const val TAG = "Tokkip Phone"

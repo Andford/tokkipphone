@@ -53,6 +53,7 @@ mod setup;
 mod startup;
 mod state;
 mod storage;
+mod tokkip_share;
 mod transfers;
 mod updater;
 mod webcam;

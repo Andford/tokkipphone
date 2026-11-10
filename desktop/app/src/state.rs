@@ -1099,6 +1099,7 @@ mod tests {
                 accent: None,
                 screen: None,
                 install_id: None,
+                tokkip: None,
             },
             paired_at: at,
             link: LinkState::Offline { last_seen: None },

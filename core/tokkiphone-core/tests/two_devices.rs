@@ -645,6 +645,7 @@ fn info(name: &str, kind: DeviceKind) -> DeviceInfo {
         accent: None,
         screen: None,
         install_id: None,
+        tokkip: None,
     }
 }
 

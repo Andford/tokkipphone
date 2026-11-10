@@ -3419,13 +3419,39 @@ impl Node {
 
     /// Updates this device's description (e.g. after a rename).
     pub async fn update_device_info(&self, device: DeviceInfo) {
-        let device = device.sanitized();
-        self.shared.local.write().unwrap_or_else(|e| e.into_inner()).device = device.clone();
+        let mut device = device.sanitized();
+        {
+            let mut local = self.shared.local.write().unwrap_or_else(|e| e.into_inner());
+            // Tokkip comes on its own (update_tokkip): a description without him keeps him.
+            if device.tokkip.is_none() {
+                device.tokkip = local.device.tokkip.clone();
+            }
+            local.device = device.clone();
+        }
         let update = HelloUpdate { device: Some(device), ..Default::default() };
         if let Ok(env) = Envelope::new(types::HELLO_UPDATE, &update) {
             self.shared.broadcast(env).await;
         }
         self.shared.refresh_all_capabilities();
+    }
+
+    /// Updates how this device's Tokkip looks and feels (the Tokkip apps'
+    /// JSON, see `DeviceInfo::tokkip`) and tells connected peers (`hello.update`).
+    pub async fn update_tokkip(&self, tokkip: Option<String>) {
+        let tokkip =
+            tokkip.filter(|t| !t.is_empty() && t.len() <= tokkiphone_protocol::messages::MAX_TOKKIP_LEN);
+        let device = {
+            let mut local = self.shared.local.write().unwrap_or_else(|e| e.into_inner());
+            if local.device.tokkip == tokkip {
+                return;
+            }
+            local.device.tokkip = tokkip;
+            local.device.clone()
+        };
+        let update = HelloUpdate { device: Some(device), ..Default::default() };
+        if let Ok(env) = Envelope::new(types::HELLO_UPDATE, &update) {
+            self.shared.broadcast(env).await;
+        }
     }
 
     /// Updates this device's Material You seed color (`accent`, ARGB) and

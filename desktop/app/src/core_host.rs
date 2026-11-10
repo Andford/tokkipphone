@@ -253,6 +253,7 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
         max_entries: tokkiphone_core::DEFAULT_TIMELINE_MAX_ENTRIES,
     });
     let _ = host.node.set(node);
+    crate::tokkip_share::start();
     host.hub.update(|s| {
         let mut changes = s.set_devices(devices);
         for m in matrices {
@@ -353,6 +354,7 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
                 crate::webcam::on_event(&event);
                 crate::phone_mic::on_event(&event);
                 crate::automations::on_event(&event);
+                crate::tokkip_share::on_event(&event);
                 crate::bridge::app::on_home_event(&event);
             }
             Err(RecvError::Lagged(missed)) => {
@@ -400,6 +402,7 @@ fn this_device() -> DeviceInfo {
         accent: None,
         screen: None,
         install_id: crate::win::machine_guid().as_deref().and_then(tokkiphone_core::install_id_from),
+        tokkip: crate::tokkip_share::pc_tokkip(),
     }
 }
 

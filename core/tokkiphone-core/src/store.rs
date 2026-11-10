@@ -595,6 +595,8 @@ const MIGRATIONS: &[&str] = &[
         ON send_queue(status, next_retry_ms ASC, expires_at ASC);",
     // v8: a device's install-stable ID, the only key used to merge re-paired entries
     "ALTER TABLE peers ADD COLUMN install_id TEXT;",
+    // v9: Tokkip as the device has him (DeviceInfo::tokkip)
+    "ALTER TABLE peers ADD COLUMN tokkip TEXT;",
 ];
 
 /// A paired device as stored on disk.
@@ -663,15 +665,16 @@ impl Store {
         let screen = encode_screen(info.screen.as_ref());
         self.with(|c| {
             c.execute(
-                "INSERT INTO peers (id, name, kind, os, os_ver, model, accent, paired_at, screen, install_id)
-                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)
+                "INSERT INTO peers (id, name, kind, os, os_ver, model, accent, paired_at, screen, install_id, tokkip)
+                 VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)
                  ON CONFLICT(id) DO UPDATE SET
                     name = excluded.name, kind = excluded.kind, os = excluded.os,
                     os_ver = excluded.os_ver, model = excluded.model,
                     accent = COALESCE(excluded.accent, peers.accent),
                     paired_at = excluded.paired_at,
                     screen = CASE WHEN excluded.screen = '' THEN peers.screen ELSE excluded.screen END,
-                    install_id = COALESCE(excluded.install_id, peers.install_id)",
+                    install_id = COALESCE(excluded.install_id, peers.install_id),
+                    tokkip = COALESCE(excluded.tokkip, peers.tokkip)",
                 params![
                     id.as_bytes().as_slice(),
                     info.name,
@@ -682,7 +685,8 @@ impl Store {
                     info.accent.map(i64::from),
                     paired_at,
                     screen,
-                    valid_install_id(info)
+                    valid_install_id(info),
+                    info.tokkip
                 ],
             )?;
             cleanup_peers(c, Some(id))?;
@@ -711,7 +715,8 @@ impl Store {
                 "UPDATE peers SET name = ?2, kind = ?3, os = ?4, os_ver = ?5, model = ?6,
                     accent = COALESCE(?7, accent),
                     screen = CASE WHEN ?8 = '' THEN screen ELSE ?8 END,
-                    install_id = COALESCE(?9, install_id)
+                    install_id = COALESCE(?9, install_id),
+                    tokkip = COALESCE(?10, tokkip)
                  WHERE id = ?1",
                 params![
                     id.as_bytes().as_slice(),
@@ -722,7 +727,8 @@ impl Store {
                     info.model,
                     info.accent.map(i64::from),
                     screen,
-                    valid_install_id(info)
+                    valid_install_id(info),
+                    info.tokkip
                 ],
             )?;
             if valid_install_id(info).is_some() {
@@ -2160,7 +2166,7 @@ fn decode_queue_row(c: &Connection, raw: RawQueueRow, include_blob: bool) -> Opt
 }
 
 const SELECT: &str = "SELECT id, name, kind, os, os_ver, model, accent, paired_at, last_seen, last_addrs, \
-     caps, power, wake_info, screen, install_id FROM peers";
+     caps, power, wake_info, screen, install_id, tokkip FROM peers";
 
 /// The device's install ID when it's well formed (others are never stored).
 fn valid_install_id(info: &DeviceInfo) -> Option<&str> {
@@ -2384,6 +2390,7 @@ fn row_to_peer(row: &rusqlite::Row<'_>) -> rusqlite::Result<PeerRecord> {
             accent: accent.and_then(|a| u32::try_from(a).ok()),
             screen: decode_screen(&screen),
             install_id: row.get(14)?,
+            tokkip: row.get(15)?,
         },
         paired_at: row.get(7)?,
         last_seen: row.get(8)?,
@@ -2555,7 +2562,35 @@ mod tests {
                 cutout_path: Some("M 0.5 0.018 L 0.54 0.036 L 0.5 0.054 L 0.46 0.036 Z".into()),
             }),
             install_id: None,
+            tokkip: None,
         }
+    }
+
+    #[test]
+    fn a_devices_tokkip_is_kept_until_it_sends_another() {
+        let store = Store::in_memory().unwrap();
+        let peer = DeviceId([9; 32]);
+        let mut info = DeviceInfo {
+            name: "Pixel".into(),
+            kind: tokkiphone_protocol::messages::DeviceKind::Phone,
+            os: "android".into(),
+            os_ver: "16".into(),
+            model: None,
+            accent: None,
+            screen: None,
+            install_id: None,
+            tokkip: Some(r#"{"v":1,"look":{"species":"gato"}}"#.into()),
+        };
+        store.upsert_peer(&peer, &info, 1).unwrap();
+        let read = |s: &Store| s.get_peer(&peer).unwrap().unwrap().info.tokkip;
+        assert_eq!(read(&store).as_deref(), Some(r#"{"v":1,"look":{"species":"gato"}}"#));
+        // A description without Tokkip (an older app) leaves him as he was.
+        info.tokkip = None;
+        store.update_info(&peer, &info).unwrap();
+        assert!(read(&store).is_some_and(|t| t.contains("gato")));
+        info.tokkip = Some(r#"{"v":1,"look":{"species":"robot"}}"#.into());
+        store.update_info(&peer, &info).unwrap();
+        assert!(read(&store).is_some_and(|t| t.contains("robot")));
     }
 
     #[test]

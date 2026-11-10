@@ -112,6 +112,8 @@
          phone's speech recognizer for voice typing: Android hides other apps
          unless they're declared here. -->
     <queries>
+        <!-- The Tokkip app: Tokkip shared with Tokkip PC (tokkip/TokkipLink.kt). -->
+        <package android:name="mx.loperstack.tokkip" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
@@ -191,6 +193,15 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+
+        <!-- The Tokkip app's Tokkip, for paired PCs (tokkip/TokkipLink.kt). Only a look comes in. -->
+        <receiver
+            android:name=".tokkip.TokkipReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="mx.loperstack.tokkiphone.action.TOKKIP" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name=".files.TransferNotifications$CancelReceiver"

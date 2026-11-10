@@ -342,12 +342,21 @@ pub struct DeviceInfo {
     /// A salted hash, never the raw platform ID; see `install_id_from`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub install_id: Option<String>,
+    /// Tokkip as this device has him (species, colours, outfit and, from a
+    /// phone, how you feel today): a small JSON the Tokkip apps read and
+    /// write (see `docs/protocol/tokkip.md`). The core only carries it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tokkip: Option<String>,
 }
+
+/// The most a device's [`DeviceInfo::tokkip`] may be; anything bigger isn't one.
+pub const MAX_TOKKIP_LEN: usize = 4096;
 
 impl DeviceInfo {
     pub fn sanitized(mut self) -> Self {
         self.screen = self.screen.and_then(ScreenShape::sanitized);
         self.install_id = self.install_id.filter(|id| is_valid_install_id(id));
+        self.tokkip = self.tokkip.filter(|t| !t.is_empty() && t.len() <= MAX_TOKKIP_LEN);
         self
     }
 }
@@ -4157,6 +4166,7 @@ mod tests {
             accent: None,
             screen: None,
             install_id: None,
+            tokkip: None,
         }
     }
 

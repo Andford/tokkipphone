@@ -81,6 +81,9 @@ pub struct DeviceInfo {
     /// Identifies the device across reinstalls; see [`install_id_from`].
     #[uniffi(default = None)]
     pub install_id: Option<String>,
+    /// Tokkip as this device has him: the Tokkip apps' small JSON, carried as is.
+    #[uniffi(default = None)]
+    pub tokkip: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, uniffi::Enum)]
@@ -1962,6 +1965,7 @@ impl From<core::DeviceInfo> for DeviceInfo {
             accent: i.accent,
             screen: i.screen.map(Into::into),
             install_id: i.install_id,
+            tokkip: i.tokkip,
         }
     }
 }
@@ -1977,6 +1981,7 @@ impl From<DeviceInfo> for core::DeviceInfo {
             accent: i.accent,
             screen: i.screen.map(Into::into),
             install_id: i.install_id,
+            tokkip: i.tokkip,
         }
         .sanitized()
     }
@@ -3789,6 +3794,13 @@ impl TokkipPhoneNode {
         self.run(async move { node.update_device_info(info.into()).await }).await;
     }
 
+    /// Updates how this phone's Tokkip looks and feels (the Tokkip app's JSON,
+    /// `None` to forget it) and tells connected PCs if it changed.
+    pub async fn update_tokkip(&self, tokkip: Option<String>) {
+        let node = self.node.clone();
+        self.run(async move { node.update_tokkip(tokkip).await }).await;
+    }
+
     /// Updates this phone's Material You seed color (`0xFFRRGGBB` ARGB) and
     /// sends `HelloUpdate` to connected PCs if it changed.
     pub async fn update_accent(&self, accent: Option<u32>) {
@@ -4602,6 +4614,7 @@ mod tests {
                 cutout_path: None,
             }),
             install_id: None,
+            tokkip: None,
         };
         assert_eq!(DeviceInfo::from(core::DeviceInfo::from(info.clone())), info);
     }

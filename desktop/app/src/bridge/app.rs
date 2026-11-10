@@ -3362,6 +3362,7 @@ mod tests {
                 accent: Some(accent),
                 screen: None,
                 install_id: None,
+                tokkip: None,
             },
             paired_at: i64::from(n),
             link: if online {
