@@ -179,7 +179,7 @@ mod tests {
         assert!(is_installed(Path::new("/usr/local/bin/tokkiphone-desktop")));
         assert!(is_installed(Path::new("/opt/tokkiphone/tokkiphone-desktop")));
         assert!(is_installed_location(Path::new(
-            "/home/user/.local/share/tokkiphone-mx/loperstack/tokkiphone-desktop"
+            "/home/user/.local/share/tokkiphone-app/tokkiphone-desktop"
         )));
         assert!(is_installed_location(Path::new("/home/user/.local/bin/tokkiphone-desktop")));
         assert!(!is_installed(Path::new("/home/user/repo/target/debug/tokkiphone-desktop")));

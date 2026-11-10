@@ -29,7 +29,7 @@ if (-not (Test-Path $runner)) { throw "qmltestrunner not found under $QtRoot; pa
 $qml = Join-Path $repo 'desktop\app\qml'
 $tests = Join-Path $repo 'desktop\app\tests\qml'
 $imports = Join-Path $repo 'target\qml-tests'
-$module = Join-Path $imports 'app\tokkiphone'
+$module = Join-Path $imports 'mx\loperstack\tokkiphone'
 if (Test-Path $imports) { Remove-Item -Recurse -Force $imports }
 New-Item -ItemType Directory -Force $module | Out-Null
 
