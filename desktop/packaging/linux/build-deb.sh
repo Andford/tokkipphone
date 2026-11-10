@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Builds a Debian/Ubuntu .deb package for Tokkip Phone Desktop:
-#   dist/nectarlink_<version>_<arch>.deb
+#   dist/tokkiphone_<version>_<arch>.deb
 
 set -euo pipefail
 
@@ -32,54 +32,54 @@ if [[ -z "${QMAKE:-}" ]]; then
     fi
 fi
 
-BIN_PATH="${BIN_PATH:-${REPO_ROOT}/target/release/nectarlink-desktop}"
+BIN_PATH="${BIN_PATH:-${REPO_ROOT}/target/release/tokkiphone-desktop}"
 if [[ ! -f "${BIN_PATH}" ]]; then
-    echo "Building nectarlink-desktop (release)..."
-    (cd "${REPO_ROOT}" && cargo build --release -p nectarlink-desktop)
+    echo "Building tokkiphone-desktop (release)..."
+    (cd "${REPO_ROOT}" && cargo build --release -p tokkiphone-desktop)
 fi
 
-STAGE_DIR="$(mktemp -d -t nectarlink-deb-XXXXXX)"
+STAGE_DIR="$(mktemp -d -t tokkiphone-deb-XXXXXX)"
 trap 'rm -rf "${STAGE_DIR}"' EXIT
 
-PKG_ROOT="${STAGE_DIR}/nectarlink_${VERSION}_${DEB_ARCH}"
+PKG_ROOT="${STAGE_DIR}/tokkiphone_${VERSION}_${DEB_ARCH}"
 mkdir -p \
     "${PKG_ROOT}/DEBIAN" \
     "${PKG_ROOT}/usr/bin" \
-    "${PKG_ROOT}/usr/lib/nectarlink" \
-    "${PKG_ROOT}/usr/share/nectarlink" \
+    "${PKG_ROOT}/usr/lib/tokkiphone" \
+    "${PKG_ROOT}/usr/share/tokkiphone" \
     "${PKG_ROOT}/usr/share/applications" \
     "${PKG_ROOT}/usr/share/metainfo" \
     "${PKG_ROOT}/usr/share/icons/hicolor/256x256/apps" \
     "${PKG_ROOT}/usr/share/icons/hicolor/512x512/apps" \
     "${PKG_ROOT}/usr/share/icons/hicolor/scalable/apps"
 
-install -m 0755 "${BIN_PATH}" "${PKG_ROOT}/usr/lib/nectarlink/nectarlink-desktop"
-cat > "${PKG_ROOT}/usr/bin/nectarlink-desktop" <<'EOF'
+install -m 0755 "${BIN_PATH}" "${PKG_ROOT}/usr/lib/tokkiphone/tokkiphone-desktop"
+cat > "${PKG_ROOT}/usr/bin/tokkiphone-desktop" <<'EOF'
 #!/usr/bin/env sh
-if [ -d /usr/lib/nectarlink/lib ]; then
-    export LD_LIBRARY_PATH="/usr/lib/nectarlink/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
-    export QT_PLUGIN_PATH="/usr/lib/nectarlink/plugins${QT_PLUGIN_PATH:+:${QT_PLUGIN_PATH}}"
-    export QML2_IMPORT_PATH="/usr/lib/nectarlink/qml${QML2_IMPORT_PATH:+:${QML2_IMPORT_PATH}}"
+if [ -d /usr/lib/tokkiphone/lib ]; then
+    export LD_LIBRARY_PATH="/usr/lib/tokkiphone/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+    export QT_PLUGIN_PATH="/usr/lib/tokkiphone/plugins${QT_PLUGIN_PATH:+:${QT_PLUGIN_PATH}}"
+    export QML2_IMPORT_PATH="/usr/lib/tokkiphone/qml${QML2_IMPORT_PATH:+:${QML2_IMPORT_PATH}}"
 fi
-exec /usr/lib/nectarlink/nectarlink-desktop "$@"
+exec /usr/lib/tokkiphone/tokkiphone-desktop "$@"
 EOF
-chmod 0755 "${PKG_ROOT}/usr/bin/nectarlink-desktop"
+chmod 0755 "${PKG_ROOT}/usr/bin/tokkiphone-desktop"
 
-for qm in "$(dirname "${BIN_PATH}")"/nectarlink_*.qm; do
+for qm in "$(dirname "${BIN_PATH}")"/tokkiphone_*.qm; do
     if [[ -f "${qm}" ]]; then
-        install -m 0644 "${qm}" "${PKG_ROOT}/usr/share/nectarlink/$(basename "${qm}")"
+        install -m 0644 "${qm}" "${PKG_ROOT}/usr/share/tokkiphone/$(basename "${qm}")"
     fi
 done
 
-install -m 0644 "${SCRIPT_DIR}/nectarlink.desktop" "${PKG_ROOT}/usr/share/applications/nectarlink.desktop"
-install -m 0644 "${SCRIPT_DIR}/org.nectarlink.desktop.metainfo.xml" "${PKG_ROOT}/usr/share/metainfo/org.nectarlink.desktop.metainfo.xml"
+install -m 0644 "${SCRIPT_DIR}/tokkiphone.desktop" "${PKG_ROOT}/usr/share/applications/tokkiphone.desktop"
+install -m 0644 "${SCRIPT_DIR}/mx.loperstack.tokkiphone.desktop.metainfo.xml" "${PKG_ROOT}/usr/share/metainfo/mx.loperstack.tokkiphone.desktop.metainfo.xml"
 
 if [[ -f "${REPO_ROOT}/assets/brand/icon-512.png" ]]; then
-    install -m 0644 "${REPO_ROOT}/assets/brand/icon-512.png" "${PKG_ROOT}/usr/share/icons/hicolor/512x512/apps/nectarlink.png"
-    install -m 0644 "${REPO_ROOT}/assets/brand/icon-512.png" "${PKG_ROOT}/usr/share/icons/hicolor/256x256/apps/nectarlink.png"
+    install -m 0644 "${REPO_ROOT}/assets/brand/icon-512.png" "${PKG_ROOT}/usr/share/icons/hicolor/512x512/apps/tokkiphone.png"
+    install -m 0644 "${REPO_ROOT}/assets/brand/icon-512.png" "${PKG_ROOT}/usr/share/icons/hicolor/256x256/apps/tokkiphone.png"
 fi
 if [[ -f "${REPO_ROOT}/assets/brand/icon.svg" ]]; then
-    install -m 0644 "${REPO_ROOT}/assets/brand/icon.svg" "${PKG_ROOT}/usr/share/icons/hicolor/scalable/apps/nectarlink.svg"
+    install -m 0644 "${REPO_ROOT}/assets/brand/icon.svg" "${PKG_ROOT}/usr/share/icons/hicolor/scalable/apps/tokkiphone.svg"
 fi
 
 QT_DEPENDS=""
@@ -98,8 +98,8 @@ bundle_private_qt_if_needed() {
         return 0
     fi
 
-    echo "Bundling private Qt runtime from ${qt_libs} into /usr/lib/nectarlink..."
-    local dest="${PKG_ROOT}/usr/lib/nectarlink"
+    echo "Bundling private Qt runtime from ${qt_libs} into /usr/lib/tokkiphone..."
+    local dest="${PKG_ROOT}/usr/lib/tokkiphone"
     mkdir -p "${dest}/lib" "${dest}/plugins" "${dest}/qml"
 
     local pattern
@@ -167,7 +167,7 @@ bundle_private_qt_if_needed
 INSTALLED_SIZE="$(du -sk "${PKG_ROOT}/usr" | awk '{print $1}')"
 
 cat > "${PKG_ROOT}/DEBIAN/control" <<EOF
-Package: nectarlink
+Package: tokkiphone
 Version: ${VERSION}
 Section: net
 Priority: optional
@@ -211,7 +211,7 @@ chmod 0755 "${PKG_ROOT}/DEBIAN/postrm"
 
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/dist}"
 mkdir -p "${OUT_DIR}"
-OUT_DEB="${OUT_DIR}/nectarlink_${VERSION}_${DEB_ARCH}.deb"
+OUT_DEB="${OUT_DIR}/tokkiphone_${VERSION}_${DEB_ARCH}.deb"
 
 dpkg-deb --root-owner-group --build "${PKG_ROOT}" "${OUT_DEB}"
 echo "Built ${OUT_DEB}"

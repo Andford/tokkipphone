@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! Runs `nectarlink-core` beside Qt: a small Tokio runtime owns the [`Node`],
+//! Runs `tokkiphone-core` beside Qt: a small Tokio runtime owns the [`Node`],
 //! core events are folded into the [`Hub`], and Qt objects issue commands
 //! through [`spawn`]. The UI starts before the node, which comes up in the
 //! background (startup is never blocked on the network).
@@ -12,11 +12,11 @@ use std::{
     time::Duration,
 };
 
-use nectarlink_core::{DeviceInfo, DeviceKind, LinkState, Node, NodeConfig, Platform};
 use tokio::{
     runtime::Runtime,
     sync::{Notify, broadcast::error::RecvError},
 };
+use tokkiphone_core::{DeviceInfo, DeviceKind, LinkState, Node, NodeConfig, Platform};
 
 use crate::state::{Changes, CoreStatus, Hub};
 
@@ -75,7 +75,7 @@ pub fn spawn(fut: impl Future<Output = ()> + Send + 'static) {
 pub fn start(data_dir: PathBuf, platform: Arc<dyn Platform>) -> std::io::Result<&'static CoreHost> {
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
-        .thread_name("nectarlink-core")
+        .thread_name("tokkiphone-core")
         .enable_all()
         .build()?;
     let host = CoreHost {
@@ -105,43 +105,43 @@ pub fn compute_capabilities(
 ) -> Vec<String> {
     let mut caps = vec![
         "pc.power".into(),
-        nectarlink_core::PHOTOS_SHOW.into(),
-        nectarlink_core::CAMERA_CONTINUITY.into(),
-        nectarlink_core::CALLS_SHOW.into(),
-        nectarlink_core::CONTACTS_SHOW.into(),
-        nectarlink_core::SMS_SHOW.into(),
-        nectarlink_core::TOGGLES_SHOW.into(),
+        tokkiphone_core::PHOTOS_SHOW.into(),
+        tokkiphone_core::CAMERA_CONTINUITY.into(),
+        tokkiphone_core::CALLS_SHOW.into(),
+        tokkiphone_core::CONTACTS_SHOW.into(),
+        tokkiphone_core::SMS_SHOW.into(),
+        tokkiphone_core::TOGGLES_SHOW.into(),
     ];
     #[cfg(any(windows, target_os = "linux"))]
     {
-        caps.push(nectarlink_core::PC_WAKE.into());
+        caps.push(tokkiphone_core::PC_WAKE.into());
         caps.push("media.control".into());
-        caps.push(nectarlink_core::STORAGE_MOUNT.into());
-        caps.push(nectarlink_core::STORAGE_READ.into());
-        caps.push(nectarlink_core::STORAGE_WRITE.into());
-        caps.push(nectarlink_core::MIRROR_VIEW.into());
-        caps.push(nectarlink_core::MIRROR_LISTEN.into());
-        caps.push(nectarlink_core::DECK_ACTIONS.into());
-        caps.push(nectarlink_core::PC_AUDIO.into());
-        caps.push(nectarlink_core::RECORDER.into());
+        caps.push(tokkiphone_core::STORAGE_MOUNT.into());
+        caps.push(tokkiphone_core::STORAGE_READ.into());
+        caps.push(tokkiphone_core::STORAGE_WRITE.into());
+        caps.push(tokkiphone_core::MIRROR_VIEW.into());
+        caps.push(tokkiphone_core::MIRROR_LISTEN.into());
+        caps.push(tokkiphone_core::DECK_ACTIONS.into());
+        caps.push(tokkiphone_core::PC_AUDIO.into());
+        caps.push(tokkiphone_core::RECORDER.into());
         #[cfg(windows)]
         {
-            caps.push(nectarlink_core::WEBCAM_VIRTUAL.into());
+            caps.push(tokkiphone_core::WEBCAM_VIRTUAL.into());
             if crate::webcam::supports_hevc() {
-                caps.push(nectarlink_core::WEBCAM_HEVC.into());
+                caps.push(tokkiphone_core::WEBCAM_HEVC.into());
             }
-            caps.push(nectarlink_core::MEDIA_STREAM.into());
+            caps.push(tokkiphone_core::MEDIA_STREAM.into());
         }
         #[cfg(target_os = "linux")]
         {
             if crate::win::vcam::dll_path().is_some() || crate::win::vcam::is_registered() {
-                caps.push(nectarlink_core::WEBCAM_VIRTUAL.into());
+                caps.push(tokkiphone_core::WEBCAM_VIRTUAL.into());
             }
             if crate::win::window_capture::is_available() && crate::pc_mirror::is_capture_available() {
-                caps.push(nectarlink_core::MEDIA_STREAM.into());
+                caps.push(tokkiphone_core::MEDIA_STREAM.into());
             }
         }
-        caps.push(nectarlink_core::MIC_LISTEN.into());
+        caps.push(tokkiphone_core::MIC_LISTEN.into());
     }
     #[cfg(any(windows, target_os = "linux"))]
     let mut pc_mirror_enabled = crate::pc_mirror::is_active();
@@ -154,7 +154,7 @@ pub fn compute_capabilities(
         for d in devices {
             if let Ok(toggles) = node.device_toggles(d.id) {
                 for (name, on) in toggles {
-                    if on && name == nectarlink_core::PC_MIRROR_TOGGLE {
+                    if on && name == tokkiphone_core::PC_MIRROR_TOGGLE {
                         pc_mirror_enabled = true;
                     }
                     if on && name == "remote_input" {
@@ -166,7 +166,7 @@ pub fn compute_capabilities(
     }
     #[cfg(any(windows, target_os = "linux"))]
     if pc_mirror_enabled && crate::pc_mirror::is_capture_available() {
-        caps.push(nectarlink_core::MIRROR_CAPTURE.into());
+        caps.push(tokkiphone_core::MIRROR_CAPTURE.into());
     }
     #[cfg(windows)]
     let input_available = true;
@@ -174,11 +174,11 @@ pub fn compute_capabilities(
     let input_available = crate::win::input::is_available();
     #[cfg(any(windows, target_os = "linux"))]
     if remote_input_enabled && input_available {
-        caps.push(nectarlink_core::MIRROR_INPUT.into());
-        caps.push(nectarlink_core::INPUT_INJECT.into());
+        caps.push(tokkiphone_core::MIRROR_INPUT.into());
+        caps.push(tokkiphone_core::INPUT_INJECT.into());
     }
     if crate::win::vcam::is_registered() {
-        caps.push(nectarlink_core::WEBCAM_ADDON_VCAM.into());
+        caps.push(tokkiphone_core::WEBCAM_ADDON_VCAM.into());
     }
     caps
 }
@@ -189,7 +189,7 @@ pub fn refresh_capabilities() {
     let Some(node) = node() else { return };
     spawn(async move {
         let caps = compute_capabilities(Some(&node));
-        node.update_power(nectarlink_core::PowerLevel::Basic, caps).await;
+        node.update_power(tokkiphone_core::PowerLevel::Basic, caps).await;
     });
 }
 
@@ -198,12 +198,12 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
     let wake = crate::win::wol::query_wake_status();
     let mut config = NodeConfig::new(&data_dir, this_device(), env!("CARGO_PKG_VERSION"));
     config.downloads_dir = Some(downloads_dir());
-    // NECTARLINK_NO_ADB=1 keeps a development copy from reaching phones plugged in over USB,
-    // unless NECTARLINK_ADB_ONLY_SERIAL explicitly restricts ADB to an Android emulator.
+    // TOKKIPPHONE_NO_ADB=1 keeps a development copy from reaching phones plugged in over USB,
+    // unless TOKKIPPHONE_ADB_ONLY_SERIAL explicitly restricts ADB to an Android emulator.
     let only_emulator =
-        std::env::var("NECTARLINK_ADB_ONLY_SERIAL").is_ok_and(|s| s.trim().starts_with("emulator-"));
-    let adb_disabled = !only_emulator && std::env::var_os("NECTARLINK_NO_ADB").is_some_and(|v| v == "1");
-    config.adb_server = (!adb_disabled).then_some(nectarlink_core::DEFAULT_ADB_ADDR);
+        std::env::var("TOKKIPPHONE_ADB_ONLY_SERIAL").is_ok_and(|s| s.trim().starts_with("emulator-"));
+    let adb_disabled = !only_emulator && std::env::var_os("TOKKIPPHONE_NO_ADB").is_some_and(|v| v == "1");
+    config.adb_server = (!adb_disabled).then_some(tokkiphone_core::DEFAULT_ADB_ADDR);
     config.away_mode = crate::settings::Settings::load(&data_dir).away_mode;
     // This PC's own players, for phones (crate::win::media_sessions).
     config.capabilities = compute_capabilities(None);
@@ -222,7 +222,7 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
     };
     let post_start_caps = compute_capabilities(Some(&node));
     if post_start_caps != initial_caps {
-        node.update_power(nectarlink_core::PowerLevel::Basic, post_start_caps).await;
+        node.update_power(tokkiphone_core::PowerLevel::Basic, post_start_caps).await;
     }
     node.set_wake_info(wake.info.clone()).await;
     // Subscribe before reading the initial state so no event is missed.
@@ -248,9 +248,9 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
     if walkthrough_reconciled {
         let _ = saved_settings.save(&data_dir);
     }
-    let _ = node.set_timeline_retention(nectarlink_core::TimelineRetention {
+    let _ = node.set_timeline_retention(tokkiphone_core::TimelineRetention {
         max_days: saved_settings.timeline_retention_days,
-        max_entries: nectarlink_core::DEFAULT_TIMELINE_MAX_ENTRIES,
+        max_entries: tokkiphone_core::DEFAULT_TIMELINE_MAX_ENTRIES,
     });
     let _ = host.node.set(node);
     host.hub.update(|s| {
@@ -302,7 +302,7 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
                             .set_phone_toggle(
                                 peer,
                                 "pc_active".into(),
-                                nectarlink_core::PhoneToggleValue::Bool(active),
+                                tokkiphone_core::PhoneToggleValue::Bool(active),
                             )
                             .await;
                     });
@@ -316,14 +316,14 @@ async fn run(data_dir: PathBuf, platform: Arc<dyn Platform>) {
             Ok(event) => {
                 if matches!(
                     &event,
-                    nectarlink_core::NodeEvent::QueueChanged
-                        | nectarlink_core::NodeEvent::QueueDroppedOnUnpair { .. }
+                    tokkiphone_core::NodeEvent::QueueChanged
+                        | tokkiphone_core::NodeEvent::QueueDroppedOnUnpair { .. }
                 ) && let Some(node) = self::node()
                 {
                     let items = node.send_queue(None).unwrap_or_default();
                     host.hub.update(|s| s.set_send_queue(items));
                 }
-                if let nectarlink_core::NodeEvent::QueueDroppedOnUnpair { peer_name, dropped_count, .. } =
+                if let tokkiphone_core::NodeEvent::QueueDroppedOnUnpair { peer_name, dropped_count, .. } =
                     &event
                     && *dropped_count > 0
                 {
@@ -399,7 +399,7 @@ fn this_device() -> DeviceInfo {
         model: None,
         accent: None,
         screen: None,
-        install_id: crate::win::machine_guid().as_deref().and_then(nectarlink_core::install_id_from),
+        install_id: crate::win::machine_guid().as_deref().and_then(tokkiphone_core::install_id_from),
     }
 }
 
@@ -438,41 +438,41 @@ mod tests {
         assert!(!caps.contains(&"mirror.listen".into()), "macOS must not advertise mirror.listen");
         assert!(!caps.contains(&"media.control".into()), "macOS must not advertise media.control");
         assert!(
-            !caps.contains(&nectarlink_core::STORAGE_MOUNT.into()),
+            !caps.contains(&tokkiphone_core::STORAGE_MOUNT.into()),
             "macOS must not advertise storage.mount"
         );
         assert!(
-            !caps.contains(&nectarlink_core::STORAGE_READ.into()),
+            !caps.contains(&tokkiphone_core::STORAGE_READ.into()),
             "macOS must not advertise storage.read"
         );
         assert!(
-            !caps.contains(&nectarlink_core::STORAGE_WRITE.into()),
+            !caps.contains(&tokkiphone_core::STORAGE_WRITE.into()),
             "macOS must not advertise storage.write"
         );
         assert!(
-            !caps.contains(&nectarlink_core::WEBCAM_VIRTUAL.into()),
+            !caps.contains(&tokkiphone_core::WEBCAM_VIRTUAL.into()),
             "macOS must not advertise camera.virtual"
         );
-        assert!(!caps.contains(&nectarlink_core::PC_AUDIO.into()), "macOS must not advertise pc.audio");
-        assert!(!caps.contains(&nectarlink_core::RECORDER.into()), "macOS must not advertise recorder");
+        assert!(!caps.contains(&tokkiphone_core::PC_AUDIO.into()), "macOS must not advertise pc.audio");
+        assert!(!caps.contains(&tokkiphone_core::RECORDER.into()), "macOS must not advertise recorder");
         assert!(
-            !caps.contains(&nectarlink_core::DECK_ACTIONS.into()),
+            !caps.contains(&tokkiphone_core::DECK_ACTIONS.into()),
             "macOS must not advertise deck.actions"
         );
         assert!(
-            !caps.contains(&nectarlink_core::MEDIA_STREAM.into()),
+            !caps.contains(&tokkiphone_core::MEDIA_STREAM.into()),
             "macOS must not advertise media.stream"
         );
-        assert!(!caps.contains(&nectarlink_core::MIC_LISTEN.into()), "macOS must not advertise mic.listen");
-        assert!(!caps.contains(&nectarlink_core::PC_WAKE.into()), "macOS must not advertise pc.wake");
+        assert!(!caps.contains(&tokkiphone_core::MIC_LISTEN.into()), "macOS must not advertise mic.listen");
+        assert!(!caps.contains(&tokkiphone_core::PC_WAKE.into()), "macOS must not advertise pc.wake");
 
         // Ensure supported features on macOS are advertised
         assert!(caps.contains(&"pc.power".into()));
-        assert!(caps.contains(&nectarlink_core::PHOTOS_SHOW.into()));
-        assert!(caps.contains(&nectarlink_core::CAMERA_CONTINUITY.into()));
-        assert!(caps.contains(&nectarlink_core::CALLS_SHOW.into()));
-        assert!(caps.contains(&nectarlink_core::CONTACTS_SHOW.into()));
-        assert!(caps.contains(&nectarlink_core::SMS_SHOW.into()));
-        assert!(caps.contains(&nectarlink_core::TOGGLES_SHOW.into()));
+        assert!(caps.contains(&tokkiphone_core::PHOTOS_SHOW.into()));
+        assert!(caps.contains(&tokkiphone_core::CAMERA_CONTINUITY.into()));
+        assert!(caps.contains(&tokkiphone_core::CALLS_SHOW.into()));
+        assert!(caps.contains(&tokkiphone_core::CONTACTS_SHOW.into()));
+        assert!(caps.contains(&tokkiphone_core::SMS_SHOW.into()));
+        assert!(caps.contains(&tokkiphone_core::TOGGLES_SHOW.into()));
     }
 }

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // A Material switch. Click, Space or Enter flips it; `toggled` reports the
 // user's choice (bind `checked` to the source of truth).

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // A round device or app badge: an icon, or the first letter of a name.
 Rectangle {

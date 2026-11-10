@@ -7,7 +7,7 @@
   1. Builds the release app (unless -SkipBuild).
   2. Stages it with the Qt libraries, plugins, QML modules and translations it
      uses (windeployqt), the Microsoft C++ runtime, and the license notices.
-  3. Packs the folder into target\package\Nectarlink-<version>-x64-setup.exe
+  3. Packs the folder into target\package\TokkipPhone-<version>-x64-setup.exe
      with NSIS (unless -StageOnly).
 
   Needs Qt (qmake on PATH, or QT_ROOT_DIR / -QtRoot) and, for the
@@ -78,7 +78,7 @@ if (-not (Test-Path $windeployqt)) {
 }
 if (-not (Test-Path $windeployqt)) { throw "windeployqt not found under $hostKit or $QtRoot; pass -QtRoot" }
 
-$arm64ToolDir = Join-Path $env:LOCALAPPDATA "Nectarlink\dev\qmake-arm64"
+$arm64ToolDir = Join-Path $env:LOCALAPPDATA "Tokkip Phone\dev\qmake-arm64"
 if ($isArm64) {
     & (Join-Path $PSScriptRoot "qmake-arm64.ps1") -QtRoot $qtBase -OutDir $arm64ToolDir | Out-Null
     $qtpaths = Join-Path $arm64ToolDir 'qtpaths.exe'
@@ -98,23 +98,23 @@ if (-not $SkipBuild) {
     if ($isArm64) {
         $env:QMAKE = Join-Path $arm64ToolDir "qmake6.exe"
         if (-not (Test-Path $env:QMAKE)) { $env:QMAKE = Join-Path $arm64ToolDir "qmake.exe" }
-        Invoke-Native "the build" { cargo build --locked --release --target aarch64-pc-windows-msvc -p nectarlink-desktop -p nectarlink-vcam }
+        Invoke-Native "the build" { cargo build --locked --release --target aarch64-pc-windows-msvc -p tokkiphone-desktop -p tokkiphone-vcam }
     } else {
         $env:PATH = "$(Join-Path $targetKit 'bin');$env:PATH"
-        Invoke-Native "the build" { cargo build --locked --release -p nectarlink-desktop -p nectarlink-vcam }
+        Invoke-Native "the build" { cargo build --locked --release -p tokkiphone-desktop -p tokkiphone-vcam }
     }
 }
-$exe = Join-Path $targetDir 'nectarlink-desktop.exe'
+$exe = Join-Path $targetDir 'tokkiphone-desktop.exe'
 if (-not (Test-Path $exe)) { throw "no release build at $exe" }
-$vcamDll = Join-Path $targetDir 'nectarlink_vcam.dll'
+$vcamDll = Join-Path $targetDir 'tokkiphone_vcam.dll'
 if (-not (Test-Path $vcamDll)) { throw "no release build at $vcamDll" }
 
 # ---- Stage ----
 Step "Stage"
 $package = Join-Path $root 'target\package'
-$stage = Join-Path $package 'Nectarlink'
+$stage = Join-Path $package 'Tokkip Phone'
 if (Test-Path $stage) {
-    $stagedVcam = Join-Path $stage 'nectarlink_vcam.dll'
+    $stagedVcam = Join-Path $stage 'tokkiphone_vcam.dll'
     if (Test-Path $stagedVcam) {
         & regsvr32.exe /s /u $stagedVcam 2>$null | Out-Null
         try {
@@ -124,7 +124,7 @@ if (Test-Path $stage) {
             # NTFS allows moving a mapped file on the same volume so staging stays clean.
             $trashDir = Join-Path $root 'target\package-locked'
             New-Item -ItemType Directory -Force $trashDir | Out-Null
-            Move-Item $stagedVcam (Join-Path $trashDir "nectarlink_vcam.$([DateTime]::UtcNow.Ticks).dll") -Force -ErrorAction SilentlyContinue
+            Move-Item $stagedVcam (Join-Path $trashDir "tokkiphone_vcam.$([DateTime]::UtcNow.Ticks).dll") -Force -ErrorAction SilentlyContinue
         }
     }
     Remove-Item $stage -Recurse -Force
@@ -149,7 +149,7 @@ Invoke-Native "windeployqt" {
         }
         $env:PATH = "$arm64ToolDir;$(Join-Path $hostKit 'bin');$env:PATH"
     }
-    & $windeployqt @deployArgs (Join-Path $stage 'nectarlink-desktop.exe')
+    & $windeployqt @deployArgs (Join-Path $stage 'tokkiphone-desktop.exe')
 }
 
 # Translations. windeployqt stages Qt's own .qm files (in translations/, so its
@@ -164,7 +164,7 @@ $offeredLanguages = @([regex]::Matches(($i18nSource -split 'pub const LANGUAGES'
 $translationSources = @()
 if (Test-Path (Join-Path $root 'desktop\app\i18n')) {
     $translationSources = @(Get-ChildItem (Join-Path $root 'desktop\app\i18n') -Filter '*.ts' |
-        Where-Object { $offeredLanguages -contains ($_.BaseName -replace '^nectarlink_', '') })
+        Where-Object { $offeredLanguages -contains ($_.BaseName -replace '^tokkiphone_', '') })
 }
 if ($translationSources.Count -gt 0) {
     # A host tool: the x64 kit's, as an ARM64 kit's own can't run here.
@@ -218,7 +218,7 @@ Copy-Item (Join-Path $root 'LICENSE') (Join-Path $stage 'LICENSE.txt')
 Invoke-Native "writing the notices" { cargo xtask notices (Join-Path $stage 'THIRD-PARTY-NOTICES.txt') }
 
 # The icon build.rs drew for the .exe, and Sparse Package assets for Windows Share sheet.
-$icon = Get-ChildItem (Join-Path $targetDir 'build') -Recurse -Filter 'nectarlink.ico' |
+$icon = Get-ChildItem (Join-Path $targetDir 'build') -Recurse -Filter 'tokkiphone.ico' |
     Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $icon) { throw "the app icon isn't built" }
 $assetsDir = Join-Path $stage 'Assets'
@@ -249,9 +249,9 @@ Step "Installer ($Arch)"
 $makensis = (Get-Command makensis -ErrorAction SilentlyContinue).Source
 if (-not $makensis) { $makensis = Join-Path ${env:ProgramFiles(x86)} 'NSIS\makensis.exe' }
 if (-not (Test-Path $makensis)) { throw "NSIS (makensis) not found" }
-$out = Join-Path $package "Nectarlink-$version-$Arch-setup.exe"
+$out = Join-Path $package "TokkipPhone-$version-$Arch-setup.exe"
 Invoke-Native "makensis" {
     & $makensis /V2 "/DVERSION=$numeric" "/DDISPLAY_VERSION=$version" "/DARCH=$Arch" "/DSTAGE=$stage" `
-        "/DICON=$($icon.FullName)" "/DOUTFILE=$out" (Join-Path $root 'desktop\installer\nectarlink.nsi')
+        "/DICON=$($icon.FullName)" "/DOUTFILE=$out" (Join-Path $root 'desktop\installer\tokkiphone.nsi')
 }
 Write-Host ("Installer: {0} ({1:N1} MB)" -f $out, ((Get-Item $out).Length / 1MB))

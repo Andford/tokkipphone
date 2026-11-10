@@ -15,11 +15,11 @@ use std::{
 };
 
 use data_encoding::BASE64;
-use nectarlink_core::{
+use serde_json::json;
+use tokkiphone_core::{
     CLIP_MAX_IMAGE_BYTES, ClipKind, ClipSuggestion, ClipboardItemKind, DeviceId, Error, FeatureState,
     LinkState, Node, NodeEvent,
 };
-use serde_json::json;
 
 use crate::{
     bridge::app::{describe, open_dialer, show_message, show_message_with_action},
@@ -404,7 +404,7 @@ pub fn run_last_suggestion() {
             Ok(())
         }
         ClipKind::TrackingNumber => {
-            crate::win::shell::open_url(&nectarlink_core::tracking_search_url(&suggestion.target))
+            crate::win::shell::open_url(&tokkiphone_core::tracking_search_url(&suggestion.target))
         }
         ClipKind::Email => crate::win::shell::open_mailto(&suggestion.target),
     };

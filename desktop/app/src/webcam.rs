@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //! Phone as a webcam (`docs/protocol/webcam.md`): decodes a phone's H.264
 //! camera stream on a dedicated thread, publishes shared GPU NV12 textures or
-//! fallback BGRX frames into the mapping read by `nectarlink_vcam.dll` (the global one the
+//! fallback BGRX frames into the mapping read by `tokkiphone_vcam.dll` (the global one the
 //! camera creates inside Windows' Frame Server, or this session's while it
 //! isn't there), and feeds the live preview `VideoView` (`stream:
 //! "webcam"`) in Settings.
@@ -10,7 +10,7 @@
 //!
 //! End-to-end 4K UHD (`3840×2160` @ 30 fps) is supported across the phone
 //! camera encoder, the desktop H.264 decoder, the shared-memory frame
-//! transport (`nectarlink-vcam` v2), and the Media Foundation virtual camera
+//! transport (`tokkiphone-vcam` v2), and the Media Foundation virtual camera
 //! source (`RGB32` and `NV12`).
 //!
 //! 10-bit HDR (`P010` / BT.2020 PQ or HLG) is intentionally omitted: Windows'
@@ -30,8 +30,8 @@ use std::{
     time::{Duration, Instant},
 };
 
-use nectarlink_core::{DeviceId, Error, NodeEvent, WebcamConfig, WebcamSink, WebcamStart};
-use nectarlink_vcam::{
+use tokkiphone_core::{DeviceId, Error, NodeEvent, WebcamConfig, WebcamSink, WebcamStart};
+use tokkiphone_vcam::{
     DEFAULT_MAPPING_NAME, LOCAL_MAPPING_NAME, SharedFrameMapping, render_placeholder_bgrx,
 };
 
@@ -238,14 +238,14 @@ pub fn selected_phone() -> Option<DeviceId> {
             && app
                 .devices
                 .iter()
-                .any(|d| d.id == id && matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+                .any(|d| d.id == id && matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
         {
             return Some(id);
         }
         if let Some(online_id) = app
             .devices
             .iter()
-            .find(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+            .find(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
             .map(|d| d.id)
         {
             return Some(online_id);
@@ -584,7 +584,7 @@ pub fn on_event(event: &NodeEvent) {
             core_host::host().hub.changed(Changes::WEBCAM);
         }
         NodeEvent::Webcam { device, on: false }
-        | NodeEvent::LinkChanged { device, link: nectarlink_core::LinkState::Offline { .. } } => {
+        | NodeEvent::LinkChanged { device, link: tokkiphone_core::LinkState::Offline { .. } } => {
             let changed = state(|s| {
                 if matches!(s.phase, Phase::Asking { device: d } | Phase::Streaming { device: d, .. } if d == *device)
                 {
@@ -754,7 +754,7 @@ fn decode(device: DeviceId, items: &Receiver<Item>, waiting: &AtomicUsize) {
     let mut local_mapping = mapping();
     let mut last_mapping_check = Instant::now();
     #[cfg(windows)]
-    let mut gpu_publisher = nectarlink_vcam::gpu::GpuPublisher::new();
+    let mut gpu_publisher = tokkiphone_vcam::gpu::GpuPublisher::new();
     #[cfg(windows)]
     let mut shared_transport = false;
 

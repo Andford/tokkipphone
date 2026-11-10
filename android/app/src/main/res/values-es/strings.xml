@@ -145,7 +145,7 @@
     <string name="transfer_pause">Pausar</string>
     <string name="transfer_resume">Reanudar</string>
     <string name="transfer_paused_progress">En pausa · %1$s / %2$s</string>
-    <string name="transfer_received_from">De %1$s · en Download/Nectarlink</string>
+    <string name="transfer_received_from">De %1$s · en Download/Tokkip Phone</string>
     <string name="transfer_sent_to">Enviado a %1$s</string>
     <string name="transfer_cancelled">Cancelado</string>
     <string name="transfer_denied">%1$s no acepta archivos de este teléfono.</string>
@@ -929,7 +929,7 @@
     <string name="guide_files_pc_1">Arrastra archivos a la ventana de Tokkip Phone o a la isla de arriba en tu PC.</string>
     <string name="guide_files_opt_1">Enviar archivos / Enviar una carpeta: pasa archivos sueltos o carpetas completas.</string>
     <string name="guide_files_opt_2">Pausar / Reanudar: retoma las transferencias interrumpidas sin volver a enviar lo que ya llegó.</string>
-    <string name="guide_files_privacy">Los archivos viajan por QUIC con TLS 1.3 y verificación BLAKE3 hasta Download/Nectarlink.</string>
+    <string name="guide_files_privacy">Los archivos viajan por QUIC con TLS 1.3 y verificación BLAKE3 hasta Download/Tokkip Phone.</string>
     <string name="guide_files_limits">Hasta 5,000 archivos por lote.</string>
     <string name="guide_queue_title">Cola de envío</string>
     <string name="guide_queue_summary">Pon en cola archivos, enlaces, recortes y grabaciones mientras tu PC está desconectada, y se entregan cuando se reconecta.</string>

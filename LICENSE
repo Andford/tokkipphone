@@ -5,12 +5,12 @@ project. The full license texts are in the LICENSES/ directory.
   -------------------------------------------  ----------------------------------
   Desktop app   (desktop/)                     GPL-3.0-or-later, with the
   Android app   (android/)                     additional permission in
-  CLI           (core/nectarlink-cli/)         LICENSES/APP-STORE-EXCEPTION.md
+  CLI           (core/tokkiphone-cli/)         LICENSES/APP-STORE-EXCEPTION.md
 
   Core libraries (core/, except the CLI):      MPL-2.0
-    nectarlink-core, nectarlink-protocol,
-    nectarlink-adb, nectarlink-localsend,
-    nectarlink-ffi
+    tokkiphone-core, tokkiphone-protocol,
+    tokkiphone-adb, tokkiphone-localsend,
+    tokkiphone-ffi
 
   Protocol specification and documentation     CC-BY-4.0
   (docs/)

@@ -42,11 +42,11 @@ const HKLM_CLSID_PREFIX: &str = r"SOFTWARE\Classes\CLSID";
 const HKLM_FRAMESERVER_PREFIX: &str =
     r"SOFTWARE\Microsoft\Windows Media Foundation\Platform\FrameServer\Sources";
 
-/// Resolves `nectarlink_vcam.dll` alongside `nectarlink-desktop.exe`.
+/// Resolves `tokkiphone_vcam.dll` alongside `tokkiphone-desktop.exe`.
 pub fn dll_path() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let dir = exe.parent()?;
-    Some(dir.join("nectarlink_vcam.dll"))
+    Some(dir.join("tokkiphone_vcam.dll"))
 }
 
 /// Checks whether the virtual camera COM media source is registered under `root\classes_prefix`
@@ -77,7 +77,7 @@ pub fn is_registered_under(root: HKEY, classes_prefix: &str) -> bool {
     path.is_file()
 }
 
-/// Returns `true` if `nectarlink_vcam.dll` is registered in `HKLM` and exists on disk.
+/// Returns `true` if `tokkiphone_vcam.dll` is registered in `HKLM` and exists on disk.
 pub fn is_registered() -> bool {
     is_registered_under(HKEY_LOCAL_MACHINE, HKLM_CLSID_PREFIX)
 }
@@ -157,18 +157,18 @@ pub fn unregister_under(root: HKEY, classes_prefix: &str, frameserver_prefix: &s
     Ok(())
 }
 
-/// Registers `nectarlink_vcam.dll` in `HKLM` (requires administrator privileges).
+/// Registers `tokkiphone_vcam.dll` in `HKLM` (requires administrator privileges).
 pub fn register_hklm() -> Result<(), String> {
-    let dll = dll_path().ok_or_else(|| "cannot resolve nectarlink_vcam.dll path".to_owned())?;
+    let dll = dll_path().ok_or_else(|| "cannot resolve tokkiphone_vcam.dll path".to_owned())?;
     register_under(HKEY_LOCAL_MACHINE, HKLM_CLSID_PREFIX, HKLM_FRAMESERVER_PREFIX, &dll)
 }
 
-/// Unregisters `nectarlink_vcam.dll` from `HKLM` (requires administrator privileges).
+/// Unregisters `tokkiphone_vcam.dll` from `HKLM` (requires administrator privileges).
 pub fn unregister_hklm() -> Result<(), String> {
     unregister_under(HKEY_LOCAL_MACHINE, HKLM_CLSID_PREFIX, HKLM_FRAMESERVER_PREFIX)
 }
 
-/// Launches `nectarlink-desktop.exe <arg>` elevated via `ShellExecuteExW` (`"runas"`)
+/// Launches `tokkiphone-desktop.exe <arg>` elevated via `ShellExecuteExW` (`"runas"`)
 /// and invokes `on_done` once the helper process exits.
 pub fn run_elevated(arg: &'static str, on_done: impl FnOnce(bool) + Send + 'static) {
     std::thread::spawn(move || {
@@ -244,7 +244,7 @@ impl std::fmt::Debug for VirtualCameraHandle {
 
 impl VirtualCameraHandle {
     /// Creates and starts the `"Tokkip Phone Webcam"` session-lifetime virtual camera.
-    /// Succeeds when `nectarlink_vcam.dll` is registered in `HKLM`.
+    /// Succeeds when `tokkiphone_vcam.dll` is registered in `HKLM`.
     pub fn start() -> Result<Self, String> {
         let create =
             create_virtual_camera().ok_or_else(|| "the virtual camera needs Windows 11".to_owned())?;
@@ -297,7 +297,7 @@ mod tests {
     #[test]
     fn registers_checks_and_unregisters_under_test_key() {
         let pid = std::process::id();
-        let base = format!(r"Software\NectarlinkTest_Vcam_{pid}");
+        let base = format!(r"Software\TokkipPhoneTest_Vcam_{pid}");
         let classes = format!(r"{base}\Classes\CLSID");
         let fs = format!(r"{base}\FrameServer\Sources");
 

@@ -1,6 +1,6 @@
-# Contributing to NectarLink
+# Contributing to Tokkip Phone
 
-Thank you for helping with NectarLink. The project is young, so the codebase
+Thank you for helping with Tokkip Phone. The project is young, so the codebase
 and these guidelines still change often.
 
 ## Before you start
@@ -13,7 +13,7 @@ and these guidelines still change often.
 
 ## Sign your commits (DCO)
 
-NectarLink uses the [Developer Certificate of Origin](DCO.txt) instead of a
+Tokkip Phone uses the [Developer Certificate of Origin](DCO.txt) instead of a
 CLA. By signing off, you certify that you wrote the change or otherwise have
 the right to submit it under the project's licenses.
 
@@ -66,7 +66,7 @@ These come from the plan and will grow into a full style guide:
   Rust, string resources on Android. After changing text on Windows, run
   `cargo xtask strings`, then `lupdate` over every catalogue and the
   template, as [docs/translating.md](docs/translating.md) shows. That page
-  also covers translating NectarLink into a new language.
+  also covers translating Tokkip Phone into a new language.
 - **Accessibility is not optional.** Labels for screen readers and full
   keyboard navigation from day one.
 - Format with `cargo fmt` and keep `cargo clippy` clean. Android code follows
@@ -80,5 +80,5 @@ Questions, ideas that need talking through, and "how do I…" belong in
 ## Reporting bugs
 
 Open an issue with your Windows build, phone model, Android version, and the
-NectarLink versions on both sides. Security problems go through
+Tokkip Phone versions on both sides. Security problems go through
 [SECURITY.md](SECURITY.md) instead, never a public issue.

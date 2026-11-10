@@ -20,7 +20,7 @@
 #   --package KIND     deb, rpm or tarball, instead of the one that fits
 #   --help             Show this
 #
-# NECTARLINK_ASSETS_DIR=/path takes the release files from a folder instead
+# TOKKIPPHONE_ASSETS_DIR=/path takes the release files from a folder instead
 # of GitHub (for testing).
 
 # Everything is in functions, called on the last line: piped into sh, the
@@ -32,10 +32,10 @@ MDNS_PORT=5353
 LOCALSEND_PORT=53317
 MIN_GLIBC="2.39"
 WEBCAM_NAME="Tokkip Phone Webcam"
-VCAM_MODULES_CONF="/etc/modules-load.d/nectarlink-vcam.conf"
-VCAM_MODPROBE_CONF="/etc/modprobe.d/nectarlink-vcam.conf"
-UINPUT_RULE="/etc/udev/rules.d/70-nectarlink-uinput.rules"
-UINPUT_MODULES_CONF="/etc/modules-load.d/nectarlink-uinput.conf"
+VCAM_MODULES_CONF="/etc/modules-load.d/tokkiphone-vcam.conf"
+VCAM_MODPROBE_CONF="/etc/modprobe.d/tokkiphone-vcam.conf"
+UINPUT_RULE="/etc/udev/rules.d/70-tokkiphone-uinput.rules"
+UINPUT_MODULES_CONF="/etc/modules-load.d/tokkiphone-uinput.conf"
 PRIVATE_NETS="192.168.0.0/16 10.0.0.0/8 172.16.0.0/12"
 
 STEP=0
@@ -235,8 +235,8 @@ check_system() {
 
 # Fetches $1 to file $2.
 fetch() {
-    if [ -n "${NECTARLINK_ASSETS_DIR:-}" ]; then
-        cp "$NECTARLINK_ASSETS_DIR/${1##*/}" "$2"
+    if [ -n "${TOKKIPPHONE_ASSETS_DIR:-}" ]; then
+        cp "$TOKKIPPHONE_ASSETS_DIR/${1##*/}" "$2"
     elif has curl; then
         curl -fsSL --retry 3 -o "$2" "$1"
     elif has wget; then
@@ -250,10 +250,10 @@ find_release() {
     step "Finding the release"
     if [ -n "$WANT_VERSION" ]; then
         VERSION="$WANT_VERSION"
-    elif [ -n "${NECTARLINK_ASSETS_DIR:-}" ]; then
-        for f in "$NECTARLINK_ASSETS_DIR"/Nectarlink-*-linux-x86_64.tar.gz; do
+    elif [ -n "${TOKKIPPHONE_ASSETS_DIR:-}" ]; then
+        for f in "$TOKKIPPHONE_ASSETS_DIR"/TokkipPhone-*-linux-x86_64.tar.gz; do
             [ -f "$f" ] || continue
-            VERSION="${f##*/Nectarlink-}"
+            VERSION="${f##*/TokkipPhone-}"
             VERSION="${VERSION%-linux-x86_64.tar.gz}"
         done
     else
@@ -264,9 +264,9 @@ find_release() {
     [ -n "$VERSION" ] || fail "couldn't tell which version is the latest."
     BASE_URL="https://github.com/$REPO/releases/download/v$VERSION"
     case "$PACKAGE" in
-        deb) ASSET="nectarlink_${VERSION}_${DEB_ARCH}.deb" ;;
-        rpm) ASSET="nectarlink-${VERSION}-1.${ARCH}.rpm" ;;
-        tarball) ASSET="Nectarlink-${VERSION}-linux-${ARCH}.tar.gz" ;;
+        deb) ASSET="tokkiphone_${VERSION}_${DEB_ARCH}.deb" ;;
+        rpm) ASSET="tokkiphone-${VERSION}-1.${ARCH}.rpm" ;;
+        tarball) ASSET="TokkipPhone-${VERSION}-linux-${ARCH}.tar.gz" ;;
     esac
     good "Tokkip Phone $VERSION"
 }
@@ -319,12 +319,12 @@ install_app() {
             run tar -xzf "$WORK/$ASSET" -C "$WORK" || fail "couldn't unpack $ASSET."
             if [ "$HAVE_ADMIN" -eq 1 ]; then
                 install_tarball_dependencies
-                admin "$WORK/Nectarlink-$VERSION-linux-$ARCH/install.sh" || fail "the tarball's installer failed." "The messages above say why."
+                admin "$WORK/TokkipPhone-$VERSION-linux-$ARCH/install.sh" || fail "the tarball's installer failed." "The messages above say why."
             else
-                run "$WORK/Nectarlink-$VERSION-linux-$ARCH/install.sh" || fail "the tarball's installer failed." "The messages above say why."
+                run "$WORK/TokkipPhone-$VERSION-linux-$ARCH/install.sh" || fail "the tarball's installer failed." "The messages above say why."
                 case ":$PATH:" in
                     *":$HOME/.local/bin:"*) ;;
-                    *) note "Add ~/.local/bin to your PATH to start it with nectarlink-desktop from a terminal." ;;
+                    *) note "Add ~/.local/bin to your PATH to start it with tokkiphone-desktop from a terminal." ;;
                 esac
             fi
             ;;
@@ -444,7 +444,7 @@ firewall_kind() {
 # Tells the app the firewall was opened (it can't read the rules itself).
 remember_firewall() {
     [ -n "$TARGET_HOME" ] || return 0
-    dir="${XDG_DATA_HOME:-$TARGET_HOME/.local/share}/Nectarlink"
+    dir="${XDG_DATA_HOME:-$TARGET_HOME/.local/share}/Tokkip Phone"
     if [ "$(id -u)" -eq 0 ] && [ "$TARGET_USER" != "root" ]; then
         su -s /bin/sh "$TARGET_USER" -c "mkdir -p '$dir' && printf '$DATA_PORT\n' > '$dir/firewall_verified'" 2>/dev/null || true
     elif [ "$(id -u)" -ne 0 ]; then
@@ -482,7 +482,7 @@ setup_firewall() {
 
 finish() {
     printf '\n%sTokkip Phone %s is ready.%s\n' "$BOLD" "$VERSION" "$RESET"
-    echo "Open it from your app menu, or run nectarlink-desktop. Then install the"
+    echo "Open it from your app menu, or run tokkiphone-desktop. Then install the"
     echo "Android app and pair: https://github.com/$REPO#get-started"
     echo "It updates itself from now on. If it was already open, quit and open it again."
 }
@@ -493,29 +493,29 @@ uninstall() {
     find_user
     step "Removing Tokkip Phone"
     removed=0
-    if has dpkg && dpkg -s nectarlink >/dev/null 2>&1; then
-        admin env DEBIAN_FRONTEND=noninteractive apt-get remove -y nectarlink && removed=1
+    if has dpkg && dpkg -s tokkiphone >/dev/null 2>&1; then
+        admin env DEBIAN_FRONTEND=noninteractive apt-get remove -y tokkiphone && removed=1
     fi
-    if has rpm && rpm -q --quiet nectarlink 2>/dev/null; then
-        if has dnf; then admin dnf remove -y nectarlink && removed=1
-        elif has zypper; then admin zypper --non-interactive remove nectarlink && removed=1
-        else admin rpm -e nectarlink && removed=1
+    if has rpm && rpm -q --quiet tokkiphone 2>/dev/null; then
+        if has dnf; then admin dnf remove -y tokkiphone && removed=1
+        elif has zypper; then admin zypper --non-interactive remove tokkiphone && removed=1
+        else admin rpm -e tokkiphone && removed=1
         fi
     fi
-    if [ -d /opt/nectarlink ]; then
-        admin rm -rf /opt/nectarlink /usr/local/bin/nectarlink-desktop /usr/share/applications/nectarlink.desktop \
-            /usr/share/metainfo/org.nectarlink.desktop.metainfo.xml /usr/share/icons/hicolor/scalable/apps/nectarlink.svg \
-            /usr/share/icons/hicolor/512x512/apps/nectarlink.png && removed=1
+    if [ -d /opt/tokkiphone ]; then
+        admin rm -rf /opt/tokkiphone /usr/local/bin/tokkiphone-desktop /usr/share/applications/tokkiphone.desktop \
+            /usr/share/metainfo/mx.loperstack.tokkiphone.desktop.metainfo.xml /usr/share/icons/hicolor/scalable/apps/tokkiphone.svg \
+            /usr/share/icons/hicolor/512x512/apps/tokkiphone.png && removed=1
     fi
     user_share="${XDG_DATA_HOME:-$TARGET_HOME/.local/share}"
-    if [ -d "$user_share/nectarlink-app" ]; then
-        run rm -rf "$user_share/nectarlink-app" "$TARGET_HOME/.local/bin/nectarlink-desktop" \
-            "$user_share/metainfo/org.nectarlink.desktop.metainfo.xml" && removed=1
+    if [ -d "$user_share/tokkiphone-app" ]; then
+        run rm -rf "$user_share/tokkiphone-app" "$TARGET_HOME/.local/bin/tokkiphone-desktop" \
+            "$user_share/metainfo/mx.loperstack.tokkiphone.desktop.metainfo.xml" && removed=1
     fi
     # The menu entry and icon the app keeps for itself, and starting with the computer.
-    run rm -f "$user_share/applications/nectarlink.desktop" "$user_share/icons/hicolor/256x256/apps/nectarlink.png" \
-        "$user_share/icons/hicolor/512x512/apps/nectarlink.png" "$user_share/icons/hicolor/scalable/apps/nectarlink.svg" \
-        "${XDG_CONFIG_HOME:-$TARGET_HOME/.config}/autostart/nectarlink.desktop"
+    run rm -f "$user_share/applications/tokkiphone.desktop" "$user_share/icons/hicolor/256x256/apps/tokkiphone.png" \
+        "$user_share/icons/hicolor/512x512/apps/tokkiphone.png" "$user_share/icons/hicolor/scalable/apps/tokkiphone.svg" \
+        "${XDG_CONFIG_HOME:-$TARGET_HOME/.config}/autostart/tokkiphone.desktop"
     if [ "$removed" -eq 1 ]; then good "The app is removed"; else say "The app wasn't installed by a package or the tarball."; fi
 
     step "Removing the system settings"
@@ -546,7 +546,7 @@ uninstall() {
     esac
 
     printf '\n%sTokkip Phone is removed.%s\n' "$BOLD" "$RESET"
-    echo "Your settings and paired devices are still in ${user_share}/Nectarlink;"
+    echo "Your settings and paired devices are still in ${user_share}/Tokkip Phone;"
     echo "delete that folder to remove them too."
 }
 
@@ -555,7 +555,7 @@ main() {
     PATH="$PATH:/usr/sbin:/sbin"
     setup_output
     parse_args "$@"
-    WORK="$(mktemp -d "${TMPDIR:-/tmp}/nectarlink-install.XXXXXX")" || fail "couldn't create a temporary folder."
+    WORK="$(mktemp -d "${TMPDIR:-/tmp}/tokkiphone-install.XXXXXX")" || fail "couldn't create a temporary folder."
     trap 'rm -rf "$WORK"' EXIT
     trap 'exit 130' INT TERM
 

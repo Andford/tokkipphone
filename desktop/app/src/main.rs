@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 //! Tokkip Phone for Windows.
 //!
-//! One process: Rust runs the core (`nectarlink-core`) and OS integration,
+//! One process: Rust runs the core (`tokkiphone-core`) and OS integration,
 //! Qt Quick draws the UI. Windows are created when opened and destroyed when
 //! closed; the app keeps running in the tray (docs/PLAN.md §5).
 
@@ -78,7 +78,7 @@ use std::{
 #[cfg(not(target_os = "linux"))]
 use cxx_qt_lib::QGuiApplication;
 use cxx_qt_lib::{QQmlApplicationEngine, QString, QUrl};
-use nectarlink_core::{
+use tokkiphone_core::{
     MediaAction, MediaError, MirrorInput, MirrorStart, Platform, PowerAction, StorageEntry, StorageError,
     StorageReadFile, StorageWriteDone,
 };
@@ -114,7 +114,7 @@ impl Platform for DesktopPlatform {
     fn power(&self, action: PowerAction) -> Result<(), String> {
         links::power(action)
     }
-    fn open_link(&self, _from: &nectarlink_core::DeviceId, url: &str) -> Result<(), String> {
+    fn open_link(&self, _from: &tokkiphone_core::DeviceId, url: &str) -> Result<(), String> {
         links::open_here(url)
     }
     fn media_command(
@@ -127,61 +127,61 @@ impl Platform for DesktopPlatform {
     }
     fn mirror_requested(
         &self,
-        peer: &nectarlink_core::DeviceId,
+        peer: &tokkiphone_core::DeviceId,
         options: &MirrorStart,
     ) -> Result<(), String> {
-        if options.session != nectarlink_core::MIRROR_SCREEN {
+        if options.session != tokkiphone_core::MIRROR_SCREEN {
             return Err("unsupported mirror session on PC".into());
         }
         pc_mirror::start(*peer, options.clone());
         Ok(())
     }
-    fn mirror_stop_requested(&self, peer: &nectarlink_core::DeviceId, session: u32) {
-        if session == nectarlink_core::MIRROR_SCREEN {
+    fn mirror_stop_requested(&self, peer: &tokkiphone_core::DeviceId, session: u32) {
+        if session == tokkiphone_core::MIRROR_SCREEN {
             pc_mirror::stop_for(peer);
         }
     }
-    fn mirror_keyframe_requested(&self, peer: &nectarlink_core::DeviceId, session: u32) {
-        if session == nectarlink_core::MIRROR_SCREEN {
+    fn mirror_keyframe_requested(&self, peer: &tokkiphone_core::DeviceId, session: u32) {
+        if session == tokkiphone_core::MIRROR_SCREEN {
             pc_mirror::request_keyframe(peer);
         }
     }
-    fn mirror_input(&self, peer: &nectarlink_core::DeviceId, session: u32, input: MirrorInput) {
+    fn mirror_input(&self, peer: &tokkiphone_core::DeviceId, session: u32, input: MirrorInput) {
         pc_mirror::handle_input(peer, session, input);
     }
     fn mirror_sink(
         &self,
-        peer: &nectarlink_core::DeviceId,
+        peer: &tokkiphone_core::DeviceId,
         session: u32,
-    ) -> Option<std::sync::Arc<dyn nectarlink_core::MirrorSink>> {
+    ) -> Option<std::sync::Arc<dyn tokkiphone_core::MirrorSink>> {
         mirror::sink(peer, session)
     }
     fn mic_sink(
         &self,
-        peer: &nectarlink_core::DeviceId,
-    ) -> Option<std::sync::Arc<dyn nectarlink_core::MicSink>> {
+        peer: &tokkiphone_core::DeviceId,
+    ) -> Option<std::sync::Arc<dyn tokkiphone_core::MicSink>> {
         phone_mic::sink(peer)
     }
     fn webcam_sink(
         &self,
-        peer: &nectarlink_core::DeviceId,
-    ) -> Option<std::sync::Arc<dyn nectarlink_core::WebcamSink>> {
+        peer: &tokkiphone_core::DeviceId,
+    ) -> Option<std::sync::Arc<dyn tokkiphone_core::WebcamSink>> {
         webcam::sink(peer)
     }
     fn remote_input(
         &self,
-        peer: &nectarlink_core::DeviceId,
-        input: nectarlink_core::RemoteInput,
+        peer: &tokkiphone_core::DeviceId,
+        input: tokkiphone_core::RemoteInput,
     ) -> Result<(), String> {
         remote::handle_input(peer, input);
         Ok(())
     }
-    fn deck_press(&self, peer: &nectarlink_core::DeviceId, tile: &str) -> Result<(), String> {
+    fn deck_press(&self, peer: &tokkiphone_core::DeviceId, tile: &str) -> Result<(), String> {
         deck::handle_press(peer, tile)
     }
     fn set_pc_audio(
         &self,
-        peer: &nectarlink_core::DeviceId,
+        peer: &tokkiphone_core::DeviceId,
         volume: Option<u8>,
         muted: Option<bool>,
     ) -> Result<(), String> {
@@ -215,7 +215,7 @@ impl Platform for DesktopPlatform {
 /// Command-line options (also used by shortcuts and autostart).
 #[derive(Debug, Default)]
 struct Options {
-    /// Where to keep data (default: %LOCALAPPDATA%\Nectarlink).
+    /// Where to keep data (default: %LOCALAPPDATA%\Tokkip Phone).
     data_dir: Option<PathBuf>,
     /// Start in the tray without opening the window (autostart).
     minimized: bool,
@@ -232,9 +232,9 @@ struct Options {
     /// Quit the running app and undo what it set up in Windows (the
     /// uninstaller). Data is kept.
     uninstall: bool,
-    /// Elevated helper: register `nectarlink_vcam.dll` in `HKLM` and exit.
+    /// Elevated helper: register `tokkiphone_vcam.dll` in `HKLM` and exit.
     register_vcam: bool,
-    /// Elevated helper: unregister `nectarlink_vcam.dll` from `HKLM` and exit.
+    /// Elevated helper: unregister `tokkiphone_vcam.dll` from `HKLM` and exit.
     unregister_vcam: bool,
     /// Out-of-process Windows 11 Widget Board COM server (`--widget-provider`).
     widget_provider: bool,
@@ -358,7 +358,7 @@ fn parse_options_from<I: IntoIterator<Item = std::ffi::OsString>>(iter: I) -> Op
         // Sending doesn't need the window.
         options.minimized = true;
     } else if share_targets.is_empty() && !paths.is_empty() {
-        // Desktop entry `Exec=nectarlink-desktop %U` passes URLs or dropped files
+        // Desktop entry `Exec=tokkiphone-desktop %U` passes URLs or dropped files
         // as positional arguments without `--share`.
         share_targets = paths.into_iter().map(|p| p.to_string_lossy().into_owned()).collect();
     }
@@ -376,7 +376,21 @@ fn parse_options_from<I: IntoIterator<Item = std::ffi::OsString>>(iter: I) -> Op
 }
 
 fn default_data_dir() -> PathBuf {
-    dirs::data_local_dir().unwrap_or_else(std::env::temp_dir).join("Nectarlink")
+    let base = dirs::data_local_dir().unwrap_or_else(std::env::temp_dir);
+    moved_data_dir(&base.join("Nectarlink"), base.join("Tokkip Phone"))
+}
+
+/// Tokkip Phone 0.1 kept everything (pairings, history, settings) under
+/// NectarLink's name: that folder becomes `new` once. If it can't move yet
+/// (a 0.1 copy still has it open), it's used as it is and moves next time.
+fn moved_data_dir(old: &Path, new: PathBuf) -> PathBuf {
+    if new.exists() || !old.is_dir() {
+        return new;
+    }
+    match std::fs::rename(old, &new) {
+        Ok(()) => new,
+        Err(_) => old.to_path_buf(),
+    }
 }
 
 /// Network changes come in bursts; tell the core once things settle.
@@ -401,7 +415,7 @@ fn watch_network() {
 /// Phone notifications as Windows toasts, sent by "Tokkip Phone" with the
 /// app's icon (written as a PNG, which Windows needs as a file).
 fn start_toasts() {
-    let icon = core_host::host().data_dir.join("cache").join("nectarlink.png");
+    let icon = core_host::host().data_dir.join("cache").join("tokkiphone.png");
     win::toast::start(icon, notifications::on_toast);
 }
 
@@ -435,7 +449,7 @@ fn run_setup_window(mode: setup::Mode) -> ExitCode {
             Ok(true) => return ExitCode::SUCCESS,
             Ok(false) => {}
             Err(e) => {
-                eprintln!("nectarlink: {e}");
+                eprintln!("tokkiphone: {e}");
                 return ExitCode::FAILURE;
             }
         }
@@ -459,7 +473,7 @@ fn run_setup_window(mode: setup::Mode) -> ExitCode {
     bridge::native::ffi::apply_app_icon();
     let mut engine = QQmlApplicationEngine::new();
     if let Some(engine) = engine.as_mut() {
-        engine.load(&QUrl::from("qrc:/qt/qml/app/nectarlink/qml/setup/SetupWindow.qml"));
+        engine.load(&QUrl::from("qrc:/qt/qml/mx/loperstack/tokkiphone/qml/setup/SetupWindow.qml"));
     }
     let code = app.as_mut().map_or(1, |app| app.exec());
     drop(engine);
@@ -470,7 +484,7 @@ fn run_setup_window(mode: setup::Mode) -> ExitCode {
 fn main() -> ExitCode {
     let options = parse_options();
     if options.version {
-        println!("nectarlink-desktop {}", env!("CARGO_PKG_VERSION"));
+        println!("tokkiphone-desktop {}", env!("CARGO_PKG_VERSION"));
         return ExitCode::SUCCESS;
     }
     if let Some(installer) = options.setup.clone().filter(|p| !p.as_os_str().is_empty()) {
@@ -491,7 +505,7 @@ fn main() -> ExitCode {
         return match win::vcam::register_hklm() {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
-                eprintln!("nectarlink: register-vcam failed: {e}");
+                eprintln!("tokkiphone: register-vcam failed: {e}");
                 ExitCode::FAILURE
             }
         };
@@ -500,19 +514,19 @@ fn main() -> ExitCode {
         return match win::vcam::unregister_hklm() {
             Ok(()) => ExitCode::SUCCESS,
             Err(e) => {
-                eprintln!("nectarlink: unregister-vcam failed: {e}");
+                eprintln!("tokkiphone: unregister-vcam failed: {e}");
                 ExitCode::FAILURE
             }
         };
     }
     // The check starts the whole app, so never on the user's own data.
     if options.ui_check && options.data_dir.is_none() {
-        eprintln!("nectarlink: --ui-check needs --data-dir");
+        eprintln!("tokkiphone: --ui-check needs --data-dir");
         return ExitCode::FAILURE;
     }
     let data_dir = options.data_dir.clone().unwrap_or_else(default_data_dir);
     if let Err(e) = std::fs::create_dir_all(&data_dir) {
-        eprintln!("nectarlink: can't create {}: {e}", data_dir.display());
+        eprintln!("tokkiphone: can't create {}: {e}", data_dir.display());
         return ExitCode::FAILURE;
     }
     logging::init(&data_dir);
@@ -659,7 +673,7 @@ fn main() -> ExitCode {
     #[cfg(not(target_os = "linux"))]
     let mut app = QGuiApplication::new();
     if let Some(mut app) = app.as_mut() {
-        app.as_mut().set_application_name(&QString::from("Nectarlink"));
+        app.as_mut().set_application_name(&QString::from("Tokkip Phone"));
         app.as_mut().set_application_version(&QString::from(env!("CARGO_PKG_VERSION")));
     }
     // Before any QML loads, so every string is right on the first pass.
@@ -689,7 +703,7 @@ fn main() -> ExitCode {
     let mut engine = QQmlApplicationEngine::new();
     if let Some(mut engine) = engine.as_mut() {
         bridge::native::ffi::register_qml_app_engine(engine.as_mut());
-        engine.load(&QUrl::from("qrc:/qt/qml/app/nectarlink/qml/App.qml"));
+        engine.load(&QUrl::from("qrc:/qt/qml/mx/loperstack/tokkiphone/qml/App.qml"));
     }
     if options.ui_check {
         std::thread::spawn(|| {
@@ -714,10 +728,10 @@ fn main() -> ExitCode {
     if options.ui_check {
         let problems = bridge::native::ffi::qml_problem_count();
         if problems > 0 {
-            eprintln!("nectarlink: --ui-check: {problems} QML warning(s) or error(s), see above");
+            eprintln!("tokkiphone: --ui-check: {problems} QML warning(s) or error(s), see above");
             return ExitCode::FAILURE;
         }
-        eprintln!("nectarlink: --ui-check: no QML warnings");
+        eprintln!("tokkiphone: --ui-check: no QML warnings");
     }
     ExitCode::from(u8::try_from(code).unwrap_or(1))
 }
@@ -729,13 +743,29 @@ mod tests {
     use super::*;
 
     #[test]
+    fn the_old_data_folder_moves_once() {
+        let base = std::env::temp_dir().join(format!("tokkiphone-datadir-{}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&base);
+        let (old, new) = (base.join("Nectarlink"), base.join("Tokkip Phone"));
+        std::fs::create_dir_all(&old).unwrap();
+        std::fs::write(old.join("settings.json"), b"{}").unwrap();
+        assert_eq!(moved_data_dir(&old, new.clone()), new);
+        assert!(new.join("settings.json").is_file() && !old.exists());
+        // A new folder is never replaced by an old one.
+        std::fs::create_dir_all(&old).unwrap();
+        assert_eq!(moved_data_dir(&old, new.clone()), new);
+        assert!(old.exists());
+        let _ = std::fs::remove_dir_all(&base);
+    }
+
+    #[test]
     fn parse_options_recognizes_share_flag() {
         let opts = parse_options_from(
-            ["--data-dir", r"C:\Temp\nectarlink-test", "--share", r"C:\photo.jpg", "https://example.com"]
+            ["--data-dir", r"C:\Temp\tokkiphone-test", "--share", r"C:\photo.jpg", "https://example.com"]
                 .into_iter()
                 .map(OsString::from),
         );
-        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\nectarlink-test")));
+        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\tokkiphone-test")));
         assert!(opts.minimized);
         assert_eq!(
             opts.share,
@@ -750,27 +780,27 @@ mod tests {
     #[test]
     fn parse_options_recognizes_ui_check_flag() {
         let opts = parse_options_from(
-            ["--ui-check", "--data-dir", r"C:\Temp\nectarlink-test"].into_iter().map(OsString::from),
+            ["--ui-check", "--data-dir", r"C:\Temp\tokkiphone-test"].into_iter().map(OsString::from),
         );
         assert!(opts.ui_check);
         assert!(!opts.minimized);
-        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\nectarlink-test")));
+        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\tokkiphone-test")));
         assert!(!parse_options_from(["--minimized"].into_iter().map(OsString::from)).ui_check);
     }
 
     #[test]
     fn parse_options_recognizes_task_flag() {
         let find_opts = parse_options_from(
-            ["--data-dir", r"C:\Temp\nectarlink-test", "--task", "find-phone"]
+            ["--data-dir", r"C:\Temp\tokkiphone-test", "--task", "find-phone"]
                 .into_iter()
                 .map(OsString::from),
         );
-        assert_eq!(find_opts.data_dir, Some(PathBuf::from(r"C:\Temp\nectarlink-test")));
+        assert_eq!(find_opts.data_dir, Some(PathBuf::from(r"C:\Temp\tokkiphone-test")));
         assert_eq!(find_opts.task.as_deref(), Some("find-phone"));
         assert!(find_opts.minimized);
 
         let timeline_opts = parse_options_from(
-            ["--data-dir", r"C:\Temp\nectarlink-test", "--task", "open-timeline"]
+            ["--data-dir", r"C:\Temp\tokkiphone-test", "--task", "open-timeline"]
                 .into_iter()
                 .map(OsString::from),
         );
@@ -781,9 +811,9 @@ mod tests {
     #[test]
     fn parse_options_recognizes_widget_provider_flag() {
         let opts = parse_options_from(
-            ["--data-dir", r"C:\Temp\nectarlink-test", "--widget-provider"].into_iter().map(OsString::from),
+            ["--data-dir", r"C:\Temp\tokkiphone-test", "--widget-provider"].into_iter().map(OsString::from),
         );
-        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\nectarlink-test")));
+        assert_eq!(opts.data_dir, Some(PathBuf::from(r"C:\Temp\tokkiphone-test")));
         assert!(opts.widget_provider);
     }
 

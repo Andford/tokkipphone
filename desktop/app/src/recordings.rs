@@ -14,7 +14,7 @@ use std::{
     time::{Instant, SystemTime},
 };
 
-use nectarlink_core::{RecordingMarker, Transfer, TransferState};
+use tokkiphone_core::{RecordingMarker, Transfer, TransferState};
 #[cfg(windows)]
 use windows::{
     Win32::{
@@ -71,15 +71,20 @@ pub fn set_format(format: RecordingFormat) {
     cfg.updated_at = Some(SystemTime::now());
 }
 
-/// Default folder: `Documents\Nectarlink Recordings`.
+/// Default folder: `Documents\Tokkip Phone Recordings`.
 pub fn default_folder() -> PathBuf {
-    dirs::document_dir()
-        .unwrap_or_else(|| core_host::host().data_dir.join("recordings"))
-        .join("Nectarlink Recordings")
+    let base = dirs::document_dir().unwrap_or_else(|| core_host::host().data_dir.join("recordings"));
+    let folder = base.join("Tokkip Phone Recordings");
+    // 0.1's folder, under NectarLink's name: it becomes this one once.
+    let old = base.join("Nectarlink Recordings");
+    if !folder.exists() && old.is_dir() {
+        let _ = std::fs::rename(&old, &folder);
+    }
+    folder
 }
 
 /// The folder where recordings go right now (`configured` if set, otherwise
-/// `Documents\Nectarlink Recordings`).
+/// `Documents\Tokkip Phone Recordings`).
 pub fn effective_folder(configured: Option<&Path>) -> PathBuf {
     configured.filter(|p| !p.as_os_str().is_empty()).map(Path::to_path_buf).unwrap_or_else(default_folder)
 }
@@ -571,7 +576,7 @@ pub fn on_done(transfer: Transfer) {
             };
             node.update_timeline_by_ref(
                 &transfer.id,
-                nectarlink_core::TimelineKind::Recording,
+                tokkiphone_core::TimelineKind::Recording,
                 &file_name,
                 &detail,
                 &final_path_str,

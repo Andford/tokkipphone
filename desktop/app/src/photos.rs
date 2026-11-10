@@ -15,11 +15,11 @@ use std::{
     time::{Duration, Instant},
 };
 
-use nectarlink_core::{
+use serde_json::{Value, json};
+use tokkiphone_core::{
     DeviceId, Direction, Error, FeatureState, LinkState, NodeEvent, Photo, PhotoAlbum, PhotoItem, PhotoThumb,
     Transfer, TransferState,
 };
-use serde_json::{Value, json};
 
 use crate::{
     bridge::app::{describe, show_message},
@@ -385,7 +385,7 @@ fn deliver(transfer_id: &str, intent: Intent, saved: &[PathBuf]) {
                     final_paths.iter().filter_map(|p| std::fs::metadata(p).ok().map(|m| m.len())).sum();
                 node.update_timeline_by_ref(
                     transfer_id,
-                    nectarlink_core::TimelineKind::Photo,
+                    tokkiphone_core::TimelineKind::Photo,
                     &title,
                     &dest_label,
                     &target,
@@ -1209,11 +1209,11 @@ pub fn open_latest_photo(device: DeviceId) {
 
     // Check if the timeline already has a local saved photo for this phone while we also query the phone.
     let timeline_fallback = node
-        .timeline_page(&nectarlink_core::TimelineQuery {
-            kind: Some(nectarlink_core::TimelineKind::Photo),
+        .timeline_page(&tokkiphone_core::TimelineQuery {
+            kind: Some(tokkiphone_core::TimelineKind::Photo),
             device: Some(device),
             limit: 10,
-            ..nectarlink_core::TimelineQuery::default()
+            ..tokkiphone_core::TimelineQuery::default()
         })
         .map(|p| p.entries)
         .unwrap_or_default()
@@ -1227,7 +1227,7 @@ pub fn open_latest_photo(device: DeviceId) {
     let online = core_host::host().hub.read(|s| {
         s.devices
             .iter()
-            .any(|d| d.id == device && matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+            .any(|d| d.id == device && matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
     });
     if !online {
         if let Some(path) = timeline_fallback {

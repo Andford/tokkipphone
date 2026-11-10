@@ -487,7 +487,7 @@ impl Tray {
                 cbSize: std::mem::size_of::<WNDCLASSEXW>() as u32,
                 lpfnWndProc: Some(window_proc),
                 hInstance: instance.into(),
-                lpszClassName: w!("Nectarlink.TrayWindow"),
+                lpszClassName: w!("TokkipPhone.TrayWindow"),
                 ..Default::default()
             };
             // Registering twice (a second Tray) fails harmlessly.
@@ -497,8 +497,8 @@ impl Tray {
             // power and setting broadcasts.
             let hwnd = CreateWindowExW(
                 WS_EX_TOOLWINDOW | WINDOW_EX_STYLE(0),
-                w!("Nectarlink.TrayWindow"),
-                w!("Nectarlink"),
+                w!("TokkipPhone.TrayWindow"),
+                w!("Tokkip Phone"),
                 WS_POPUP,
                 0,
                 0,

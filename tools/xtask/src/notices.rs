@@ -15,7 +15,7 @@ use std::{
 use anyhow::{Context, Result, bail};
 use serde_json::Value;
 
-const ROOT_PACKAGE: &str = "nectarlink-desktop";
+const ROOT_PACKAGE: &str = "tokkiphone-desktop";
 const DEFAULT_TARGET: &str = "x86_64-pc-windows-msvc";
 
 /// License-ish files a crate ships.

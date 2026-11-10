@@ -11,7 +11,7 @@ use std::{
     },
 };
 
-use nectarlink_core::{Battery, DeviceId, NodeEvent};
+use tokkiphone_core::{Battery, DeviceId, NodeEvent};
 
 use crate::{
     core_host,

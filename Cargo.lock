@@ -2413,141 +2413,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nectarlink-adb"
-version = "0.1.4"
-dependencies = [
- "thiserror 2.0.21",
- "tokio",
- "tokio-util",
- "tracing",
-]
-
-[[package]]
-name = "nectarlink-cli"
-version = "0.1.4"
-dependencies = [
- "anyhow",
- "clap",
- "dirs",
- "hostname",
- "libc",
- "nectarlink-core",
- "qrcode",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "windows",
-]
-
-[[package]]
-name = "nectarlink-core"
-version = "0.1.4"
-dependencies = [
- "blake3",
- "bytes",
- "data-encoding",
- "iroh",
- "iroh-mdns-address-lookup",
- "material-colors",
- "n0-future",
- "nectarlink-adb",
- "nectarlink-protocol",
- "noq-proto",
- "rand",
- "ring",
- "rusqlite",
- "rustls",
- "rustls-pki-types",
- "serde",
- "serde_json",
- "sha2",
- "socket2",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tokio-rustls",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "url",
- "windows",
-]
-
-[[package]]
-name = "nectarlink-desktop"
-version = "0.1.4"
-dependencies = [
- "anyhow",
- "blake3",
- "cxx",
- "cxx-qt",
- "cxx-qt-build",
- "cxx-qt-lib",
- "data-encoding",
- "dirs",
- "embed-resource",
- "hostname",
- "libc",
- "material-colors",
- "nectarlink-core",
- "nectarlink-vcam",
- "qrcode",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "windows",
- "windows-core",
- "zbus",
-]
-
-[[package]]
-name = "nectarlink-ffi"
-version = "0.1.4"
-dependencies = [
- "jni-sys 0.4.1",
- "nectarlink-core",
- "paranoid-android",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "tracing-subscriber",
- "uniffi",
-]
-
-[[package]]
-name = "nectarlink-protocol"
-version = "0.1.4"
-dependencies = [
- "ciborium",
- "data-encoding",
- "hmac",
- "serde",
- "serde_bytes",
- "sha2",
- "thiserror 2.0.21",
- "tokio",
- "url",
-]
-
-[[package]]
-name = "nectarlink-vcam"
-version = "0.1.4"
-dependencies = [
- "ab_glyph",
- "embed-resource",
- "libc",
- "windows",
- "windows-core",
-]
-
-[[package]]
 name = "netdev"
 version = "0.45.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4224,6 +4089,141 @@ dependencies = [
  "tokio",
  "tokio-rustls",
  "tokio-util",
+]
+
+[[package]]
+name = "tokkiphone-adb"
+version = "0.1.4"
+dependencies = [
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
+name = "tokkiphone-cli"
+version = "0.1.4"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dirs",
+ "hostname",
+ "libc",
+ "qrcode",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokkiphone-core",
+ "tracing",
+ "tracing-subscriber",
+ "windows",
+]
+
+[[package]]
+name = "tokkiphone-core"
+version = "0.1.4"
+dependencies = [
+ "blake3",
+ "bytes",
+ "data-encoding",
+ "iroh",
+ "iroh-mdns-address-lookup",
+ "material-colors",
+ "n0-future",
+ "noq-proto",
+ "rand",
+ "ring",
+ "rusqlite",
+ "rustls",
+ "rustls-pki-types",
+ "serde",
+ "serde_json",
+ "sha2",
+ "socket2",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-rustls",
+ "tokio-util",
+ "tokkiphone-adb",
+ "tokkiphone-protocol",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+ "windows",
+]
+
+[[package]]
+name = "tokkiphone-desktop"
+version = "0.1.4"
+dependencies = [
+ "anyhow",
+ "blake3",
+ "cxx",
+ "cxx-qt",
+ "cxx-qt-build",
+ "cxx-qt-lib",
+ "data-encoding",
+ "dirs",
+ "embed-resource",
+ "hostname",
+ "libc",
+ "material-colors",
+ "qrcode",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "tokio",
+ "tokkiphone-core",
+ "tokkiphone-vcam",
+ "tracing",
+ "tracing-subscriber",
+ "windows",
+ "windows-core",
+ "zbus",
+]
+
+[[package]]
+name = "tokkiphone-ffi"
+version = "0.1.4"
+dependencies = [
+ "jni-sys 0.4.1",
+ "paranoid-android",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokkiphone-core",
+ "tracing",
+ "tracing-subscriber",
+ "uniffi",
+]
+
+[[package]]
+name = "tokkiphone-protocol"
+version = "0.1.4"
+dependencies = [
+ "ciborium",
+ "data-encoding",
+ "hmac",
+ "serde",
+ "serde_bytes",
+ "sha2",
+ "thiserror 2.0.21",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "tokkiphone-vcam"
+version = "0.1.4"
+dependencies = [
+ "ab_glyph",
+ "embed-resource",
+ "libc",
+ "windows",
+ "windows-core",
 ]
 
 [[package]]

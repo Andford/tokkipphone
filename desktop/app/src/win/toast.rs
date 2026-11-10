@@ -36,7 +36,7 @@ use windows::{
 };
 
 /// The app's AppUserModelID: toasts are grouped and attributed by it.
-pub const AUMID: &str = "Nectarlink.Desktop";
+pub const AUMID: &str = "TokkipPhone.Desktop";
 
 /// What the user did with a toast.
 #[derive(Debug, Clone, PartialEq, Eq)]

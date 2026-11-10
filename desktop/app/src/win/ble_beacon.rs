@@ -11,7 +11,7 @@ use std::{
     sync::{Mutex, OnceLock},
 };
 
-use nectarlink_core::DeviceId;
+use tokkiphone_core::DeviceId;
 use windows::{
     Devices::Bluetooth::Advertisement::{
         BluetoothLEAdvertisementPublisher, BluetoothLEAdvertisementPublisherStatus,

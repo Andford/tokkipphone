@@ -1,5 +1,5 @@
 [package]
-name = "nectarlink-vcam"
+name = "tokkiphone-vcam"
 description = "Tokkip Phone virtual camera Media Foundation media source (Windows 11)"
 version.workspace = true
 edition.workspace = true
@@ -10,7 +10,7 @@ license = "GPL-3.0-or-later"
 publish = false
 
 [lib]
-name = "nectarlink_vcam"
+name = "tokkiphone_vcam"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]

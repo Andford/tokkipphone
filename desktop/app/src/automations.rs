@@ -8,8 +8,8 @@ use std::{
     sync::{Mutex, OnceLock},
 };
 
-use nectarlink_core::{DeviceId, LinkState, NodeEvent};
 use serde::{Deserialize, Serialize};
+use tokkiphone_core::{DeviceId, LinkState, NodeEvent};
 
 use crate::{deck, settings, win};
 

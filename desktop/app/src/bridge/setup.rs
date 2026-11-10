@@ -124,12 +124,12 @@ impl cxx_qt::Initialize for qobject::Setup {
         }
         // Debug builds only: open on a given screen, to check how it looks.
         if cfg!(debug_assertions)
-            && let Ok(phase) = std::env::var("NECTARLINK_SETUP_PREVIEW")
+            && let Ok(phase) = std::env::var("TOKKIPPHONE_SETUP_PREVIEW")
         {
-            if let Ok(theme) = std::env::var("NECTARLINK_SETUP_THEME") {
+            if let Ok(theme) = std::env::var("TOKKIPPHONE_SETUP_THEME") {
                 self.as_mut().set_dark(theme == "dark");
             }
-            if let Ok(kind) = std::env::var("NECTARLINK_SETUP_KIND") {
+            if let Ok(kind) = std::env::var("TOKKIPPHONE_SETUP_KIND") {
                 self.as_mut().set_kind(QString::from(&kind));
                 self.as_mut().set_installed_version(QString::from("0.1.0"));
             }

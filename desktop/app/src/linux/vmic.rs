@@ -12,11 +12,11 @@ use std::path::{Path, PathBuf};
 
 pub const SOURCE_NAME: &str = "TokkipPhone_Virtual_Mic";
 pub const DEFAULT_DESCRIPTION: &str = "Tokkip Phone Phone Microphone";
-const FIFO_FILENAME: &str = "nectarlink-vmic.pcm";
+const FIFO_FILENAME: &str = "tokkiphone-vmic.pcm";
 
 /// Returns a user-private path for the virtual microphone FIFO.
 ///
-/// Prefers `$XDG_RUNTIME_DIR/nectarlink-vmic.pcm` (which is mode `0700` and
+/// Prefers `$XDG_RUNTIME_DIR/tokkiphone-vmic.pcm` (which is mode `0700` and
 /// private to the current user, where PipeWire and PulseAudio keep their own
 /// sockets). Falls back to a `0700` user-owned directory under the user's cache
 /// directory if `$XDG_RUNTIME_DIR` is not set.
@@ -27,7 +27,7 @@ pub fn default_fifo_path() -> PathBuf {
     // SAFETY: `geteuid` is always safe to call on Unix.
     let uid = unsafe { libc::geteuid() };
     let base = dirs::cache_dir().unwrap_or_else(std::env::temp_dir);
-    base.join(format!("nectarlink-{uid}")).join(FIFO_FILENAME)
+    base.join(format!("tokkiphone-{uid}")).join(FIFO_FILENAME)
 }
 
 const MAX_PHONE_NAME_CHARS: usize = 64;
@@ -187,7 +187,7 @@ pub fn mono_to_stereo_s16le(mono_pcm: &[u8]) -> Vec<u8> {
 }
 
 /// Extracts module IDs from `pactl list modules short` output that belong to a
-/// Tokkip Phone `module-pipe-source` instance (including legacy `/tmp/nectarlink-vmic.pcm`
+/// Tokkip Phone `module-pipe-source` instance (including legacy `/tmp/tokkiphone-vmic.pcm`
 /// or `Tokkip_Phone_Microphone` modules).
 pub fn parse_stale_pipe_source_modules(pactl_short: &str) -> Vec<u32> {
     let mut ids = Vec::new();
@@ -209,7 +209,7 @@ pub fn parse_stale_pipe_source_modules(pactl_short: &str) -> Vec<u32> {
 }
 
 /// Unloads any leftover Tokkip Phone `module-pipe-source` modules in
-/// PulseAudio / PipeWire and removes any legacy `/tmp/nectarlink-vmic.pcm` FIFO.
+/// PulseAudio / PipeWire and removes any legacy `/tmp/tokkiphone-vmic.pcm` FIFO.
 pub fn cleanup_stale_sources() {
     if let Some(output) = super::run_cmd_timeout("pactl", &["list", "modules", "short"], PACTL_TIMEOUT)
         && output.status.success()
@@ -658,8 +658,8 @@ mod tests {
         assert!(props.contains(&format!("'{} (Tokkip Phone)'", "A".repeat(64))));
 
         assert_eq!(
-            format_file_arg(Path::new("/run/user/1000/nectarlink-vmic.pcm")).unwrap(),
-            "file=\"/run/user/1000/nectarlink-vmic.pcm\""
+            format_file_arg(Path::new("/run/user/1000/tokkiphone-vmic.pcm")).unwrap(),
+            "file=\"/run/user/1000/tokkiphone-vmic.pcm\""
         );
         assert!(format_file_arg(Path::new("/tmp/bad\"quote.pcm")).is_err());
         assert!(format_file_arg(Path::new("/tmp/bad'quote.pcm")).is_err());
@@ -669,7 +669,7 @@ mod tests {
     #[test]
     fn default_fifo_path_never_uses_shared_tmp_root() {
         let path = default_fifo_path();
-        assert_eq!(path.file_name().and_then(|n| n.to_str()), Some("nectarlink-vmic.pcm"));
+        assert_eq!(path.file_name().and_then(|n| n.to_str()), Some("tokkiphone-vmic.pcm"));
         assert_ne!(
             path.parent(),
             Some(Path::new("/tmp")),
@@ -679,11 +679,11 @@ mod tests {
     }
 
     #[test]
-    fn parse_stale_pipe_source_modules_identifies_nectarlink_modules_only() {
+    fn parse_stale_pipe_source_modules_identifies_tokkiphone_modules_only() {
         let sample = "\
 25\tmodule-native-protocol-unix\t\n\
-536870913\tmodule-pipe-source\tsource_name=TokkipPhone_Virtual_Mic file=/tmp/nectarlink-vmic.pcm format=s16le rate=48000 channels=1 source_properties=device.description=Tokkip_Phone_Microphone\n\
-536870914\tmodule-pipe-source\tsource_name=TokkipPhone_Virtual_Mic file=\"/run/user/1000/nectarlink-vmic.pcm\" format=s16le rate=48000 channels=1 source_properties=\"device.description='IOSMOB5 (Tokkip Phone)'\"\n\
+536870913\tmodule-pipe-source\tsource_name=TokkipPhone_Virtual_Mic file=/tmp/tokkiphone-vmic.pcm format=s16le rate=48000 channels=1 source_properties=device.description=Tokkip_Phone_Microphone\n\
+536870914\tmodule-pipe-source\tsource_name=TokkipPhone_Virtual_Mic file=\"/run/user/1000/tokkiphone-vmic.pcm\" format=s16le rate=48000 channels=1 source_properties=\"device.description='IOSMOB5 (Tokkip Phone)'\"\n\
 536870915\tmodule-pipe-source\tsource_name=Other_Pipe file=/tmp/other.pcm\n";
         assert_eq!(parse_stale_pipe_source_modules(sample), vec![536870913, 536870914]);
     }

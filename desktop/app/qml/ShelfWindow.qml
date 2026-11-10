@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Window
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Slide-out edge panel ("The Shelf") showing the latest photo, latest
 // screenshot, current clipboard item, and recent received files. Dragging

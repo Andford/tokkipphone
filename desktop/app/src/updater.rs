@@ -65,8 +65,8 @@ pub struct Update {
 }
 
 /// The scheduled task the installer registers (see the module docs).
-pub const TASK: &str = "Nectarlink Update";
-/// What the task runs: `nectarlink-desktop.exe --update-service`.
+pub const TASK: &str = "Tokkip Phone Update";
+/// What the task runs: `tokkiphone-desktop.exe --update-service`.
 pub const SERVICE_ARG: &str = "--update-service";
 /// How long nobody may have used the PC before an update installs by itself.
 const QUIET_FOR: Duration = Duration::from_secs(10 * 60);
@@ -261,13 +261,13 @@ fn detect_linux_install_kind() -> LinuxInstallKind {
     }
     if let Ok(exe) = std::env::current_exe() {
         let resolved = std::fs::canonicalize(&exe).unwrap_or(exe);
-        if resolved.starts_with("/opt/nectarlink")
-            || resolved.parent().and_then(|p| p.file_name()).is_some_and(|n| n == "nectarlink-app")
+        if resolved.starts_with("/opt/tokkiphone")
+            || resolved.parent().and_then(|p| p.file_name()).is_some_and(|n| n == "tokkiphone-app")
         {
             return LinuxInstallKind::Tarball;
         }
     }
-    if Path::new("/var/lib/dpkg/info/nectarlink.list").is_file() {
+    if Path::new("/var/lib/dpkg/info/tokkiphone.list").is_file() {
         return LinuxInstallKind::Deb;
     }
     if rpm_installed() {
@@ -279,11 +279,11 @@ fn detect_linux_install_kind() -> LinuxInstallKind {
     LinuxInstallKind::Tarball
 }
 
-/// Whether the `nectarlink` RPM package is installed.
+/// Whether the `tokkiphone` RPM package is installed.
 #[cfg(target_os = "linux")]
 fn rpm_installed() -> bool {
     std::process::Command::new("rpm")
-        .args(["-q", "--quiet", "nectarlink"])
+        .args(["-q", "--quiet", "tokkiphone"])
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
@@ -343,9 +343,9 @@ fn newer_release_for(release: Release, current: &str, suffix: &str) -> Option<Up
     // The name becomes a file name under %TEMP%: a plain name only, never a path.
     let installer = release.assets.iter().find(|a| {
         a.name.ends_with(suffix)
-            && (a.name.starts_with("Nectarlink-")
-                || a.name.starts_with("nectarlink_")
-                || a.name.starts_with("nectarlink-"))
+            && (a.name.starts_with("TokkipPhone-")
+                || a.name.starts_with("tokkiphone_")
+                || a.name.starts_with("tokkiphone-"))
             && a.name.chars().all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '.' | '_'))
             && !a.name.contains("..")
     })?;
@@ -408,7 +408,7 @@ fn quiet() -> bool {
         s.transfers.iter().any(|t| {
             matches!(
                 t.transfer.state,
-                nectarlink_core::TransferState::Running | nectarlink_core::TransferState::Waiting
+                tokkiphone_core::TransferState::Running | tokkiphone_core::TransferState::Waiting
             )
         })
     });
@@ -494,7 +494,7 @@ impl std::fmt::Display for StageError {
 }
 
 /// Where the app leaves a downloaded installer for the task:
-/// `%ProgramData%\Nectarlink\updates`. Anyone may write here; the task only
+/// `%ProgramData%\Tokkip Phone\updates`. Anyone may write here; the task only
 /// runs a copy that matches the release's own sums.
 #[cfg(windows)]
 fn staging_dir() -> PathBuf {
@@ -502,7 +502,7 @@ fn staging_dir() -> PathBuf {
         .map(PathBuf::from)
         .filter(|p| p.is_absolute())
         .unwrap_or_else(|| PathBuf::from(r"C:\ProgramData"))
-        .join("Nectarlink")
+        .join("Tokkip Phone")
         .join("updates")
 }
 
@@ -516,10 +516,10 @@ fn current_euid() -> u32 {
 #[cfg(not(windows))]
 fn staging_dir() -> PathBuf {
     if let Some(base) = dirs::cache_dir().filter(|p| p.is_absolute()) {
-        base.join("nectarlink").join("updates")
+        base.join("tokkiphone").join("updates")
     } else {
         let uid = current_euid();
-        std::env::temp_dir().join(format!("nectarlink-{uid}")).join("updates")
+        std::env::temp_dir().join(format!("tokkiphone-{uid}")).join("updates")
     }
 }
 
@@ -670,14 +670,14 @@ fn relauncher_script(exe: &str, version: &str, arguments: &str) -> String {
         format!("Start-Process -FilePath '{exe}' -ArgumentList '{arguments}'")
     };
     format!(
-        "$key = 'HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Nectarlink'\n\
+        "$key = 'HKLM:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Tokkip Phone'\n\
          $log = Join-Path (Split-Path -Parent '{exe}') 'update.log'\n\
          $since = Get-Date\n\
          $deadline = $since.AddMinutes(10)\n\
          Start-Sleep -Seconds 3\n\
          while ((Get-Date) -lt $deadline) {{\n\
            $installed = (Get-ItemProperty -Path $key -Name DisplayVersion -ErrorAction SilentlyContinue).DisplayVersion\n\
-           $running = Get-Process -ErrorAction SilentlyContinue | Where-Object {{ $_.Name -like 'Nectarlink-*-setup' }}\n\
+           $running = Get-Process -ErrorAction SilentlyContinue | Where-Object {{ $_.Name -like 'TokkipPhone-*-setup' }}\n\
            if ($installed -eq '{version}' -and -not $running) {{ break }}\n\
            $logged = Get-Item -LiteralPath $log -ErrorAction SilentlyContinue\n\
            if ($logged -and $logged.LastWriteTime -gt $since -and -not $running) {{\n\
@@ -764,7 +764,7 @@ pub fn run_service() -> ExitCode {
                 .args([
                     "-e",
                     "-c",
-                    "tar -C \"$2\" -xzf \"$1\" && set -- \"$2\"/Nectarlink-*/install.sh && [ -x \"$1\" ] && \"$1\"",
+                    "tar -C \"$2\" -xzf \"$1\" && set -- \"$2\"/TokkipPhone-*/install.sh && [ -x \"$1\" ] && \"$1\"",
                     "sh",
                 ])
                 .arg(&path)
@@ -807,7 +807,7 @@ fn service_dir() -> std::io::Result<PathBuf> {
     let parent = if system_temp.is_dir() {
         if let Ok(entries) = std::fs::read_dir(&system_temp) {
             for entry in entries.flatten() {
-                if entry.file_name().to_string_lossy().starts_with("nectarlink-update-") {
+                if entry.file_name().to_string_lossy().starts_with("tokkiphone-update-") {
                     let _ = std::fs::remove_dir_all(entry.path());
                 }
             }
@@ -820,7 +820,7 @@ fn service_dir() -> std::io::Result<PathBuf> {
     if !crate::win::secure_random(&mut random) {
         return Err(std::io::Error::other("no secure random source"));
     }
-    let name = format!("nectarlink-update-{}", random.iter().map(|b| format!("{b:02x}")).collect::<String>());
+    let name = format!("tokkiphone-update-{}", random.iter().map(|b| format!("{b:02x}")).collect::<String>());
     let dir = parent.join(name);
     std::fs::create_dir(&dir)?;
     Ok(dir)
@@ -834,7 +834,7 @@ fn service_dir() -> std::io::Result<PathBuf> {
     if !crate::win::secure_random(&mut random) {
         return Err(std::io::Error::other("no secure random source"));
     }
-    let name = format!("nectarlink-update-{}", random.iter().map(|b| format!("{b:02x}")).collect::<String>());
+    let name = format!("tokkiphone-update-{}", random.iter().map(|b| format!("{b:02x}")).collect::<String>());
     let dir = parent.join(name);
     std::fs::DirBuilder::new().mode(0o700).create(&dir)?;
     Ok(dir)
@@ -872,7 +872,7 @@ fn install_with_prompt(update: &Update, staged: &Path) -> Result<(), String> {
         tr!("Updater", "The update couldn't be started. Try again.")
     };
     let expected = expected_hash(update).map_err(|e| e.for_user())?;
-    let dir = std::env::temp_dir().join("Nectarlink update");
+    let dir = std::env::temp_dir().join("Tokkip Phone update");
     let path: PathBuf = dir.join(&update.installer_name);
     std::fs::create_dir_all(&dir)
         .and_then(|()| match std::fs::remove_file(&path) {
@@ -892,16 +892,16 @@ fn install_with_prompt(update: &Update, staged: &Path) -> Result<(), String> {
 }
 
 /// Root-executed shell script that copies a user-staged `.deb` into a
-/// root-owned `0700` directory (`/var/cache/nectarlink-update`), verifies its
+/// root-owned `0700` directory (`/var/cache/tokkiphone-update`), verifies its
 /// SHA-256 digest as root on the root-owned copy, and only then runs
 /// `dpkg -i`. Prevents TOCTOU replacement in the user-writable cache directory.
 #[cfg(target_os = "linux")]
 const PRIVILEGED_DEB_INSTALL_SCRIPT: &str = "\
-dir=\"/var/cache/nectarlink-update\"\n\
+dir=\"/var/cache/tokkiphone-update\"\n\
 rm -rf -- \"$dir\"\n\
 install -d -m 0700 -o 0 -g 0 \"$dir\"\n\
 trap 'rm -rf -- \"$dir\"' EXIT\n\
-dst=\"$dir/nectarlink-update.deb\"\n\
+dst=\"$dir/tokkiphone-update.deb\"\n\
 install -m 0600 -o 0 -g 0 \"$1\" \"$dst\"\n\
 printf '%s  %s\\n' \"$2\" \"$dst\" | sha256sum -c --status -\n\
 apt-get install -y -- \"$dst\" || dpkg -i -- \"$dst\"\n";
@@ -917,11 +917,11 @@ else rpm -U --replacepkgs -- \"$1\"; fi";
 /// The `.rpm` counterpart of [`PRIVILEGED_DEB_INSTALL_SCRIPT`].
 #[cfg(target_os = "linux")]
 const PRIVILEGED_RPM_INSTALL_SCRIPT: &str = "\
-dir=\"/var/cache/nectarlink-update\"\n\
+dir=\"/var/cache/tokkiphone-update\"\n\
 rm -rf -- \"$dir\"\n\
 install -d -m 0700 -o 0 -g 0 \"$dir\"\n\
 trap 'rm -rf -- \"$dir\"' EXIT\n\
-dst=\"$dir/nectarlink-update.rpm\"\n\
+dst=\"$dir/tokkiphone-update.rpm\"\n\
 install -m 0600 -o 0 -g 0 \"$1\" \"$dst\"\n\
 printf '%s  %s\\n' \"$2\" \"$dst\" | sha256sum -c --status -\n\
 set -- \"$dst\"\n\
@@ -931,15 +931,15 @@ else rpm -U --replacepkgs -- \"$1\"; fi\n";
 
 #[cfg(target_os = "linux")]
 const PRIVILEGED_TAR_INSTALL_SCRIPT: &str = "\
-dir=\"/var/cache/nectarlink-update\"\n\
+dir=\"/var/cache/tokkiphone-update\"\n\
 rm -rf -- \"$dir\"\n\
 install -d -m 0700 -o 0 -g 0 \"$dir\"\n\
 trap 'rm -rf -- \"$dir\"' EXIT\n\
-dst=\"$dir/nectarlink-update.tar.gz\"\n\
+dst=\"$dir/tokkiphone-update.tar.gz\"\n\
 install -m 0600 -o 0 -g 0 \"$1\" \"$dst\"\n\
 printf '%s  %s\\n' \"$2\" \"$dst\" | sha256sum -c --status -\n\
 tar -C \"$dir\" -xzf \"$dst\"\n\
-set -- \"$dir\"/Nectarlink-*/install.sh\n\
+set -- \"$dir\"/TokkipPhone-*/install.sh\n\
 [ -x \"$1\" ] && \"$1\"\n";
 
 #[cfg(target_os = "linux")]
@@ -1036,7 +1036,7 @@ fn install_with_prompt(update: &Update, staged: &Path) -> Result<(), String> {
                 .args([
                     "-e",
                     "-c",
-                    "tar -C \"$2\" -xzf \"$1\" && set -- \"$2\"/Nectarlink-*/install.sh && [ -x \"$1\" ] && \"$1\"",
+                    "tar -C \"$2\" -xzf \"$1\" && set -- \"$2\"/TokkipPhone-*/install.sh && [ -x \"$1\" ] && \"$1\"",
                     "sh",
                 ])
                 .arg(staged)
@@ -1176,23 +1176,23 @@ mod tests {
             prerelease: false,
             assets: vec![
                 Asset {
-                    name: "Nectarlink-9.0.0-x64-setup.exe".into(),
+                    name: "TokkipPhone-9.0.0-x64-setup.exe".into(),
                     browser_download_url: "https://x/setup".into(),
                 },
                 Asset {
-                    name: "Nectarlink-9.0.0-arm64-setup.exe".into(),
+                    name: "TokkipPhone-9.0.0-arm64-setup.exe".into(),
                     browser_download_url: "https://x/setup-arm64".into(),
                 },
                 Asset {
-                    name: "Nectarlink-9.0.0-x86_64.AppImage".into(),
+                    name: "TokkipPhone-9.0.0-x86_64.AppImage".into(),
                     browser_download_url: "https://x/appimage-x64".into(),
                 },
                 Asset {
-                    name: "nectarlink_9.0.0_amd64.deb".into(),
+                    name: "tokkiphone_9.0.0_amd64.deb".into(),
                     browser_download_url: "https://x/deb-amd64".into(),
                 },
                 Asset {
-                    name: "nectarlink-9.0.0-1.x86_64.rpm".into(),
+                    name: "tokkiphone-9.0.0-1.x86_64.rpm".into(),
                     browser_download_url: "https://x/rpm-x86_64".into(),
                 },
                 Asset { name: "SHA256SUMS.txt".into(), browser_download_url: "https://x/sums".into() },
@@ -1203,16 +1203,16 @@ mod tests {
     #[test]
     fn the_relauncher_waits_for_the_version_then_opens_the_app() {
         let script = relauncher_script(
-            r"C:\Program Files\Nectarlink\nectarlink-desktop.exe",
+            r"C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe",
             "0.2.0",
             "--minimized --updated",
         );
         assert!(script.contains("$installed -eq '0.2.0'"));
-        assert!(script.contains("Nectarlink-*-setup"));
+        assert!(script.contains("TokkipPhone-*-setup"));
         assert!(script.contains(
-            r"Start-Process -FilePath 'C:\Program Files\Nectarlink\nectarlink-desktop.exe' -ArgumentList '--minimized --updated'"
+            r"Start-Process -FilePath 'C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe' -ArgumentList '--minimized --updated'"
         ));
-        let shown = relauncher_script(r"C:\Program Files\Nectarlink\nectarlink-desktop.exe", "0.2.0", "");
+        let shown = relauncher_script(r"C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe", "0.2.0", "");
         assert!(!shown.contains("-ArgumentList"));
     }
 
@@ -1235,15 +1235,15 @@ mod tests {
 
     #[test]
     fn the_relauncher_refuses_paths_and_versions_that_could_break_its_quotes() {
-        let odd = Path::new(r"C:\Program Files\it's\nectarlink-desktop.exe");
+        let odd = Path::new(r"C:\Program Files\it's\tokkiphone-desktop.exe");
         assert!(spawn_relauncher(odd, "0.2.0", false).is_err());
-        let fine = Path::new(r"C:\Program Files\Nectarlink\nectarlink-desktop.exe");
+        let fine = Path::new(r"C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe");
         assert!(spawn_relauncher(fine, "0.2.0'; Remove-Item x; '", false).is_err());
     }
 
     #[test]
     fn installer_names_that_are_not_plain_file_names_are_refused() {
-        for name in [r"..\..\evil-x64-setup.exe", "Nectarlink-9/../x-x64-setup.exe", "evil-x64-setup.exe"] {
+        for name in [r"..\..\evil-x64-setup.exe", "TokkipPhone-9/../x-x64-setup.exe", "evil-x64-setup.exe"] {
             let mut r = release("v9.0.0");
             r.assets[0].name = name.into();
             assert!(newer_release_for(r, "0.0.1", "-x64-setup.exe").is_none(), "{name}");
@@ -1257,7 +1257,7 @@ mod tests {
         let arm64 = newer_release_for(release("v9.0.0"), "0.0.1", "-arm64-setup.exe").unwrap();
         assert_eq!(
             (arm64.installer_name.as_str(), arm64.installer_url.as_str()),
-            ("Nectarlink-9.0.0-arm64-setup.exe", "https://x/setup-arm64")
+            ("TokkipPhone-9.0.0-arm64-setup.exe", "https://x/setup-arm64")
         );
         assert!(newer_release(release("v0.0.1"), "0.0.1").is_none());
         let mut draft = release("v9.0.0");
@@ -1273,12 +1273,12 @@ mod tests {
         let appimage = newer_release_for(release("v9.0.0"), "0.0.1", "-x86_64.AppImage").unwrap();
         assert_eq!(
             (appimage.installer_name.as_str(), appimage.installer_url.as_str()),
-            ("Nectarlink-9.0.0-x86_64.AppImage", "https://x/appimage-x64")
+            ("TokkipPhone-9.0.0-x86_64.AppImage", "https://x/appimage-x64")
         );
         let deb = newer_release_for(release("v9.0.0"), "0.0.1", "_amd64.deb").unwrap();
         assert_eq!(
             (deb.installer_name.as_str(), deb.installer_url.as_str()),
-            ("nectarlink_9.0.0_amd64.deb", "https://x/deb-amd64")
+            ("tokkiphone_9.0.0_amd64.deb", "https://x/deb-amd64")
         );
         #[cfg(target_os = "linux")]
         {
@@ -1290,7 +1290,7 @@ mod tests {
             assert!(PRIVILEGED_DEB_INSTALL_SCRIPT.contains("sha256sum -c --status -"));
             assert!(PRIVILEGED_DEB_INSTALL_SCRIPT.contains("dpkg -i -- \"$dst\""));
             let rpm = newer_release_linux_kind(release("v9.0.0"), "0.0.1", LinuxInstallKind::Rpm).unwrap();
-            assert_eq!(rpm.installer_name, "nectarlink-9.0.0-1.x86_64.rpm");
+            assert_eq!(rpm.installer_name, "tokkiphone-9.0.0-1.x86_64.rpm");
             assert!(PRIVILEGED_RPM_INSTALL_SCRIPT.contains("sha256sum -c --status -"));
             assert!(PRIVILEGED_RPM_INSTALL_SCRIPT.contains("dnf install -y --nogpgcheck -- \"$1\""));
             // An RPM install never falls back to a tarball, a second copy in /opt.
@@ -1301,7 +1301,7 @@ mod tests {
     }
 
     #[test]
-    fn linux_staging_dir_is_absolute_and_under_nectarlink_updates() {
+    fn linux_staging_dir_is_absolute_and_under_tokkiphone_updates() {
         let dir = staging_dir();
         assert!(dir.is_absolute(), "staging_dir must be absolute: {}", dir.display());
         assert!(dir.ends_with("updates"));
@@ -1310,8 +1310,8 @@ mod tests {
     #[test]
     fn finds_the_installer_hash() {
         let hash = "a".repeat(64);
-        let sums = format!("{hash}  Nectarlink-9.0.0-x64-setup.exe\n{}  other.txt\n", "b".repeat(64));
-        assert_eq!(listed_hash(&sums, "Nectarlink-9.0.0-x64-setup.exe"), Some(hash));
+        let sums = format!("{hash}  TokkipPhone-9.0.0-x64-setup.exe\n{}  other.txt\n", "b".repeat(64));
+        assert_eq!(listed_hash(&sums, "TokkipPhone-9.0.0-x64-setup.exe"), Some(hash));
         assert_eq!(listed_hash(&sums, "missing.exe"), None);
         assert_eq!(listed_hash(&format!("{}  *x.exe", "C".repeat(64)), "x.exe"), Some("c".repeat(64)));
     }

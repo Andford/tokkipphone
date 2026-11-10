@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Pairing a phone: a QR code to scan (refreshed automatically), nearby
 // pairing with a 6-digit code check, and the outcome. While `running`, this

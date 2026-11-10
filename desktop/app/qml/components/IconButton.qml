@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // A round icon button (or compact icon+text pill) with a hover tooltip and accessible name.
 FocusScope {

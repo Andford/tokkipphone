@@ -709,7 +709,7 @@ mod tests {
     fn decoder_sample_pool_survives_sustained_gpu_publication() {
         let (done, finished) = std::sync::mpsc::channel();
         let worker = std::thread::spawn(move || {
-            use nectarlink_vcam::gpu::{GpuPublisher, GpuReader};
+            use tokkiphone_vcam::gpu::{GpuPublisher, GpuReader};
             use windows::Win32::Media::MediaFoundation::MFCreateDXGISurfaceBuffer;
             for codec in ["h264", "h265"] {
                 if !installed(codec) {
@@ -719,7 +719,7 @@ mod tests {
                 if !decoder.on_gpu() {
                     continue;
                 }
-                let name = format!("Local\\NectarlinkDecoderPoolTest_{}_{}", std::process::id(), codec);
+                let name = format!("Local\\TokkipPhoneDecoderPoolTest_{}_{}", std::process::id(), codec);
                 let mut reader = GpuReader::new_with_mapping(&name).unwrap();
                 let mut publisher = GpuPublisher::new_with_mapping(&name).unwrap();
                 let mut output = None;

@@ -108,10 +108,10 @@ mod tests {
     #[test]
     fn task_arguments_preserve_custom_data_dir() {
         assert_eq!(build_task_arguments("send-files", None), "--task send-files");
-        let custom = Path::new(r"C:\Temp\nectarlink-test");
+        let custom = Path::new(r"C:\Temp\tokkiphone-test");
         assert_eq!(
             build_task_arguments("find-phone", Some(custom)),
-            r#"--data-dir "C:\Temp\nectarlink-test" --task find-phone"#
+            r#"--data-dir "C:\Temp\tokkiphone-test" --task find-phone"#
         );
         assert_eq!(TASKS.len(), 5);
     }

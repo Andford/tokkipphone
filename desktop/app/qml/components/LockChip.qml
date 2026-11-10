@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Shown on a locked feature: what unlocks it and how long it takes, e.g.
 // "Elevated · ~2 min". `feature` is AppController.featureState(...).

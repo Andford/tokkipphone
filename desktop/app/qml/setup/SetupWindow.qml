@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Shapes
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // The installer's and the uninstaller's window (src/setup.rs). One window,
 // three moments: welcome, working, done. Its own fixed colors (Tokkip's teal on

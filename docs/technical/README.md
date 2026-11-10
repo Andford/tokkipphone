@@ -1,6 +1,6 @@
-# NectarLink Technical Documentation
+# Tokkip Phone Technical Documentation
 
-This directory contains engineering documentation for contributors, security reviewers, and systems engineers working on NectarLink. It covers the multi-crate Rust workspace, the Windows Qt 6 + `cxx-qt` desktop application, the Android Jetpack Compose + UniFFI client, the QUIC + TLS 1.3 protocol, the SQLite persistence layer, and the performance verification suite.
+This directory contains engineering documentation for contributors, security reviewers, and systems engineers working on Tokkip Phone. It covers the multi-crate Rust workspace, the Windows Qt 6 + `cxx-qt` desktop application, the Android Jetpack Compose + UniFFI client, the QUIC + TLS 1.3 protocol, the SQLite persistence layer, and the performance verification suite.
 
 For end-user setup and feature guides, see [docs/guide/README.md](../guide/README.md).
 
@@ -11,7 +11,7 @@ For end-user setup and feature guides, see [docs/guide/README.md](../guide/READM
 | [Architecture](architecture.md) | Crate layout, runtime topology, discovery and transport (`Lan`, `Usb`, `Relay`), Android elevated helper, Windows Media Foundation virtual camera, and perceptual OKLab color engine |
 | [Security Model](security-model.md) | Ed25519 device identity, OS key protection (Windows DPAPI tied to user account and Android Keystore AES-256-GCM), QR and 6-digit pairing protocols, `CapabilityMatrix`, consent gates, update checks, and localhost HTTP API isolation |
 | [Protocol Overview](protocol-overview.md) | `nectarlink/0` wire framing (LEB128 + CBOR), QUIC stream taxonomy, control handshake, resumable BLAKE3 file transfers, real-time media framing, and index of the 18 specification files in [`docs/protocol/`](../protocol/v0.md) |
-| [Storage and Retention](storage-and-retention.md) | SQLite schema v8 (`core/nectarlink-core/src/store.rs`), timeline and `MessagingStyle` conversation caches, persistent FIFO send queue (`send_queue`), and `KeyProtector`-encrypted clipboard history |
+| [Storage and Retention](storage-and-retention.md) | SQLite schema v8 (`core/tokkiphone-core/src/store.rs`), timeline and `MessagingStyle` conversation caches, persistent FIFO send queue (`send_queue`), and `KeyProtector`-encrypted clipboard history |
 | [Performance Budgets](performance-budgets.md) | Startup, memory, CPU, transport, and latency targets from [`docs/PERFORMANCE.md`](../PERFORMANCE.md), measured benchmarks, and key root-cause engineering optimizations |
 | [Building and Testing](building-and-testing.md) | Pinned toolchains (`Rust 1.97+`, `Qt 6.12`, `Android compileSdk 37 / minSdk 26`, `JDK 17+`), `cargo xtask` automation, PowerShell verification scripts, and test suites |
 | [Releasing](releasing.md) | Versioning, the tag-driven release workflow, Android and Windows signing, and how both apps update themselves |
@@ -20,18 +20,18 @@ For end-user setup and feature guides, see [docs/guide/README.md](../guide/READM
 ## Repository Map
 
 ```text
-nectarlink/
+tokkiphone/
 ├── Cargo.toml                  Workspace manifest and shared dependency versions
 ├── rust-toolchain.toml         Pinned stable Rust toolchain (1.97+ MSRV, 2024 edition) and Android targets
 ├── core/
-│   ├── nectarlink-protocol/    Wire framing, CBOR envelopes, capability constants, SAS derivation
-│   ├── nectarlink-core/        QUIC node, ADB/USB tunnel, session engine, SQLite store, send queue, OKLab palette
-│   └── nectarlink-ffi/         UniFFI 0.32 bindings exposing nectarlink-core to Kotlin
-├── cli/                        Headless CLI (nectarlink-cli) for pairing, file transfer, notify-when, and testing
+│   ├── tokkiphone-protocol/    Wire framing, CBOR envelopes, capability constants, SAS derivation
+│   ├── tokkiphone-core/        QUIC node, ADB/USB tunnel, session engine, SQLite store, send queue, OKLab palette
+│   └── tokkiphone-ffi/         UniFFI 0.32 bindings exposing tokkiphone-core to Kotlin
+├── cli/                        Headless CLI (tokkiphone-cli) for pairing, file transfer, notify-when, and testing
 ├── desktop/
 │   ├── app/                    Windows desktop app (Rust + cxx-qt 0.10 bridges + Qt 6.12 QML)
-│   ├── vcam/                   Windows Media Foundation virtual camera COM DLL (nectarlink_vcam.dll)
-│   └── installer/              NSIS installer script (nectarlink.nsi) and Windows Sparse Package manifest (AppxManifest.xml)
+│   ├── vcam/                   Windows Media Foundation virtual camera COM DLL (tokkiphone_vcam.dll)
+│   └── installer/              NSIS installer script (tokkiphone.nsi) and Windows Sparse Package manifest (AppxManifest.xml)
 ├── android/
 │   └── app/                    Android client (Kotlin, Jetpack Compose, foreground service, elevated helper)
 ├── tools/

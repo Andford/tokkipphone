@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Shapes
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Dynamic Island-style floating pill anchored at the top-center of the primary
 // monitor (340×40px compact, expanding smoothly to 380×88px on hover or incoming call).
@@ -65,7 +65,7 @@ Window {
         target: NotificationList
         function onCountChanged() {
             const cur = NotificationList.count
-            if (cur > islandWin.lastNotificationCount && Preferences.nectarIslandNotifications) {
+            if (cur > islandWin.lastNotificationCount && Preferences.tokkipIslandNotifications) {
                 islandWin.notificationToastActive = true
                 notificationToastTimer.restart()
             } else if (cur === 0) {
@@ -164,16 +164,16 @@ Window {
 
     readonly property bool hasMediaCandidate: mediaPlaying && mediaDeviceId !== "local" && mediaTitle.length > 0
     readonly property string mode: {
-        if (Preferences.nectarIslandCalls && PhoneCall.active) return "call"
-        if (Preferences.nectarIslandTransfers && (TransferList.active > 0 || transferJustFinished)) return "transfer"
-        if (Preferences.nectarIslandMedia && hasMediaCandidate) return "media"
-        if (Preferences.nectarIslandNotifications && notificationToastActive && NotificationList.count > 0) return "notification"
-        if (Preferences.nectarIslandTransfers && TransferList.waitingCount > 0) return "waiting"
+        if (Preferences.tokkipIslandCalls && PhoneCall.active) return "call"
+        if (Preferences.tokkipIslandTransfers && (TransferList.active > 0 || transferJustFinished)) return "transfer"
+        if (Preferences.tokkipIslandMedia && hasMediaCandidate) return "media"
+        if (Preferences.tokkipIslandNotifications && notificationToastActive && NotificationList.count > 0) return "notification"
+        if (Preferences.tokkipIslandTransfers && TransferList.waitingCount > 0) return "waiting"
         return "idle"
     }
 
     readonly property bool hasActivity: mode !== "idle"
-    visible: Preferences.nectarIsland && hasActivity
+    visible: Preferences.tokkipIsland && hasActivity
 
     onVisibleChanged: {
         if (visible) {
@@ -193,14 +193,14 @@ Window {
 
     Connections {
         target: Preferences
-        function onNectarIslandChanged() {
-            if (Preferences.nectarIsland) {
+        function onTokkipIslandChanged() {
+            if (Preferences.tokkipIsland) {
                 Qt.callLater(() => AppController.styleShelfWindow())
             }
         }
     }
 
-    readonly property bool expanded: pillHover.hovered || (Preferences.nectarIslandCalls && PhoneCall.active && PhoneCall.ringing)
+    readonly property bool expanded: pillHover.hovered || (Preferences.tokkipIslandCalls && PhoneCall.active && PhoneCall.ringing)
     readonly property real pillWidth: expanded ? 380 : 340
     readonly property real pillHeight: expanded ? 88 : 40
     width: 400

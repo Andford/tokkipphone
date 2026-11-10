@@ -1,11 +1,11 @@
 [workspace]
 resolver = "3"
 members = [
-    "core/nectarlink-adb",
-    "core/nectarlink-protocol",
-    "core/nectarlink-core",
-    "core/nectarlink-cli",
-    "core/nectarlink-ffi",
+    "core/tokkiphone-adb",
+    "core/tokkiphone-protocol",
+    "core/tokkiphone-core",
+    "core/tokkiphone-cli",
+    "core/tokkiphone-ffi",
     "desktop/app",
     "desktop/vcam",
     "tools/xtask",
@@ -25,10 +25,10 @@ repository = "https://github.com/Andford/tokkiphone"
 name = "Pollen"
 
 [workspace.dependencies]
-nectarlink-adb = { path = "core/nectarlink-adb", version = "0.1.4" }
-nectarlink-protocol = { path = "core/nectarlink-protocol", version = "0.1.4" }
-nectarlink-core = { path = "core/nectarlink-core", version = "0.1.4" }
-nectarlink-vcam = { path = "desktop/vcam", version = "0.1.4" }
+tokkiphone-adb = { path = "core/tokkiphone-adb", version = "0.1.4" }
+tokkiphone-protocol = { path = "core/tokkiphone-protocol", version = "0.1.4" }
+tokkiphone-core = { path = "core/tokkiphone-core", version = "0.1.4" }
+tokkiphone-vcam = { path = "desktop/vcam", version = "0.1.4" }
 
 anyhow = "1"
 ciborium = "0.2"

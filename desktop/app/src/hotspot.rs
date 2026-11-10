@@ -13,7 +13,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use nectarlink_core::DeviceId;
+use tokkiphone_core::DeviceId;
 
 use crate::{bridge::app::show_message, core_host, state::Changes, win::wifi::Reach};
 

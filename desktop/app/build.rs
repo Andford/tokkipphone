@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! Builds the QML module `app.nectarlink` (QML files compiled ahead of time,
+//! Builds the QML module `mx.loperstack.tokkiphone` (QML files compiled ahead of time,
 //! Rust QObjects, C++ helpers), compiles in the bundled fonts, gives the
 //! executable its icon and version information, and links the Windows
 //! libraries C++ uses.
@@ -201,7 +201,7 @@ fn shaders_qrc() -> PathBuf {
 /// Task Manager show).
 fn windows_resources() {
     let out = PathBuf::from(std::env::var_os("OUT_DIR").expect("OUT_DIR"));
-    let ico = out.join("nectarlink.ico");
+    let ico = out.join("tokkiphone.ico");
     write_if_changed(&ico, icon_file());
     let version = std::env::var("CARGO_PKG_VERSION").expect("version");
     let numbers: Vec<&str> = version.split(['.', '-', '+']).take(3).collect();
@@ -223,9 +223,9 @@ BEGIN
       VALUE "CompanyName", "The Tokkip Phone contributors"
       VALUE "FileDescription", "Tokkip Phone"
       VALUE "FileVersion", "{version}"
-      VALUE "InternalName", "nectarlink-desktop"
+      VALUE "InternalName", "tokkiphone-desktop"
       VALUE "LegalCopyright", "GPL-3.0-or-later"
-      VALUE "OriginalFilename", "nectarlink-desktop.exe"
+      VALUE "OriginalFilename", "tokkiphone-desktop.exe"
       VALUE "ProductName", "Tokkip Phone"
       VALUE "ProductVersion", "{version}"
     END
@@ -238,7 +238,7 @@ END
 "#,
         ico = ico.display().to_string().replace('\\', "/"),
     );
-    let rc_path = out.join("nectarlink.rc");
+    let rc_path = out.join("tokkiphone.rc");
     write_if_changed(&rc_path, rc);
     embed_resource::compile(&rc_path, embed_resource::NONE).manifest_required().expect("compile resources");
 }
@@ -336,7 +336,7 @@ fn compile_translations() {
         let Some(stem) = ts.file_stem().and_then(|s| s.to_str()) else {
             continue;
         };
-        let Some(lang) = stem.strip_prefix("nectarlink_") else {
+        let Some(lang) = stem.strip_prefix("tokkiphone_") else {
             continue;
         };
         if !offered.contains(lang) {
@@ -368,7 +368,7 @@ fn main() {
     if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("linux") {
         compile_translations();
     }
-    let module = QmlModule::new("app.nectarlink")
+    let module = QmlModule::new("mx.loperstack.tokkiphone")
         .qml_files(QML.iter().map(|f| QmlFile::from(*f)))
         .qml_files(QML_SINGLETONS.iter().map(|f| QmlFile::from(*f).singleton(true)));
     let mut builder = CxxQtBuilder::new_qml_module(module).qt_module("Quick");
@@ -418,7 +418,7 @@ fn main() {
         println!("cargo:rustc-link-lib=Qt6Quick");
         println!("cargo:rustc-link-lib=Qt6Widgets");
         println!(
-            "cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN:$ORIGIN/lib:$ORIGIN/../lib:$ORIGIN/../lib/nectarlink/lib"
+            "cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN:$ORIGIN/lib:$ORIGIN/../lib:$ORIGIN/../lib/tokkiphone/lib"
         );
     } else if std::env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("macos") {
         println!("cargo:rustc-link-lib=framework=AppKit");

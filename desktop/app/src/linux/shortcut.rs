@@ -3,12 +3,12 @@
 //
 // `crate::send_to` reconciles per-device `<Name>.lnk` files in `send_to_dir()`.
 // On Linux we store those canonical `.lnk` metadata files inside
-// `~/.local/share/nectarlink/send-to/` and mirror them into the three major Linux
+// `~/.local/share/tokkiphone/send-to/` and mirror them into the three major Linux
 // file managers:
 //   1. GNOME Files (Nautilus): `~/.local/share/nautilus/scripts/Send to <Name> (Tokkip Phone)`
-//   2. KDE Dolphin (KIO ServiceMenus): `~/.local/share/kio/servicemenus/nectarlink-send-<id>.desktop`
+//   2. KDE Dolphin (KIO ServiceMenus): `~/.local/share/kio/servicemenus/tokkiphone-send-<id>.desktop`
 //   3. Cinnamon Nemo / XFCE Thunar (File Manager Actions):
-//      `~/.local/share/file-manager/actions/nectarlink-send-<id>.desktop`
+//      `~/.local/share/file-manager/actions/tokkiphone-send-<id>.desktop`
 
 #![allow(dead_code)]
 
@@ -93,7 +93,7 @@ pub fn write(path: &Path, shortcut: &Shortcut) -> Result<()> {
          Name=Tokkip Phone\n\
          Comment={desc}\n\
          Exec=\"{exec_target}\" {args}\n\
-         Icon=nectarlink\n\
+         Icon=tokkiphone\n\
          Terminal=false\n\
          X-TokkipPhone-Target={raw_target}\n\
          X-TokkipPhone-Args={args}\n\
@@ -159,17 +159,17 @@ pub fn startup_dir() -> Option<PathBuf> {
     Some(base.join("autostart"))
 }
 
-/// Resolve the user's canonical SendTo directory (`~/.local/share/nectarlink/send-to`).
+/// Resolve the user's canonical SendTo directory (`~/.local/share/tokkiphone/send-to`).
 /// Ensures the directory exists so `send_to::reconcile` can enumerate it cleanly.
 pub fn send_to_dir() -> Option<PathBuf> {
-    let dir = xdg_data_home()?.join("nectarlink/send-to");
+    let dir = xdg_data_home()?.join("tokkiphone/send-to");
     let _ = std::fs::create_dir_all(&dir);
     Some(dir)
 }
 
-/// Resolve the user's Recent items directory (`~/.local/share/nectarlink/recent`).
+/// Resolve the user's Recent items directory (`~/.local/share/tokkiphone/recent`).
 pub fn recent_dir() -> Option<PathBuf> {
-    let dir = xdg_data_home()?.join("nectarlink/recent");
+    let dir = xdg_data_home()?.join("tokkiphone/recent");
     let _ = std::fs::create_dir_all(&dir);
     Some(dir)
 }
@@ -266,7 +266,7 @@ pub fn write_file_manager_integrations(
     for (lnk_path, sc) in shortcuts {
         let label = format_menu_label(lnk_path);
         let dev_id = extract_device_id(&sc.arguments);
-        let desktop_filename = format!("nectarlink-send-{dev_id}.desktop");
+        let desktop_filename = format!("tokkiphone-send-{dev_id}.desktop");
 
         desired_nautilus.insert(label.clone());
         desired_desktop.insert(desktop_filename.clone());
@@ -302,7 +302,7 @@ pub fn write_file_manager_integrations(
              \n\
              [Desktop Action TokkipPhoneSend_{dev_id}]\n\
              Name={label}\n\
-             Icon=nectarlink\n\
+             Icon=tokkiphone\n\
              Exec=\"{exec_target}\" {args} %F\n"
         );
         write_file_nofollow(&kio_path, &kio_content, 0o755)?;
@@ -314,7 +314,7 @@ pub fn write_file_manager_integrations(
              Type=Action\n\
              Name={label}\n\
              Tooltip={comment}\n\
-             Icon=nectarlink\n\
+             Icon=tokkiphone\n\
              Profiles=profile-zero;\n\
              \n\
              [X-Action-Profile profile-zero]\n\
@@ -330,21 +330,21 @@ pub fn write_file_manager_integrations(
         for entry in rd.flatten() {
             let p = entry.path();
             if let Some(name) = p.file_name().and_then(|s| s.to_str()) {
-                let is_nectarlink = name.ends_with("(Tokkip Phone)") || name.contains("(Tokkip Phone ");
-                if is_nectarlink && !desired_nautilus.contains(name) {
+                let is_tokkiphone = name.ends_with("(Tokkip Phone)") || name.contains("(Tokkip Phone ");
+                if is_tokkiphone && !desired_nautilus.contains(name) {
                     let _ = std::fs::remove_file(&p);
                 }
             }
         }
     }
 
-    // Prune stale KDE ServiceMenus and File Manager Actions prefixed with `nectarlink-`
+    // Prune stale KDE ServiceMenus and File Manager Actions prefixed with `tokkiphone-`
     for dir in [&kio_dir, &actions_dir] {
         if let Ok(rd) = std::fs::read_dir(dir) {
             for entry in rd.flatten() {
                 let p = entry.path();
                 if let Some(name) = p.file_name().and_then(|s| s.to_str())
-                    && name.starts_with("nectarlink-")
+                    && name.starts_with("tokkiphone-")
                     && name.ends_with(".desktop")
                     && !desired_desktop.contains(name)
                 {
@@ -381,18 +381,18 @@ mod tests {
     #[test]
     fn file_manager_integrations_create_and_prune_entries() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        let send_to = tmp.path().join("nectarlink/send-to");
+        let send_to = tmp.path().join("tokkiphone/send-to");
         std::fs::create_dir_all(&send_to).unwrap();
 
         let lnk1 = send_to.join("Pixel 9.lnk");
         let sc1 = Shortcut {
-            target: PathBuf::from("/opt/user's bin/nectarlink-desktop"),
+            target: PathBuf::from("/opt/user's bin/tokkiphone-desktop"),
             arguments: "--send-to pixel9".to_string(),
             description: "Send to Pixel 9".to_string(),
         };
         let lnk2 = send_to.join("Galaxy S25 (Tokkip Phone).lnk");
         let sc2 = Shortcut {
-            target: PathBuf::from("/usr/bin/nectarlink-desktop"),
+            target: PathBuf::from("/usr/bin/tokkiphone-desktop"),
             arguments: "--send-to s25".to_string(),
             description: "Send to Galaxy S25".to_string(),
         };
@@ -402,9 +402,9 @@ mod tests {
 
         let nautilus_p1 = tmp.path().join("nautilus/scripts/Send to Pixel 9 (Tokkip Phone)");
         let nautilus_p2 = tmp.path().join("nautilus/scripts/Send to Galaxy S25 (Tokkip Phone)");
-        let kio_p1 = tmp.path().join("kio/servicemenus/nectarlink-send-pixel9.desktop");
-        let kio_p2 = tmp.path().join("kio/servicemenus/nectarlink-send-s25.desktop");
-        let act_p1 = tmp.path().join("file-manager/actions/nectarlink-send-pixel9.desktop");
+        let kio_p1 = tmp.path().join("kio/servicemenus/tokkiphone-send-pixel9.desktop");
+        let kio_p2 = tmp.path().join("kio/servicemenus/tokkiphone-send-s25.desktop");
+        let act_p1 = tmp.path().join("file-manager/actions/tokkiphone-send-pixel9.desktop");
 
         assert!(nautilus_p1.exists());
         assert!(nautilus_p2.exists());
@@ -422,10 +422,10 @@ mod tests {
         }
 
         let nautilus_text = std::fs::read_to_string(&nautilus_p1).unwrap();
-        assert!(nautilus_text.contains("exec '/opt/user'\\''s bin/nectarlink-desktop' --send-to pixel9"));
+        assert!(nautilus_text.contains("exec '/opt/user'\\''s bin/tokkiphone-desktop' --send-to pixel9"));
 
         let kio_text = std::fs::read_to_string(&kio_p1).unwrap();
-        assert!(kio_text.contains("Exec=\"/opt/user's bin/nectarlink-desktop\" --send-to pixel9 %F"));
+        assert!(kio_text.contains("Exec=\"/opt/user's bin/tokkiphone-desktop\" --send-to pixel9 %F"));
 
         // Now prune Galaxy S25 and verify its files are removed while Pixel 9 remains.
         write_file_manager_integrations(tmp.path(), &[(lnk1, sc1)]).expect("prune integrations");

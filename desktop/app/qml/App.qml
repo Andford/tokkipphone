@@ -2,7 +2,7 @@
 import QtQuick
 import QtQml
 import QtQml.Models
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Application root. The main window exists only while it's open: closing it
 // destroys it (freeing its GPU resources) and Tokkip Phone keeps running in
@@ -13,7 +13,7 @@ QtObject {
     readonly property var mainWindow: mainLoader.item
     readonly property Loader mainLoader: Loader {
         active: false
-        source: "qrc:/qt/qml/app/nectarlink/qml/MainWindow.qml"
+        source: "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/MainWindow.qml"
         onLoaded: {
             item.closeRequested.connect(app.onMainClosed)
             item.restoreAndBringToFront()
@@ -21,7 +21,7 @@ QtObject {
     }
     readonly property Loader laserLoader: Loader {
         active: AppController.laserActive
-        source: active ? "qrc:/qt/qml/app/nectarlink/qml/LaserOverlay.qml" : ""
+        source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/LaserOverlay.qml" : ""
     }
     property var islandWindow: null
     readonly property Component islandWindowComponent: Component {
@@ -29,7 +29,7 @@ QtObject {
     }
 
     function syncIslandWindow() {
-        if (Preferences.nectarIsland) {
+        if (Preferences.tokkipIsland) {
             if (!app.islandWindow) {
                 const w = islandWindowComponent.createObject(app)
                 if (w) {
@@ -147,7 +147,7 @@ QtObject {
     Component.onCompleted: {
         Mirror.windowsChanged.connect(app.syncMirrorWindows)
         AppController.shelfOpenChanged.connect(app.syncShelfWindow)
-        Preferences.nectarIslandChanged.connect(app.syncIslandWindow)
+        Preferences.tokkipIslandChanged.connect(app.syncIslandWindow)
         app.syncMirrorWindows()
         app.syncShelfWindow()
         app.syncIslandWindow()

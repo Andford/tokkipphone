@@ -10,8 +10,8 @@
   IgnorableNamespaces="uap uap3 uap10 com desktop rescap">
 
   <Identity
-    Name="Nectarlink.Desktop"
-    Publisher="CN=The Nectarlink contributors"
+    Name="TokkipPhone.Desktop"
+    Publisher="CN=The Tokkip Phone contributors"
     Version="0.0.1.0"
     ProcessorArchitecture="x64" />
 
@@ -32,8 +32,8 @@
 
   <Applications>
     <Application
-      Id="Nectarlink"
-      Executable="nectarlink-desktop.exe"
+      Id="Tokkip Phone"
+      Executable="tokkiphone-desktop.exe"
       uap10:TrustLevel="mediumIL"
       uap10:RuntimeBehavior="win32App">
       <uap:VisualElements
@@ -60,13 +60,13 @@
         </desktop:Extension>
         <com:Extension Category="windows.comServer">
           <com:ComServer>
-            <com:ExeServer Executable="nectarlink-desktop.exe" Arguments="--widget-provider" DisplayName="Tokkip Phone Widget Provider">
-              <com:Class Id="9C4E1A22-8F3B-4D09-A6E2-1D8F5C3B9E04" DisplayName="NectarlinkWidgetProvider" />
+            <com:ExeServer Executable="tokkiphone-desktop.exe" Arguments="--widget-provider" DisplayName="Tokkip Phone Widget Provider">
+              <com:Class Id="9C4E1A22-8F3B-4D09-A6E2-1D8F5C3B9E04" DisplayName="TokkipPhoneWidgetProvider" />
             </com:ExeServer>
           </com:ComServer>
         </com:Extension>
         <uap3:Extension Category="windows.appExtension">
-          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="Tokkip Phone" Id="NectarlinkWidgets" PublicFolder="Widgets">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets" DisplayName="Tokkip Phone" Id="TokkipPhoneWidgets" PublicFolder="Widgets">
             <uap3:Properties>
               <WidgetProvider>
                 <ProviderIcons>
@@ -76,7 +76,7 @@
                   <CreateInstance ClassId="9C4E1A22-8F3B-4D09-A6E2-1D8F5C3B9E04" />
                 </Activation>
                 <Definitions>
-                  <Definition Id="NectarlinkPhoneStatus" DisplayName="Phone Status" Description="Phone battery, connection status, clipboard preview, and quick actions">
+                  <Definition Id="TokkipPhonePhoneStatus" DisplayName="Phone Status" Description="Phone battery, connection status, clipboard preview, and quick actions">
                     <Capabilities>
                       <Capability>
                         <Size Name="medium" />

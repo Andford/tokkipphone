@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Builds a Fedora/openSUSE .rpm package for Tokkip Phone Desktop from the .deb
 # that build-deb.sh made, so both install exactly the same files:
-#   dist/nectarlink-<version>-1.<arch>.rpm
+#   dist/tokkiphone-<version>-1.<arch>.rpm
 # Needs rpmbuild (the `rpm` package on Debian and Ubuntu) and dpkg-deb.
 
 set -euo pipefail
@@ -24,13 +24,13 @@ case "${ARCH}" in
 esac
 
 OUT_DIR="${OUT_DIR:-${REPO_ROOT}/dist}"
-DEB="${DEB:-${OUT_DIR}/nectarlink_${VERSION}_${DEB_ARCH}.deb}"
+DEB="${DEB:-${OUT_DIR}/tokkiphone_${VERSION}_${DEB_ARCH}.deb}"
 if [[ ! -f "${DEB}" ]]; then
     echo "error: ${DEB} not found; run build-deb.sh first" >&2
     exit 1
 fi
 
-STAGE_DIR="$(mktemp -d -t nectarlink-rpm-XXXXXX)"
+STAGE_DIR="$(mktemp -d -t tokkiphone-rpm-XXXXXX)"
 trap 'rm -rf "${STAGE_DIR}"' EXIT
 TREE="${STAGE_DIR}/tree"
 mkdir -p "${TREE}" "${STAGE_DIR}/rpmbuild"/{BUILD,RPMS,SOURCES,SPECS,SRPMS,BUILDROOT}
@@ -52,7 +52,7 @@ for f in "${ELF_FILES[@]}"; do
         [[ -n "${lib}" && -z "${BUNDLED[${lib}]:-}" ]] && NEEDED["${lib}"]=1
     done < <(readelf -d "${f}" 2>/dev/null | sed -n 's/.*(NEEDED).*\[\(.*\)\]/\1/p')
 done
-GLIBC="$(objdump -T "${TREE}/usr/lib/nectarlink/nectarlink-desktop" | grep -o 'GLIBC_[0-9.]*' | sort -V | tail -n 1)"
+GLIBC="$(objdump -T "${TREE}/usr/lib/tokkiphone/tokkiphone-desktop" | grep -o 'GLIBC_[0-9.]*' | sort -V | tail -n 1)"
 REQUIRES=""
 for lib in $(printf '%s\n' "${!NEEDED[@]}" | sort); do
     # The loader is required through libc itself.
@@ -63,8 +63,8 @@ if [[ -n "${GLIBC}" ]]; then
     REQUIRES+="Requires: libc.so.6(${GLIBC})(64bit)"$'\n'
 fi
 
-cat > "${STAGE_DIR}/rpmbuild/SPECS/nectarlink.spec" <<EOF
-Name:           nectarlink
+cat > "${STAGE_DIR}/rpmbuild/SPECS/tokkiphone.spec" <<EOF
+Name:           tokkiphone
 Version:        ${VERSION}
 Release:        1
 Summary:        Connect your Android phone and Linux PC over LAN
@@ -99,12 +99,12 @@ and calls.
 cp -a "${TREE}/usr" "%{buildroot}/"
 
 %files
-/usr/bin/nectarlink-desktop
-/usr/lib/nectarlink
-/usr/share/nectarlink
-/usr/share/applications/nectarlink.desktop
-/usr/share/metainfo/org.nectarlink.desktop.metainfo.xml
-/usr/share/icons/hicolor/*/apps/nectarlink.*
+/usr/bin/tokkiphone-desktop
+/usr/lib/tokkiphone
+/usr/share/tokkiphone
+/usr/share/applications/tokkiphone.desktop
+/usr/share/metainfo/mx.loperstack.tokkiphone.desktop.metainfo.xml
+/usr/share/icons/hicolor/*/apps/tokkiphone.*
 
 %post
 update-desktop-database -q /usr/share/applications >/dev/null 2>&1 || :
@@ -120,9 +120,9 @@ rpmbuild -bb --quiet \
     --define "_topdir ${STAGE_DIR}/rpmbuild" \
     --define "_dbpath ${STAGE_DIR}/rpmdb" \
     --define "_rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm" \
-    "${STAGE_DIR}/rpmbuild/SPECS/nectarlink.spec"
+    "${STAGE_DIR}/rpmbuild/SPECS/tokkiphone.spec"
 
 mkdir -p "${OUT_DIR}"
-OUT_RPM="${OUT_DIR}/nectarlink-${VERSION}-1.${RPM_ARCH}.rpm"
-cp "${STAGE_DIR}/rpmbuild/RPMS/nectarlink-${VERSION}-1.${RPM_ARCH}.rpm" "${OUT_RPM}"
+OUT_RPM="${OUT_DIR}/tokkiphone-${VERSION}-1.${RPM_ARCH}.rpm"
+cp "${STAGE_DIR}/rpmbuild/RPMS/tokkiphone-${VERSION}-1.${RPM_ARCH}.rpm" "${OUT_RPM}"
 echo "Built ${OUT_RPM}"

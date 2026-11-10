@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Apps: every app on the phone, to open one in a window of its own on this PC
 // (Elevated: the phone runs it on a display of its own). Searchable; Enter

@@ -6,7 +6,7 @@
 use crate::i18n::tr;
 use std::path::{Path, PathBuf};
 
-use nectarlink_core::{DeviceId, Direction, Error, NodeEvent, Transfer, TransferState};
+use tokkiphone_core::{DeviceId, Direction, Error, NodeEvent, Transfer, TransferState};
 
 use crate::{
     bridge::app::{describe, show_message},
@@ -49,7 +49,7 @@ pub fn send_handoff(device: DeviceId, paths: Vec<PathBuf>) {
 fn send_with_mode(device: DeviceId, paths: Vec<PathBuf>, handoff: bool) {
     let Some(node) = core_host::node() else { return };
     core_host::spawn(async move {
-        let files = match tokio::task::spawn_blocking(move || nectarlink_core::outgoing_paths(&paths)).await {
+        let files = match tokio::task::spawn_blocking(move || tokkiphone_core::outgoing_paths(&paths)).await {
             Ok(Ok(files)) if !files.is_empty() => files,
             Ok(Ok(_)) => return show_message(tr!("Transfers", "There's nothing to send in there.")),
             Ok(Err(Error::TooLarge)) => {
@@ -124,7 +124,7 @@ pub fn clear_finished_queue(device: Option<DeviceId>) {
 
 /// Serializes the current `send_queue` into `(json, waiting_count, total_count, has_failed_or_expired)`.
 pub fn send_queue_snapshot() -> (String, i32, i32, bool) {
-    use nectarlink_core::{QueueKind, QueueStatus};
+    use tokkiphone_core::{QueueKind, QueueStatus};
 
     core_host::host().hub.read(|s| {
         let mut waiting_count: i32 = 0;
@@ -295,7 +295,7 @@ pub fn on_event(event: &NodeEvent) {
         && crate::settings::open_shared_files()
         && saved.len() == 1
         && first.is_file()
-        && first.file_name().and_then(|n| n.to_str()).is_some_and(nectarlink_core::is_safe_handoff_document);
+        && first.file_name().and_then(|n| n.to_str()).is_some_and(tokkiphone_core::is_safe_handoff_document);
     if auto_open {
         open(first);
     }

@@ -10,7 +10,7 @@ use std::{
     time::{Instant, SystemTime},
 };
 
-use nectarlink_core::{
+use tokkiphone_core::{
     Battery, CapabilityMatrix, DeviceId, DeviceInfo, DiscoveredDevice, LinkState, LocalSendPeer, MediaPlayer,
     NodeEvent, Notification, PairedDevice, PairingEvent, PairingFailure, PhoneToggles, PowerLevel, Transfer,
     TransferState,
@@ -53,9 +53,9 @@ impl Changes {
     pub const DECK: Changes = Changes(1 << 18);
     /// Phone as a webcam state or preferences (kept by crate::webcam).
     pub const WEBCAM: Changes = Changes(1 << 19);
-    /// Encrypted local clipboard history (kept by nectarlink_core).
+    /// Encrypted local clipboard history (kept by tokkiphone_core).
     pub const CLIPBOARD: Changes = Changes(1 << 20);
-    /// Local cross-device timeline (kept by nectarlink_core).
+    /// Local cross-device timeline (kept by tokkiphone_core).
     pub const TIMELINE: Changes = Changes(1 << 21);
     /// Continuity Camera capture request or fallback paste prompt state.
     pub const CONTINUITY: Changes = Changes(1 << 22);
@@ -288,7 +288,7 @@ pub struct AppState {
     /// Phone asking to control this PC for the first time while `remote_input` is off.
     pub remote_prompt: Option<DeviceId>,
     /// Phone asking to view this PC's screen while `pc_mirror` is off.
-    pub pc_mirror_prompt: Option<(DeviceId, nectarlink_core::MirrorStart)>,
+    pub pc_mirror_prompt: Option<(DeviceId, tokkiphone_core::MirrorStart)>,
     /// Active laser pointer overlay (`(device, x, y)` in `0.0..=1.0`).
     pub laser: Option<(DeviceId, f32, f32)>,
     /// This PC's physical adapters and Wake-on-LAN readiness.
@@ -299,7 +299,7 @@ pub struct AppState {
     /// Discovered LocalSend peers on the LAN.
     pub localsend_peers: Vec<LocalSendPeer>,
     /// Persistent outbound queue items waiting for an offline device or in flight.
-    pub send_queue: Vec<nectarlink_core::QueueItem>,
+    pub send_queue: Vec<tokkiphone_core::QueueItem>,
 }
 
 impl AppState {
@@ -574,7 +574,7 @@ impl AppState {
     }
 
     /// Replaces the outbound send queue snapshot from the core.
-    pub fn set_send_queue(&mut self, items: Vec<nectarlink_core::QueueItem>) -> Changes {
+    pub fn set_send_queue(&mut self, items: Vec<tokkiphone_core::QueueItem>) -> Changes {
         self.send_queue = items;
         Changes::QUEUE | Changes::TRANSFERS
     }
@@ -1083,7 +1083,7 @@ impl Hub {
 mod tests {
     use std::sync::atomic::{AtomicUsize, Ordering};
 
-    use nectarlink_core::{ConnectionPath, DeviceKind};
+    use tokkiphone_core::{ConnectionPath, DeviceKind};
 
     use super::*;
 
@@ -1293,7 +1293,7 @@ mod tests {
         s.apply(&NodeEvent::NotificationPosted { device: phone, notification: note("msg1", 100) });
 
         let mut live1 = note("ride", 50);
-        live1.live = Some(nectarlink_core::NotificationLive {
+        live1.live = Some(tokkiphone_core::NotificationLive {
             v: 1,
             progress: Some(20),
             max: Some(100),
@@ -1380,7 +1380,7 @@ mod tests {
         Transfer {
             id: id.into(),
             device: DeviceId([1; 32]),
-            direction: nectarlink_core::Direction::Outgoing,
+            direction: tokkiphone_core::Direction::Outgoing,
             names: vec!["a.bin".into()],
             files: 1,
             total: 1000,
@@ -1633,13 +1633,13 @@ mod tests {
     fn transfer_events_update_matching_send_queue_item_in_place() {
         let mut s = AppState::default();
         let peer = DeviceId([1; 32]);
-        s.set_send_queue(vec![nectarlink_core::QueueItem {
+        s.set_send_queue(vec![tokkiphone_core::QueueItem {
             id: "q-transfer-1".into(),
             seq: 1,
             peer,
             peer_name: "Pixel".into(),
-            kind: nectarlink_core::QueueKind::Files,
-            status: nectarlink_core::QueueStatus::Sending,
+            kind: tokkiphone_core::QueueKind::Files,
+            status: tokkiphone_core::QueueStatus::Sending,
             created_at: 100,
             expires_at: 200,
             attempts: 1,

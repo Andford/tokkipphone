@@ -8,7 +8,7 @@ use std::pin::Pin;
 
 use cxx_qt::{CxxQtType, Threading};
 use cxx_qt_lib::QString;
-use nectarlink_core::{CallCommand, DeviceId};
+use tokkiphone_core::{CallCommand, DeviceId};
 
 use crate::{calls, state::Changes};
 

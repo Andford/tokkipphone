@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! Windows 11 Widgets Board provider (`NectarlinkPhoneStatus`): renders an
+//! Windows 11 Widgets Board provider (`TokkipPhonePhoneStatus`): renders an
 //! Adaptive Card v1.5 snapshot of the primary paired phone (connection status,
 //! battery level, latest clipboard preview, and quick actions) and dispatches
 //! `Action.Execute` verbs (`ring`, `send_clipboard`, `take_photo`, `open_app`)
@@ -15,9 +15,9 @@ use std::{
     process::ExitCode,
 };
 
-use nectarlink_core::LinkState;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tokkiphone_core::LinkState;
 use windows::{
     Win32::{
         Foundation::{CLASS_E_NOAGGREGATION, E_INVALIDARG, E_POINTER},
@@ -36,7 +36,7 @@ use crate::{core_host, launch::Request, win::single_instance};
 pub const ARG: &str = "--widget-provider";
 
 /// Widget definition ID declared in `desktop/installer/AppxManifest.xml`.
-pub const WIDGET_ID: &str = "NectarlinkPhoneStatus";
+pub const WIDGET_ID: &str = "TokkipPhonePhoneStatus";
 
 /// COM `CLSID` for the Tokkip Phone Windows Widgets provider
 /// (`{9C4E1A22-8F3B-4D09-A6E2-1D8F5C3B9E04}`).
@@ -320,7 +320,7 @@ mod tests {
             phone_name: "Pixel 9 Pro".into(),
             battery_level: Some(85),
             battery_charging: true,
-            last_clip_preview: "https://nectarlink.dev/docs".into(),
+            last_clip_preview: "https://tokkiphone.dev/docs".into(),
         };
         let card_str = render_adaptive_card(&connected);
         let parsed: serde_json::Value = serde_json::from_str(&card_str).unwrap();
@@ -329,7 +329,7 @@ mod tests {
         assert!(card_str.contains("Pixel 9 Pro"));
         assert!(card_str.contains("Connected"));
         assert!(card_str.contains("85% · Charging"));
-        assert!(card_str.contains("https://nectarlink.dev/docs"));
+        assert!(card_str.contains("https://tokkiphone.dev/docs"));
 
         let actions = parsed["actions"].as_array().unwrap();
         let verbs: Vec<&str> = actions.iter().filter_map(|a| a["verb"].as_str()).collect();

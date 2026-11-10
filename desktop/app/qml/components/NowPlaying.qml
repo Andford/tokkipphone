@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Effects
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // What plays on a phone or this PC: compact by default and adjustable (expand/collapse),
 // with a native GPU-blurred album art backdrop, animated equalizer bars,

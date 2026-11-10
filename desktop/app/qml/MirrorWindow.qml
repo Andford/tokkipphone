@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Window
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // A phone's screen, or one of its apps, in a window of its own, sized like
 // the phone. One per mirroring (`mirrorKey`); closing it ends that one.
@@ -109,7 +109,7 @@ Window {
         stream: win.mirrorKey
         windowIcon: win.info.icon || ""
         windowAppId: win.info.app && (win.info.pkg || "").length > 0
-            ? "Nectarlink.App." + (win.info.device || "").slice(0, 8) + "." + win.info.pkg
+            ? "TokkipPhone.App." + (win.info.device || "").slice(0, 8) + "." + win.info.pkg
             : ""
         focus: true
         acceptsText: win.phase === "showing" && win.canControl

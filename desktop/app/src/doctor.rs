@@ -7,8 +7,8 @@
 //! and come back as a list for the UI.
 
 use crate::i18n::tr;
-use nectarlink_core::{ConnectionPath, LinkState};
 use serde::Serialize;
+use tokkiphone_core::{ConnectionPath, LinkState};
 
 use crate::{core_host, win::doctor as windows_checks};
 

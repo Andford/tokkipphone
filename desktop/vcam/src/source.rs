@@ -195,7 +195,7 @@ impl VcamMediaSource {
             attrs.SetUnknown(&MF_DEVICEMFT_SENSORPROFILE_COLLECTION, &profile_collection)?;
 
             let modes =
-                if mapping_name.starts_with("Local\\NectarlinkVcamSrcTest_") { &MODES[..2] } else { MODES };
+                if mapping_name.starts_with("Local\\TokkipPhoneVcamSrcTest_") { &MODES[..2] } else { MODES };
             let mut media_types = Vec::with_capacity(modes.len() * 2);
             for &(w, h, fps) in modes {
                 media_types.push(Some(create_video_media_type(&MFVideoFormat_NV12, w, h, fps)?));
@@ -1369,7 +1369,7 @@ mod tests {
         assert_eq!(MODES, &[(1280, 720, 30), (1920, 1080, 30), (3840, 2160, 30)]);
         unsafe {
             MFStartup(MF_VERSION, MFSTARTUP_NOSOCKET).unwrap();
-            let map_name = format!("Local\\NectarlinkVcam4kModes_{}", std::process::id());
+            let map_name = format!("Local\\TokkipPhoneVcam4kModes_{}", std::process::id());
             let source_ex = VcamMediaSource::new_with_mapping(&map_name).unwrap();
             let source: IMFMediaSource = source_ex.cast().unwrap();
             let pd = source.CreatePresentationDescriptor().unwrap();

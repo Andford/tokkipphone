@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Layouts
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // First-run setup walkthrough (7 steps): Welcome, Privacy, Install phone app,
 // Pair, Choose what to share, Optional setup, and You are set.
@@ -19,7 +19,7 @@ FocusScope {
 
     readonly property int totalSteps: 7
     // Matches the APK name on the GitHub release (see .github/workflows/release.yml).
-    readonly property string adbCommand: "adb install -r Nectarlink-" + AppController.version + "-android.apk"
+    readonly property string adbCommand: "adb install -r TokkipPhone-" + AppController.version + "-android.apk"
     property int step: Math.max(0, Math.min(totalSteps - 1, Preferences.walkthroughStep))
     property alias currentStep: walkthrough.step
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // Linux equivalent of Jump List tasks via freedesktop.org `.desktop` Desktop Actions
-// (`~/.local/share/applications/nectarlink.desktop` + hicolor app icon).
+// (`~/.local/share/applications/tokkiphone.desktop` + hicolor app icon).
 //
 // Desktop environments (GNOME Dash, KDE Plasma Task Manager, Cinnamon, XFCE) expose
 // `[Desktop Action <id>]` entries in the launcher right-click menu, providing full
@@ -15,7 +15,7 @@ pub const ARG: &str = "--task";
 
 /// Jump-list tasks exposed on the launcher / dock right-click menu.
 /// Kept in parity with the Windows Jump List (`win/jumplist.rs`) and
-/// `bridge::app::NectarLinkApp::dispatch_jump_task`.
+/// `bridge::app::TokkipPhoneApp::dispatch_jump_task`.
 pub const TASKS: &[(&str, &str, &str)] = &[
     ("send-files", "Send files to phone", "Open the file picker to send files to your phone"),
     ("send-clipboard", "Send clipboard to phone", "Send what's currently copied on this PC to your phone"),
@@ -31,11 +31,11 @@ fn applications_dir() -> Option<PathBuf> {
 
 fn hicolor_icon_path() -> Option<PathBuf> {
     let base = dirs::data_local_dir().filter(|p| p.is_absolute())?;
-    Some(base.join("icons/hicolor/256x256/apps/nectarlink.png"))
+    Some(base.join("icons/hicolor/256x256/apps/tokkiphone.png"))
 }
 
 fn ensure_desktop_icon() -> PathBuf {
-    let icon_path = hicolor_icon_path().unwrap_or_else(|| PathBuf::from("nectarlink"));
+    let icon_path = hicolor_icon_path().unwrap_or_else(|| PathBuf::from("tokkiphone"));
     if icon_path.is_absolute() && !icon_path.exists() {
         let _ = super::icon::write_png(&icon_path, 256);
     }
@@ -82,8 +82,8 @@ pub fn build_desktop_file(exe: &Path, icon_path: &Path, custom_data_dir: Option<
          Icon={icon_str}\n\
          Terminal=false\n\
          Categories=Network;FileTransfer;Telephony;\n\
-         MimeType=x-scheme-handler/nectarlink;x-scheme-handler/tel;x-scheme-handler/sms;x-scheme-handler/mms;x-scheme-handler/geo;\n\
-         StartupWMClass=nectarlink\n\
+         MimeType=x-scheme-handler/tokkiphone;x-scheme-handler/tel;x-scheme-handler/sms;x-scheme-handler/mms;x-scheme-handler/geo;\n\
+         StartupWMClass=tokkiphone\n\
          Actions={};\n",
         actions_list.join(";")
     );
@@ -99,7 +99,7 @@ pub fn build_desktop_file(exe: &Path, icon_path: &Path, custom_data_dir: Option<
     content
 }
 
-/// Write `nectarlink.desktop` into `dir` pointing at `exe` and `icon_path`.
+/// Write `tokkiphone.desktop` into `dir` pointing at `exe` and `icon_path`.
 /// Extracted so unit tests can verify `.desktop` generation inside a temp directory.
 pub fn write_desktop_file_to(
     dir: &Path,
@@ -108,7 +108,7 @@ pub fn write_desktop_file_to(
     custom_data_dir: Option<&Path>,
 ) -> std::io::Result<PathBuf> {
     std::fs::create_dir_all(dir)?;
-    let desktop_path = dir.join("nectarlink.desktop");
+    let desktop_path = dir.join("tokkiphone.desktop");
     let content = build_desktop_file(exe, icon_path, custom_data_dir);
 
     #[cfg(unix)]
@@ -134,7 +134,7 @@ pub fn write_desktop_file_to(
 /// Remove the user-level `.desktop` file and icon installed by [`register`].
 pub fn unregister() {
     if let Some(dir) = applications_dir() {
-        let _ = std::fs::remove_file(dir.join("nectarlink.desktop"));
+        let _ = std::fs::remove_file(dir.join("tokkiphone.desktop"));
     }
     if let Some(icon) = hicolor_icon_path() {
         let _ = std::fs::remove_file(icon);
@@ -185,8 +185,8 @@ mod tests {
     #[test]
     fn write_desktop_file_generates_valid_actions_and_sections() {
         let tmp = tempfile::tempdir().expect("tempdir");
-        let exe = Path::new("/usr/bin/nectarlink-desktop");
-        let icon = Path::new("/home/user/.local/share/icons/hicolor/256x256/apps/nectarlink.png");
+        let exe = Path::new("/usr/bin/tokkiphone-desktop");
+        let icon = Path::new("/home/user/.local/share/icons/hicolor/256x256/apps/tokkiphone.png");
 
         let desktop_path = write_desktop_file_to(tmp.path(), exe, icon, None).expect("write desktop file");
         assert!(desktop_path.exists());
@@ -194,9 +194,9 @@ mod tests {
         let text = std::fs::read_to_string(&desktop_path).expect("read desktop file");
         assert!(text.contains("[Desktop Entry]"));
         assert!(text.contains(
-            "MimeType=x-scheme-handler/nectarlink;x-scheme-handler/tel;x-scheme-handler/sms;x-scheme-handler/mms;x-scheme-handler/geo;"
+            "MimeType=x-scheme-handler/tokkiphone;x-scheme-handler/tel;x-scheme-handler/sms;x-scheme-handler/mms;x-scheme-handler/geo;"
         ));
-        assert!(text.contains("StartupWMClass=nectarlink"));
+        assert!(text.contains("StartupWMClass=tokkiphone"));
         assert!(text.contains("Actions=send-files;send-clipboard;find-phone;take-photo;open-timeline;"));
         assert!(text.contains(&format!("Icon={}", icon.display())));
 
@@ -204,7 +204,7 @@ mod tests {
             assert!(text.contains(&format!("[Desktop Action {action}]")), "missing section for {action}");
             assert!(text.contains(&format!("Name={title}")), "missing title for {action}");
             assert!(
-                text.contains(&format!("Exec=\"/usr/bin/nectarlink-desktop\" --task {action}")),
+                text.contains(&format!("Exec=\"/usr/bin/tokkiphone-desktop\" --task {action}")),
                 "missing Exec for {action}"
             );
         }

@@ -15,7 +15,7 @@ use std::{
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-use nectarlink_core::{CameraCaptureMode, DeviceId, Error, LinkState, NodeEvent};
+use tokkiphone_core::{CameraCaptureMode, DeviceId, Error, LinkState, NodeEvent};
 
 use crate::{core_host, state::Changes};
 
@@ -310,7 +310,7 @@ fn spawn_focus_and_paste(hwnd: isize) {
     });
 }
 
-/// Handles Continuity Camera events from `nectarlink_core`.
+/// Handles Continuity Camera events from `tokkiphone_core`.
 pub fn on_event(event: &NodeEvent) {
     match event {
         NodeEvent::CameraCaptureReceived { device, request_id, mode, mime, data, .. } => {

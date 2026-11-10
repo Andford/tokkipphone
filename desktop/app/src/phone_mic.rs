@@ -15,7 +15,7 @@ use std::{
     time::Duration,
 };
 
-use nectarlink_core::{AudioOutputDevice, DeviceId, Error, LinkState, MicSink, MirrorAudioConfig, NodeEvent};
+use tokkiphone_core::{AudioOutputDevice, DeviceId, Error, LinkState, MicSink, MirrorAudioConfig, NodeEvent};
 
 use crate::{
     bridge::app::{describe, show_message},
@@ -132,11 +132,11 @@ const CABLES: &[&str] =
     &["cable input", "vb-audio", "voicemeeter input", "virtual cable", "virtual microphone"];
 
 #[cfg(target_os = "linux")]
-pub const VIRTUAL_MIC_ID: &str = "nectarlink:virtual_mic";
+pub const VIRTUAL_MIC_ID: &str = "tokkiphone:virtual_mic";
 #[cfg(target_os = "linux")]
 pub const VIRTUAL_MIC_NAME: &str = "Tokkip Phone Phone Mic (Virtual Microphone, Stereo)";
 #[cfg(target_os = "linux")]
-pub const VIRTUAL_MIC_MONO_ID: &str = "nectarlink:virtual_mic_mono";
+pub const VIRTUAL_MIC_MONO_ID: &str = "tokkiphone:virtual_mic_mono";
 #[cfg(target_os = "linux")]
 pub const VIRTUAL_MIC_MONO_NAME: &str = "Tokkip Phone Phone Mic (Virtual Microphone, Mono)";
 
@@ -218,7 +218,7 @@ pub fn phone() -> Option<(DeviceId, String)> {
     core_host::host().hub.read(|s| {
         let can = |id: &DeviceId| {
             s.matrices.get(id).and_then(|m| m.state("media.phone_mic"))
-                == Some(nectarlink_core::FeatureState::Available)
+                == Some(tokkiphone_core::FeatureState::Available)
         };
         s.devices
             .iter()
@@ -289,7 +289,7 @@ fn after(phase: Phase, event: &NodeEvent) -> Phase {
     }
 }
 
-/// Where a phone's microphone goes: [`Platform::mic_sink`](nectarlink_core::Platform::mic_sink).
+/// Where a phone's microphone goes: [`Platform::mic_sink`](tokkiphone_core::Platform::mic_sink).
 pub fn sink(peer: &DeviceId) -> Option<Arc<dyn MicSink>> {
     let sink = Arc::new(Sink {
         #[cfg(target_os = "linux")]
@@ -445,11 +445,11 @@ mod tests {
     #[test]
     fn virtual_microphone_is_recognized_as_preferred_cable() {
         let devices = [
-            device("nectarlink:virtual_mic", "Tokkip Phone Phone Mic (Virtual Microphone)", false),
+            device("tokkiphone:virtual_mic", "Tokkip Phone Phone Mic (Virtual Microphone)", false),
             device("spk", "Speakers", true),
         ];
         assert!(is_cable("Tokkip Phone Phone Mic (Virtual Microphone)"));
-        assert_eq!(preferred(&devices, None).as_deref(), Some("nectarlink:virtual_mic"));
+        assert_eq!(preferred(&devices, None).as_deref(), Some("tokkiphone:virtual_mic"));
         assert_eq!(preferred(&devices, Some("spk")).as_deref(), Some("spk"));
     }
 }

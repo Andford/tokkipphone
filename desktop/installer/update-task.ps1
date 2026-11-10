@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Registers the "Nectarlink Update" task (run by the installer, as an
+# Registers the "Tokkip Phone Update" task (run by the installer, as an
 # administrator). The task runs the app as SYSTEM with --update-service,
 # which installs the latest GitHub release when it's newer, after checking
 # it against the release's SHA-256 sums (desktop/app/src/updater.rs). It
@@ -10,7 +10,7 @@ param(
     [Parameter(Mandatory)][string]$Exe
 )
 $ErrorActionPreference = 'Stop'
-$name = 'Nectarlink Update'
+$name = 'Tokkip Phone Update'
 
 $action = New-ScheduledTaskAction -Execute $Exe -Argument '--update-service'
 $principal = New-ScheduledTaskPrincipal -UserId 'S-1-5-18' -LogonType ServiceAccount -RunLevel Highest

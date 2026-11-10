@@ -15,7 +15,7 @@ use cxx_qt::{CxxQtThread, CxxQtType, Threading};
 use cxx_qt_lib::{
     QHash, QHashPair_QString_QVariant, QList, QMap, QMapPair_QString_QVariant, QString, QVariant,
 };
-use nectarlink_core::{DeviceId, Error, FeatureState, LinkState, PhoneToggleValue, features::Upgrade};
+use tokkiphone_core::{DeviceId, Error, FeatureState, LinkState, PhoneToggleValue, features::Upgrade};
 
 use crate::{
     core_host,
@@ -667,7 +667,7 @@ pub(crate) fn show_offline_queued_toast(device: DeviceId, item_id: Option<String
                         i.peer == device
                             && matches!(
                                 i.status,
-                                nectarlink_core::QueueStatus::Waiting | nectarlink_core::QueueStatus::Sending
+                                tokkiphone_core::QueueStatus::Waiting | tokkiphone_core::QueueStatus::Sending
                             )
                     })
                     .map(|i| i.id.clone())
@@ -983,7 +983,7 @@ fn dispatch_jump_task(qt: &CxxQtThread<qobject::AppController>, action: String) 
 
 /// Formats the tray tooltip summary for a single connected phone: battery level,
 /// charging status, and optional Wi-Fi / cellular signal bars.
-pub(crate) fn format_tray_device_summary(name: &str, b: &nectarlink_core::Battery) -> String {
+pub(crate) fn format_tray_device_summary(name: &str, b: &tokkiphone_core::Battery) -> String {
     let charging = if b.charging { ", charging" } else { "" };
     let mut parts = vec![format!("{name} · {}%{charging}", b.level)];
     if let Some(w) = b.wifi_bars {
@@ -1200,7 +1200,7 @@ impl qobject::AppController {
                 .filter(|i| {
                     matches!(
                         i.status,
-                        nectarlink_core::QueueStatus::Waiting | nectarlink_core::QueueStatus::Sending
+                        tokkiphone_core::QueueStatus::Waiting | tokkiphone_core::QueueStatus::Sending
                     )
                 })
                 .count();
@@ -2530,7 +2530,7 @@ fn load_guide_doc_content(raw_key: &str) -> (String, String) {
              - Paired phone; Photos permission on your phone for the latest photo and screenshot tiles."
             ),
         ),
-        "nectar-island" => (
+        "tokkip-island" => (
             tr!("Guide", "Tokkip Island"),
             tr!(
                 "Guide",
@@ -2685,7 +2685,7 @@ fn resolve_shelf_device(current_device_idx: i32) -> (Option<DeviceId>, String, b
 }
 
 fn compute_shelf_items_json(current_device_idx: i32) -> String {
-    use nectarlink_core::{ClipboardItemKind, Direction, TimelineKind, TimelineQuery, TransferState};
+    use tokkiphone_core::{ClipboardItemKind, Direction, TimelineKind, TimelineQuery, TransferState};
 
     let (device_opt, device_name, online) = resolve_shelf_device(current_device_idx);
     let node = core_host::node();
@@ -3057,7 +3057,7 @@ fn watch_home(device: Option<DeviceId>) {
     }
 }
 
-pub(crate) fn update_home_sms(device: DeviceId, threads: &[nectarlink_core::SmsThread]) {
+pub(crate) fn update_home_sms(device: DeviceId, threads: &[tokkiphone_core::SmsThread]) {
     let changed = home_store(|s| {
         let entry = s.devices.entry(device).or_default();
         let unread_messages: u32 = threads.iter().map(|t| t.unread).sum();
@@ -3075,7 +3075,7 @@ pub(crate) fn update_home_sms(device: DeviceId, threads: &[nectarlink_core::SmsT
     }
 }
 
-pub(crate) fn update_home_calls(device: DeviceId, entries: &[nectarlink_core::CallLogEntry]) {
+pub(crate) fn update_home_calls(device: DeviceId, entries: &[tokkiphone_core::CallLogEntry]) {
     let changed = home_store(|s| {
         let entry = s.devices.entry(device).or_default();
         let missed_calls = entries.iter().filter(|e| e.direction == "missed").count() as u32;
@@ -3096,8 +3096,8 @@ pub(crate) fn update_home_calls(device: DeviceId, entries: &[nectarlink_core::Ca
     }
 }
 
-pub(crate) fn on_home_event(event: &nectarlink_core::NodeEvent) {
-    use nectarlink_core::NodeEvent;
+pub(crate) fn on_home_event(event: &tokkiphone_core::NodeEvent) {
+    use tokkiphone_core::NodeEvent;
     let watched = home_store(|s| s.watched);
     let shelf_active = is_shelf_open();
     match event {
@@ -3353,9 +3353,9 @@ mod tests {
     fn phone_colors_come_from_the_connected_phone_when_an_old_pairing_shares_its_name() {
         let phone = |n: u8, accent: u32, online: bool| crate::state::DeviceView {
             id: DeviceId([n; 32]),
-            info: nectarlink_core::DeviceInfo {
+            info: tokkiphone_core::DeviceInfo {
                 name: "Galaxy".into(),
-                kind: nectarlink_core::DeviceKind::Phone,
+                kind: tokkiphone_core::DeviceKind::Phone,
                 os: "android".into(),
                 os_ver: "16".into(),
                 model: None,
@@ -3365,12 +3365,12 @@ mod tests {
             },
             paired_at: i64::from(n),
             link: if online {
-                LinkState::Online { path: nectarlink_core::ConnectionPath::Lan, rtt_ms: 4 }
+                LinkState::Online { path: tokkiphone_core::ConnectionPath::Lan, rtt_ms: 4 }
             } else {
                 LinkState::Offline { last_seen: None }
             },
             battery: None,
-            power: nectarlink_core::PowerLevel::Basic,
+            power: tokkiphone_core::PowerLevel::Basic,
             reconnect: true,
         };
         // The stale pairing is listed first and has its own (old) color.
@@ -3385,7 +3385,7 @@ mod tests {
 
     #[test]
     fn tray_summary_includes_battery_and_signal_strength() {
-        let b = nectarlink_core::Battery {
+        let b = tokkiphone_core::Battery {
             level: 85,
             charging: true,
             plugged: Some("usb".into()),
@@ -3396,7 +3396,7 @@ mod tests {
         };
         assert_eq!(format_tray_device_summary("Pixel 9", &b), "Pixel 9 · 85%, charging · Wi-Fi 3/4 · 5G 4/4");
 
-        let basic = nectarlink_core::Battery {
+        let basic = tokkiphone_core::Battery {
             level: 40,
             charging: false,
             plugged: None,

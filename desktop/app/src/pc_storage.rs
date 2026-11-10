@@ -8,7 +8,7 @@ use std::{
     time::{SystemTime, UNIX_EPOCH},
 };
 
-use nectarlink_core::{FolderStorage, StorageEntry, StorageError, StorageReadFile, StorageWriteDone};
+use tokkiphone_core::{FolderStorage, StorageEntry, StorageError, StorageReadFile, StorageWriteDone};
 
 use crate::settings;
 

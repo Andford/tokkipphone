@@ -8,8 +8,8 @@ use std::pin::Pin;
 
 use cxx_qt::Threading;
 use cxx_qt_lib::{QString, QUrl};
-use nectarlink_core::{DeckAction, KeyMod, deck_kinds};
 use serde::Serialize;
+use tokkiphone_core::{DeckAction, KeyMod, deck_kinds};
 
 use super::prefs::qobject;
 use crate::{bridge::app::show_message, deck, state::Changes};

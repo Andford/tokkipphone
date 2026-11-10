@@ -151,13 +151,13 @@ fn run() -> windows::core::Result<()> {
             cbSize: std::mem::size_of::<WNDCLASSEXW>() as u32,
             lpfnWndProc: Some(window_proc),
             hInstance: instance.into(),
-            lpszClassName: w!("Nectarlink.Clipboard"),
+            lpszClassName: w!("TokkipPhone.Clipboard"),
             ..Default::default()
         };
         RegisterClassExW(&class);
         CreateWindowExW(
             WINDOW_EX_STYLE(0),
-            w!("Nectarlink.Clipboard"),
+            w!("TokkipPhone.Clipboard"),
             w!("Tokkip Phone clipboard"),
             WINDOW_STYLE(0),
             0,
@@ -512,7 +512,7 @@ pub(crate) fn encode_cf_html(fragment: &str) -> Vec<u8> {
 pub(crate) fn decode_cf_html(bytes: &[u8]) -> Option<String> {
     let end = bytes.iter().rposition(|&b| b != 0).map_or(0, |i| i + 1);
     let raw = &bytes[..end];
-    if raw.is_empty() || raw.len() > nectarlink_core::CLIP_MAX_BYTES {
+    if raw.is_empty() || raw.len() > tokkiphone_core::CLIP_MAX_BYTES {
         return None;
     }
     let text = std::str::from_utf8(raw).ok()?;
@@ -568,7 +568,7 @@ pub(crate) fn encode_cf_rtf(rtf: &str) -> Vec<u8> {
 pub(crate) fn decode_cf_rtf(bytes: &[u8]) -> Option<String> {
     let end = bytes.iter().rposition(|&b| b != 0).map_or(0, |i| i + 1);
     let raw = &bytes[..end];
-    if raw.is_empty() || raw.len() > nectarlink_core::CLIP_MAX_BYTES {
+    if raw.is_empty() || raw.len() > tokkiphone_core::CLIP_MAX_BYTES {
         return None;
     }
     let s = std::str::from_utf8(raw).ok()?.trim();

@@ -26,9 +26,9 @@ mod imp {
         time::Duration,
     };
 
-    use nectarlink_core::{DeviceId, NodeEvent};
+    use tokkiphone_core::{DeviceId, NodeEvent};
     #[cfg(windows)]
-    use nectarlink_core::{LinkState, StorageEntry};
+    use tokkiphone_core::{LinkState, StorageEntry};
     #[cfg(windows)]
     use windows::{
         Security::Cryptography::{BinaryStringEncoding, CryptographicBuffer},
@@ -331,7 +331,7 @@ mod imp {
         dirs::home_dir().map(|h| h.join("Nectarlink"))
     }
 
-    /// A phone still registered under `%USERPROFILE%\Nectarlink`: that registration and
+    /// A phone still registered under `%USERPROFILE%\Tokkip Phone`: that registration and
     /// its folder go (they only hold placeholders of the phone's files), so the phone
     /// comes back under `%USERPROFILE%\Tokkip Phone`.
     #[cfg(windows)]
@@ -982,8 +982,8 @@ mod imp {
                 Some(new_rel) if !old_rel.is_empty() && !new_rel.is_empty() => {
                     match node.storage_rename(root.device, &old_rel, &new_rel).await {
                         Ok(()) => STATUS_SUCCESS,
-                        Err(nectarlink_core::Error::Offline) => STATUS_CLOUD_NETWORK_UNAVAILABLE,
-                        Err(nectarlink_core::Error::Denied) => STATUS_ACCESS_DENIED,
+                        Err(tokkiphone_core::Error::Offline) => STATUS_CLOUD_NETWORK_UNAVAILABLE,
+                        Err(tokkiphone_core::Error::Denied) => STATUS_ACCESS_DENIED,
                         Err(_) => STATUS_CLOUD_UNSUCCESSFUL,
                     }
                 }
@@ -1032,9 +1032,9 @@ mod imp {
             };
             let status = match node.storage_delete(root.device, &rel_path, true).await {
                 Ok(()) => STATUS_SUCCESS,
-                Err(nectarlink_core::Error::Offline) => STATUS_CLOUD_NETWORK_UNAVAILABLE,
-                Err(nectarlink_core::Error::Denied) => STATUS_ACCESS_DENIED,
-                Err(nectarlink_core::Error::Storage(msg)) if msg.contains("not_found") => STATUS_SUCCESS,
+                Err(tokkiphone_core::Error::Offline) => STATUS_CLOUD_NETWORK_UNAVAILABLE,
+                Err(tokkiphone_core::Error::Denied) => STATUS_ACCESS_DENIED,
+                Err(tokkiphone_core::Error::Storage(msg)) if msg.contains("not_found") => STATUS_SUCCESS,
                 Err(_) => STATUS_CLOUD_UNSUCCESSFUL,
             };
             ack_delete(connection_key, transfer_key, request_key, status);
@@ -1357,17 +1357,17 @@ mod imp {
 
         #[test]
         fn normalizes_relative_paths_and_sanitizes_folder_names() {
-            let root = Path::new(r"C:\Users\alice\Nectarlink\Pixel 9");
+            let root = Path::new(r"C:\Users\alice\Tokkip Phone\Pixel 9");
             assert_eq!(relative_path_under_root(root, root), Some(String::new()));
             assert_eq!(
                 relative_path_under_root(
                     root,
-                    Path::new(r"C:\Users\alice\Nectarlink\Pixel 9\DCIM\Camera\a.jpg")
+                    Path::new(r"C:\Users\alice\Tokkip Phone\Pixel 9\DCIM\Camera\a.jpg")
                 ),
                 Some("DCIM/Camera/a.jpg".into())
             );
             assert_eq!(
-                relative_path_under_root(root, Path::new(r"C:\Users\alice\Nectarlink\Pixel 9 Pro\DCIM")),
+                relative_path_under_root(root, Path::new(r"C:\Users\alice\Tokkip Phone\Pixel 9 Pro\DCIM")),
                 None
             );
 
@@ -1382,8 +1382,8 @@ mod imp {
 mod imp {
     #![allow(dead_code)]
 
-    use nectarlink_core::{DeviceId, NodeEvent};
     use std::path::{Path, PathBuf};
+    use tokkiphone_core::{DeviceId, NodeEvent};
 
     pub fn start() {}
 

@@ -33,15 +33,15 @@ mod imp {
     static WORKER_RUNNING: AtomicBool = AtomicBool::new(false);
     /// The phone that last turned "Phone speaker" on. Audio goes there while it's online;
     /// when the PC turned it on (or that phone is away), to the first phone that is.
-    static TARGET: std::sync::Mutex<Option<nectarlink_core::DeviceId>> = std::sync::Mutex::new(None);
+    static TARGET: std::sync::Mutex<Option<tokkiphone_core::DeviceId>> = std::sync::Mutex::new(None);
 
     /// The phone the sound goes to first, if one asked.
-    pub fn target() -> Option<nectarlink_core::DeviceId> {
+    pub fn target() -> Option<tokkiphone_core::DeviceId> {
         *TARGET.lock().unwrap_or_else(|e| e.into_inner())
     }
 
     /// Records which phone asked to be the speaker.
-    pub fn set_target(phone: Option<nectarlink_core::DeviceId>) {
+    pub fn set_target(phone: Option<tokkiphone_core::DeviceId>) {
         *TARGET.lock().unwrap_or_else(|e| e.into_inner()) = phone;
     }
 
@@ -216,7 +216,7 @@ mod imp {
             return;
         }
         std::thread::Builder::new()
-            .name("nectarlink-pc-audio-loopback".into())
+            .name("tokkiphone-pc-audio-loopback".into())
             .spawn(|| {
                 run_loopback_worker();
                 WORKER_RUNNING.store(false, Ordering::SeqCst);
@@ -293,7 +293,7 @@ mod imp {
             .paired_devices()
             .unwrap_or_default()
             .into_iter()
-            .filter(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+            .filter(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
             .map(|d| d.id)
             .collect();
         let wanted = *TARGET.lock().unwrap_or_else(|e| e.into_inner());
@@ -408,7 +408,7 @@ mod imp {
             .paired_devices()
             .unwrap_or_default()
             .into_iter()
-            .filter(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+            .filter(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
             .map(|d| d.id)
             .collect();
         let wanted = *TARGET.lock().unwrap_or_else(|e| e.into_inner());
@@ -615,11 +615,11 @@ mod imp {
 mod imp {
     #![allow(dead_code)]
 
-    pub fn target() -> Option<nectarlink_core::DeviceId> {
+    pub fn target() -> Option<tokkiphone_core::DeviceId> {
         None
     }
 
-    pub fn set_target(_phone: Option<nectarlink_core::DeviceId>) {}
+    pub fn set_target(_phone: Option<tokkiphone_core::DeviceId>) {}
 
     pub fn is_enabled() -> bool {
         false

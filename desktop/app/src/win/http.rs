@@ -115,7 +115,7 @@ impl Response {
 fn open(url: &str, from: u64) -> Result<Response, String> {
     let rest = url.strip_prefix("https://").ok_or("only https")?;
     let (host, path) = rest.split_once('/').map_or((rest, "/".to_owned()), |(h, p)| (h, format!("/{p}")));
-    let agent = HSTRING::from(format!("Nectarlink/{} (Windows)", env!("CARGO_PKG_VERSION")));
+    let agent = HSTRING::from(format!("TokkipPhone/{} (Windows)", env!("CARGO_PKG_VERSION")));
     // SAFETY: WinHTTP calls with valid strings; every handle is closed by
     // `Handle`.
     unsafe {
@@ -332,7 +332,7 @@ mod tests {
     fn fetches_over_https() {
         let body = get("https://api.github.com/repos/rust-lang/rust", 1024 * 1024).unwrap();
         assert!(String::from_utf8_lossy(&body).contains("\"full_name\""));
-        assert_eq!(get("https://api.github.com/does-not-exist-nectarlink", 1024).unwrap_err(), "HTTP 404");
+        assert_eq!(get("https://api.github.com/does-not-exist-tokkiphone", 1024).unwrap_err(), "HTTP 404");
         assert_eq!(get("http://example.com", 1024).unwrap_err(), "only https");
     }
 
@@ -359,7 +359,7 @@ mod release_download {
     #[ignore = "needs the internet"]
     fn downloads_a_release_installer() {
         let url =
-            "https://github.com/Andford/tokkiphone/releases/download/v0.1.2/Nectarlink-0.1.2-x64-setup.exe";
+            "https://github.com/Andford/tokkiphone/releases/download/v0.1.2/TokkipPhone-0.1.2-x64-setup.exe";
         let dir = tempfile::tempdir().unwrap();
         let file = dir.path().join("setup.exe.part");
         let started = std::time::Instant::now();

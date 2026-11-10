@@ -3,7 +3,7 @@
 // Never compiled: lupdate reads it with the QML, so the text the app builds
 // in Rust is translated like the rest (see desktop/app/src/i18n.rs).
 
-static const char *const nectarlink_rust_strings[] = {
+static const char *const tokkiphone_rust_strings[] = {
     QT_TRANSLATE_NOOP("App", "Already on clipboard."), // desktop/app/src/bridge/app.rs
     QT_TRANSLATE_NOOP("App", "Command palette"), // desktop/app/src/bridge/app.rs
     QT_TRANSLATE_NOOP("App", "Copied to clipboard."), // desktop/app/src/bridge/app.rs

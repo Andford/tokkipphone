@@ -43,6 +43,6 @@ body:
     attributes:
       label: Logs
       description: >
-        Desktop logs are in %LOCALAPPDATA%\Nectarlink\logs. Please remove anything
+        Desktop logs are in %LOCALAPPDATA%\Tokkip Phone\logs. Please remove anything
         personal before attaching them.
       render: text

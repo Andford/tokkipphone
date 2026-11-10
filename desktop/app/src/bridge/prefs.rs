@@ -77,7 +77,7 @@ pub mod qobject {
         #[qproperty(bool, battery_alerts)]
         /// Folder where voice recordings from phones are saved.
         #[qproperty(QString, recordings_folder)]
-        /// Whether `recordings_folder` is the default (`Documents\Nectarlink Recordings`).
+        /// Whether `recordings_folder` is the default (`Documents\Tokkip Phone Recordings`).
         #[qproperty(bool, recordings_folder_is_default)]
         /// "m4a", "mp3", "wav" or "flac".
         #[qproperty(QString, recordings_format)]
@@ -104,15 +104,15 @@ pub mod qobject {
         /// Send the clipboard to the phone when control moves to it.
         #[qproperty(bool, flow_follow_clipboard)]
         /// Floating Tokkip Island pill at the top center of the screen.
-        #[qproperty(bool, nectar_island)]
+        #[qproperty(bool, tokkip_island)]
         /// Trigger Tokkip Island for phone calls.
-        #[qproperty(bool, nectar_island_calls)]
+        #[qproperty(bool, tokkip_island_calls)]
         /// Trigger Tokkip Island for file transfers.
-        #[qproperty(bool, nectar_island_transfers)]
+        #[qproperty(bool, tokkip_island_transfers)]
         /// Trigger Tokkip Island for media playback.
-        #[qproperty(bool, nectar_island_media)]
+        #[qproperty(bool, tokkip_island_media)]
         /// Trigger Tokkip Island for phone notifications.
-        #[qproperty(bool, nectar_island_notifications)]
+        #[qproperty(bool, tokkip_island_notifications)]
         /// Stream PC system audio to the connected phone via WASAPI loopback.
         #[qproperty(bool, stream_pc_audio_to_phone)]
         /// Share PC user folders (Downloads, Documents, Desktop, Pictures) with phones.
@@ -186,7 +186,7 @@ pub mod qobject {
         /// Sets the folder where voice recordings are saved (from a `file:` URL or path).
         #[qinvokable]
         fn choose_recordings_folder(self: Pin<&mut Preferences>, url: &QString);
-        /// Resets the recordings folder to `Documents\Nectarlink Recordings`.
+        /// Resets the recordings folder to `Documents\Tokkip Phone Recordings`.
         #[qinvokable]
         fn reset_recordings_folder(self: Pin<&mut Preferences>);
         /// Adds a folder sync rule between a phone folder and a PC folder.
@@ -316,11 +316,11 @@ pub struct PreferencesRust {
     clipboard_auto_copy_received_files: bool,
     open_shared_files: bool,
     flow_follow_clipboard: bool,
-    nectar_island: bool,
-    nectar_island_calls: bool,
-    nectar_island_transfers: bool,
-    nectar_island_media: bool,
-    nectar_island_notifications: bool,
+    tokkip_island: bool,
+    tokkip_island_calls: bool,
+    tokkip_island_transfers: bool,
+    tokkip_island_media: bool,
+    tokkip_island_notifications: bool,
     stream_pc_audio_to_phone: bool,
     share_pc_storage: bool,
     forward_pc_notifications_to_phone: bool,
@@ -406,11 +406,11 @@ impl cxx_qt::Initialize for qobject::Preferences {
         self.as_mut().set_clipboard_auto_copy_received_files(settings.clipboard_auto_copy_received_files);
         self.as_mut().set_open_shared_files(settings.open_shared_files);
         self.as_mut().set_flow_follow_clipboard(settings.flow_follow_clipboard);
-        self.as_mut().set_nectar_island(settings.nectar_island);
-        self.as_mut().set_nectar_island_calls(settings.nectar_island_calls);
-        self.as_mut().set_nectar_island_transfers(settings.nectar_island_transfers);
-        self.as_mut().set_nectar_island_media(settings.nectar_island_media);
-        self.as_mut().set_nectar_island_notifications(settings.nectar_island_notifications);
+        self.as_mut().set_tokkip_island(settings.tokkip_island);
+        self.as_mut().set_tokkip_island_calls(settings.tokkip_island_calls);
+        self.as_mut().set_tokkip_island_transfers(settings.tokkip_island_transfers);
+        self.as_mut().set_tokkip_island_media(settings.tokkip_island_media);
+        self.as_mut().set_tokkip_island_notifications(settings.tokkip_island_notifications);
         self.as_mut().set_stream_pc_audio_to_phone(settings.stream_pc_audio_to_phone);
         self.as_mut().set_share_pc_storage(settings.share_pc_storage);
         self.as_mut().set_forward_pc_notifications_to_phone(settings.forward_pc_notifications_to_phone);
@@ -562,9 +562,9 @@ impl cxx_qt::Initialize for qobject::Preferences {
             .on_timeline_retention_days_changed(|p| {
                 let days = p.timeline_retention_days.max(0) as u32;
                 if let Some(node) = core_host::node() {
-                    let _ = node.set_timeline_retention(nectarlink_core::TimelineRetention {
+                    let _ = node.set_timeline_retention(tokkiphone_core::TimelineRetention {
                         max_days: days,
-                        max_entries: nectarlink_core::DEFAULT_TIMELINE_MAX_ENTRIES,
+                        max_entries: tokkiphone_core::DEFAULT_TIMELINE_MAX_ENTRIES,
                     });
                 }
                 p.save();
@@ -655,15 +655,15 @@ impl cxx_qt::Initialize for qobject::Preferences {
             })
             .release();
         self.as_mut()
-            .on_nectar_island_changed(|p| {
-                crate::settings::set_nectar_island(p.nectar_island);
+            .on_tokkip_island_changed(|p| {
+                crate::settings::set_tokkip_island(p.tokkip_island);
                 p.save();
             })
             .release();
-        self.as_mut().on_nectar_island_calls_changed(|p| p.save()).release();
-        self.as_mut().on_nectar_island_transfers_changed(|p| p.save()).release();
-        self.as_mut().on_nectar_island_media_changed(|p| p.save()).release();
-        self.as_mut().on_nectar_island_notifications_changed(|p| p.save()).release();
+        self.as_mut().on_tokkip_island_calls_changed(|p| p.save()).release();
+        self.as_mut().on_tokkip_island_transfers_changed(|p| p.save()).release();
+        self.as_mut().on_tokkip_island_media_changed(|p| p.save()).release();
+        self.as_mut().on_tokkip_island_notifications_changed(|p| p.save()).release();
         self.as_mut()
             .on_stream_pc_audio_to_phone_changed(|p| {
                 crate::settings::set_stream_pc_audio_to_phone(p.stream_pc_audio_to_phone);
@@ -1024,11 +1024,11 @@ impl qobject::Preferences {
             open_shared_files: p.open_shared_files,
             flow_follow_clipboard: p.flow_follow_clipboard,
             folder_sync_rules: crate::settings::folder_sync_rules(),
-            nectar_island: p.nectar_island,
-            nectar_island_calls: p.nectar_island_calls,
-            nectar_island_transfers: p.nectar_island_transfers,
-            nectar_island_media: p.nectar_island_media,
-            nectar_island_notifications: p.nectar_island_notifications,
+            tokkip_island: p.tokkip_island,
+            tokkip_island_calls: p.tokkip_island_calls,
+            tokkip_island_transfers: p.tokkip_island_transfers,
+            tokkip_island_media: p.tokkip_island_media,
+            tokkip_island_notifications: p.tokkip_island_notifications,
             automation_rules: crate::settings::automation_rules(),
             stream_pc_audio_to_phone: p.stream_pc_audio_to_phone,
             share_pc_storage: p.share_pc_storage,

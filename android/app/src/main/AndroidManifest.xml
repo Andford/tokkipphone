@@ -128,7 +128,7 @@
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
 
     <application
-        android:name=".NectarlinkApplication"
+        android:name=".TokkipPhoneApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -136,7 +136,7 @@
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Nectarlink">
+        android:theme="@style/Theme.TokkipPhone">
 
         <activity
             android:name=".ui.MainActivity"
@@ -153,6 +153,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tokkiphone" android:host="pair" />
+                <!-- A PC still on 0.1 shows nectarlink:// links. -->
                 <data android:scheme="nectarlink" android:host="pair" />
             </intent-filter>
         </activity>
@@ -354,14 +356,14 @@
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Nectarlink" />
+            android:theme="@style/Theme.TokkipPhone" />
 
         <activity
             android:name=".camera.ContinuityCameraActivity"
             android:exported="false"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
-            android:theme="@style/Theme.Nectarlink" />
+            android:theme="@style/Theme.TokkipPhone" />
 
         <service
             android:name=".service.ConnectionService"

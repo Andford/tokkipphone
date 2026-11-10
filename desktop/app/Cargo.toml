@@ -1,5 +1,5 @@
 [package]
-name = "nectarlink-desktop"
+name = "tokkiphone-desktop"
 description = "Tokkip Phone for Windows: the desktop app"
 version.workspace = true
 edition.workspace = true
@@ -11,7 +11,7 @@ license = "GPL-3.0-or-later"
 publish = false
 
 [[bin]]
-name = "nectarlink-desktop"
+name = "tokkiphone-desktop"
 path = "src/main.rs"
 
 [dependencies]
@@ -24,8 +24,8 @@ data-encoding.workspace = true
 dirs.workspace = true
 hostname.workspace = true
 material-colors.workspace = true
-nectarlink-core.workspace = true
-nectarlink-vcam.workspace = true
+tokkiphone-core.workspace = true
+tokkiphone-vcam.workspace = true
 qrcode.workspace = true
 serde.workspace = true
 serde_json.workspace = true

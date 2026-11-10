@@ -46,8 +46,8 @@ fn names(data_dir: &Path) -> (HSTRING, HSTRING) {
     data_dir.to_string_lossy().to_lowercase().hash(&mut hasher);
     let tag = format!("{:016x}", hasher.finish());
     (
-        HSTRING::from(format!(r"Local\Nectarlink.Desktop.{tag}")),
-        HSTRING::from(format!(r"Local\Nectarlink.Desktop.Activate.{tag}")),
+        HSTRING::from(format!(r"Local\TokkipPhone.Desktop.{tag}")),
+        HSTRING::from(format!(r"Local\TokkipPhone.Desktop.Activate.{tag}")),
     )
 }
 

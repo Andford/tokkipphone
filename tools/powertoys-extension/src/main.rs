@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! `nectarlink-ptrun`: PowerToys Command Palette / PowerToys Run bridge for
+//! `tokkiphone-ptrun`: PowerToys Command Palette / PowerToys Run bridge for
 //! Tokkip Phone's Local Authenticated API (`docs/api.md`).
 //!
 //! Usage:
-//! - `nectarlink-ptrun [--data-dir <dir>] query "<search>"`
-//! - `nectarlink-ptrun [--data-dir <dir>] invoke <action> [arg]`
+//! - `tokkiphone-ptrun [--data-dir <dir>] query "<search>"`
+//! - `tokkiphone-ptrun [--data-dir <dir>] invoke <action> [arg]`
 
 use std::{
     env, fs,
@@ -43,7 +43,7 @@ pub fn default_data_dir() -> PathBuf {
     env::var_os("LOCALAPPDATA")
         .map(PathBuf::from)
         .unwrap_or_else(env::temp_dir)
-        .join("Nectarlink")
+        .join("Tokkip Phone")
 }
 
 pub fn parse_args<I, S>(iter: I) -> Result<Command, String>
@@ -63,7 +63,7 @@ where
         }
     }
     let Some(sub) = rest.first().map(|s| s.as_str()) else {
-        return Err("usage: nectarlink-ptrun [--data-dir <dir>] <query|invoke> ...".into());
+        return Err("usage: tokkiphone-ptrun [--data-dir <dir>] <query|invoke> ...".into());
     };
     match sub {
         "query" => {
@@ -74,7 +74,7 @@ where
             let action = rest
                 .get(1)
                 .cloned()
-                .ok_or_else(|| "usage: nectarlink-ptrun invoke <action> [arg]".to_owned())?;
+                .ok_or_else(|| "usage: tokkiphone-ptrun invoke <action> [arg]".to_owned())?;
             let arg = rest.get(2).cloned();
             Ok(Command::Invoke { data_dir, action, arg })
         }
@@ -219,7 +219,7 @@ fn main() -> ExitCode {
     let cmd = match parse_args(env::args().skip(1)) {
         Ok(c) => c,
         Err(e) => {
-            eprintln!("nectarlink-ptrun: {e}");
+            eprintln!("tokkiphone-ptrun: {e}");
             return ExitCode::FAILURE;
         }
     };
@@ -239,7 +239,7 @@ fn main() -> ExitCode {
             let cfg = match read_token_file(&data_dir) {
                 Ok(c) => c,
                 Err(e) => {
-                    eprintln!("nectarlink-ptrun: {e}");
+                    eprintln!("tokkiphone-ptrun: {e}");
                     return ExitCode::FAILURE;
                 }
             };
@@ -280,7 +280,7 @@ fn main() -> ExitCode {
                     ExitCode::SUCCESS
                 }
                 Err(e) => {
-                    eprintln!("nectarlink-ptrun: {e}");
+                    eprintln!("tokkiphone-ptrun: {e}");
                     ExitCode::FAILURE
                 }
             }
@@ -320,9 +320,9 @@ mod tests {
         assert_eq!(items[0].id, "send-clipboard");
         assert_eq!(items[1].id, "ring-phone");
 
-        let url_items = build_query_items("https://nectarlink.dev", &[]);
+        let url_items = build_query_items("https://tokkiphone.dev", &[]);
         assert_eq!(url_items[0].id, "send-url");
-        assert_eq!(url_items[0].arg, "https://nectarlink.dev");
+        assert_eq!(url_items[0].arg, "https://tokkiphone.dev");
 
         let ring_items = build_query_items("ring", &[]);
         assert!(ring_items.iter().any(|i| i.id == "ring-phone"));

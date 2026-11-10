@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Layouts
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // In-app Features Guide page: searchable and filterable reference to every
 // Tokkip Phone feature, live capability status when a phone is connected,
@@ -376,19 +376,19 @@ Item {
             docKey: "shelf"
         },
         {
-            id: "nectar_island",
+            id: "tokkip_island",
             name: "Tokkip Island",
             icon: Icons.island,
             area: "surfaces",
             capKey: "",
             toggleKey: "",
             pcLocal: true,
-            prefKey: "nectarIsland",
+            prefKey: "tokkipIsland",
             summary: "Compact floating pill at the top center of your monitor for calls, transfers, media, and alerts.",
             whereLabel: "Settings › General › Tokkip Island",
             needsLabel: "Tokkip Island enabled in Settings",
             targetId: "settings:general:island",
-            docKey: "nectar-island"
+            docKey: "tokkip-island"
         },
         {
             id: "timeline",

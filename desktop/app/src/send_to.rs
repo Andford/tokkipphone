@@ -16,7 +16,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use nectarlink_core::{DeviceId, Error, NodeEvent, Transfer, TransferFailure, TransferState};
+use tokkiphone_core::{DeviceId, Error, NodeEvent, Transfer, TransferFailure, TransferState};
 
 use crate::{
     bridge::app::{describe, request_activation},
@@ -227,7 +227,7 @@ fn share(files: Vec<PathBuf>, url: Option<String>, text: Option<String>) {
             let online: Vec<(DeviceId, String)> = s
                 .devices
                 .iter()
-                .filter(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+                .filter(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
                 .map(|d| (d.id, d.info.name.clone()))
                 .collect();
             let all: Vec<(DeviceId, String)> =
@@ -258,7 +258,7 @@ fn share(files: Vec<PathBuf>, url: Option<String>, text: Option<String>) {
         if let Some(text) = text.filter(|t| !t.trim().is_empty()) {
             let is_online = core_host::host().hub.read(|s| {
                 s.device(&device_id)
-                    .is_some_and(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+                    .is_some_and(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
             });
             match node.send_clipboard(device_id, text).await {
                 Ok(()) => {
@@ -287,7 +287,7 @@ fn share(files: Vec<PathBuf>, url: Option<String>, text: Option<String>) {
     });
 }
 
-fn task_notify(device: Option<String>, task: nectarlink_core::TaskNotify) {
+fn task_notify(device: Option<String>, task: tokkiphone_core::TaskNotify) {
     core_host::spawn(async move {
         let Ok(Some(node)) = tokio::time::timeout(START_TIMEOUT, core_host::wait_for_node()).await else {
             tracing::warn!("task notification wasn't sent: the core didn't start");
@@ -299,7 +299,7 @@ fn task_notify(device: Option<String>, task: nectarlink_core::TaskNotify) {
                 let target = core_host::host().hub.read(|s| {
                     s.devices
                         .iter()
-                        .find(|d| matches!(d.link, nectarlink_core::LinkState::Online { .. }))
+                        .find(|d| matches!(d.link, tokkiphone_core::LinkState::Online { .. }))
                         .or_else(|| s.devices.first())
                         .map(|d| d.id)
                 });
@@ -345,7 +345,7 @@ fn send(device: String, paths: Vec<PathBuf>) {
             return failed("Couldn't send", "That device isn't paired with this PC anymore.");
         };
         let outgoing =
-            match tokio::task::spawn_blocking(move || nectarlink_core::outgoing_paths(&paths)).await {
+            match tokio::task::spawn_blocking(move || tokkiphone_core::outgoing_paths(&paths)).await {
                 Ok(Ok(files)) if !files.is_empty() => files,
                 Ok(Ok(_)) => {
                     return failed(

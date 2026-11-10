@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Effects
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // The main window: navigation rail, title bar and pages. Before any device
 // is paired it shows the welcome (pairing) screen instead.
@@ -927,15 +927,15 @@ NativeWindow {
                 source: {
                     if (!active) return ""
                     switch (window.page) {
-                    case "timeline": return "qrc:/qt/qml/app/nectarlink/qml/pages/TimelinePage.qml"
-                    case "messages": return "qrc:/qt/qml/app/nectarlink/qml/pages/MessagesPage.qml"
-                    case "calls": return "qrc:/qt/qml/app/nectarlink/qml/pages/CallsPage.qml"
-                    case "photos": return "qrc:/qt/qml/app/nectarlink/qml/pages/PhotosPage.qml"
-                    case "apps": return "qrc:/qt/qml/app/nectarlink/qml/pages/AppsPage.qml"
-                    case "deck": return "qrc:/qt/qml/app/nectarlink/qml/pages/DeckPage.qml"
-                    case "guide": return "qrc:/qt/qml/app/nectarlink/qml/pages/FeaturesGuidePage.qml"
-                    case "settings": return "qrc:/qt/qml/app/nectarlink/qml/pages/SettingsPage.qml"
-                    default: return "qrc:/qt/qml/app/nectarlink/qml/pages/HomePage.qml"
+                    case "timeline": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/TimelinePage.qml"
+                    case "messages": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/MessagesPage.qml"
+                    case "calls": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/CallsPage.qml"
+                    case "photos": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/PhotosPage.qml"
+                    case "apps": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/AppsPage.qml"
+                    case "deck": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/DeckPage.qml"
+                    case "guide": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/FeaturesGuidePage.qml"
+                    case "settings": return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/SettingsPage.qml"
+                    default: return "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/HomePage.qml"
                     }
                 }
                 onLoaded: {
@@ -982,14 +982,14 @@ NativeWindow {
     Loader {
         anchors.fill: parent
         active: AppController.status !== "ready"
-        source: active ? "qrc:/qt/qml/app/nectarlink/qml/pages/WelcomePage.qml" : ""
+        source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/WelcomePage.qml" : ""
     }
 
     Loader {
         id: walkthroughLoader
         anchors.fill: parent
         active: window.showWalkthrough
-        source: active ? "qrc:/qt/qml/app/nectarlink/qml/pages/WalkthroughPage.qml" : ""
+        source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/WalkthroughPage.qml" : ""
         onLoaded: {
             if ("deviceId" in item)
                 item.deviceId = Qt.binding(() => window.currentDeviceId)
@@ -1018,7 +1018,7 @@ NativeWindow {
             id: pairingLoader
             width: parent.width
             active: pairingSheet.opened
-            source: active ? "qrc:/qt/qml/app/nectarlink/qml/pages/PairingPanel.qml" : ""
+            source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/pages/PairingPanel.qml" : ""
             onLoaded: {
                 item.width = Qt.binding(() => pairingLoader.width)
                 item.running = Qt.binding(() => pairingSheet.opened)
@@ -1214,7 +1214,7 @@ NativeWindow {
         id: doctorLoader
         anchors.fill: parent
         active: false
-        source: active ? "qrc:/qt/qml/app/nectarlink/qml/components/DoctorSheet.qml" : ""
+        source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/components/DoctorSheet.qml" : ""
         onLoaded: item.open()
     }
     Connections {
@@ -1241,7 +1241,7 @@ NativeWindow {
         id: commandPaletteLoader
         anchors.fill: parent
         active: AppController.commandPaletteOpen
-        source: active ? "qrc:/qt/qml/app/nectarlink/qml/components/CommandPalette.qml" : ""
+        source: active ? "qrc:/qt/qml/mx/loperstack/tokkiphone/qml/components/CommandPalette.qml" : ""
     }
 
     Toast {

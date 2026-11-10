@@ -12,8 +12,8 @@
 use crate::i18n::tr;
 use std::{collections::HashSet, path::PathBuf, sync::Mutex, time::Instant};
 
-use nectarlink_core::{ClipboardItemKind, DeviceId, LinkState, PhoneToggleValue, TimelineKind};
 use serde_json::{Value, json};
+use tokkiphone_core::{ClipboardItemKind, DeviceId, LinkState, PhoneToggleValue, TimelineKind};
 
 use crate::{
     bridge::app::{describe, show_message},
@@ -605,19 +605,19 @@ fn build_candidates() -> Vec<PaletteCandidate> {
     });
     let (link_title, link_sub, link_badge, link_keywords) = match crate::links::handoff_from_clipboard() {
         Some(h) => match h.kind {
-            nectarlink_core::HandoffKind::MapLocation => (
+            tokkiphone_core::HandoffKind::MapLocation => (
                 tr!("CommandPalette", "Open copied location in Maps on phone"),
                 h.label,
                 tr!("CommandPalette", "Handoff · Map"),
                 "open copied link map location address directions geo handoff phone".to_owned(),
             ),
-            nectarlink_core::HandoffKind::VideoLink => (
+            tokkiphone_core::HandoffKind::VideoLink => (
                 tr!("CommandPalette", "Continue copied video on phone"),
                 h.label,
                 tr!("CommandPalette", "Handoff · Video"),
                 "open copied link video youtube timestamp watch continue handoff phone".to_owned(),
             ),
-            nectarlink_core::HandoffKind::WebLink => (
+            tokkiphone_core::HandoffKind::WebLink => (
                 tr!("CommandPalette", "Open copied link on phone"),
                 h.label,
                 "Handoff".to_owned(),
@@ -1104,9 +1104,9 @@ fn build_candidates() -> Vec<PaletteCandidate> {
         }
 
         let timeline_entries = node
-            .timeline_page(&nectarlink_core::TimelineQuery {
+            .timeline_page(&tokkiphone_core::TimelineQuery {
                 limit: 20,
-                ..nectarlink_core::TimelineQuery::default()
+                ..tokkiphone_core::TimelineQuery::default()
             })
             .map(|p| p.entries)
             .unwrap_or_default();

@@ -26,7 +26,7 @@ const BACKOFF: [Duration; 5] = [
 ];
 
 fn user_agent() -> String {
-    format!("Nectarlink/{} (Linux)", env!("CARGO_PKG_VERSION"))
+    format!("TokkipPhone/{} (Linux)", env!("CARGO_PKG_VERSION"))
 }
 
 fn validate_https(url: &str) -> Result<(), String> {

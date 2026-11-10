@@ -151,7 +151,7 @@
     <string name="transfer_pause">Pause</string>
     <string name="transfer_resume">Fortsetzen</string>
     <string name="transfer_paused_progress">Pausiert · %1$s / %2$s</string>
-    <string name="transfer_received_from">Von %1$s · in Download/Nectarlink</string>
+    <string name="transfer_received_from">Von %1$s · in Download/Tokkip Phone</string>
     <string name="transfer_sent_to">Gesendet an %1$s</string>
     <string name="transfer_cancelled">Abgebrochen</string>
     <string name="transfer_denied">%1$s nimmt keine Dateien von diesem Gerät an.</string>
@@ -1019,7 +1019,7 @@
     <string name="guide_files_pc_1">Ziehe Dateien auf das Tokkip Phone-Fenster oder auf die Tokkip Island am oberen Bildschirmrand deines PCs.</string>
     <string name="guide_files_opt_1">Dateien senden / Ordner senden: Überträgt einzelne Dateien oder komplette Ordnerstrukturen.</string>
     <string name="guide_files_opt_2">Pause / Fortsetzen: Setzt unterbrochene Übertragungen fort, ohne bereits übertragene Bytes erneut zu senden.</string>
-    <string name="guide_files_privacy">Dateien werden über QUIC TLS 1.3 mit BLAKE3-Integritätsprüfung in den Ordner Download/Nectarlink übertragen.</string>
+    <string name="guide_files_privacy">Dateien werden über QUIC TLS 1.3 mit BLAKE3-Integritätsprüfung in den Ordner Download/Tokkip Phone übertragen.</string>
     <string name="guide_files_limits">Bis zu 5.000 Dateien pro Stapel.</string>
 
     <!-- 8. Send queue -->

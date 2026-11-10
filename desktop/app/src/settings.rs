@@ -131,7 +131,7 @@ fn normalize_webcam_camera(cam: &str) -> String {
 }
 
 static CLIPBOARD_AUTO_COPY_FILES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
-static NECTAR_ISLAND: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+static TOKKIP_ISLAND: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 static STREAM_PC_AUDIO: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 static SHARE_PC_STORAGE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 static FORWARD_PC_NOTIFICATIONS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
@@ -165,12 +165,12 @@ pub fn set_open_shared_files(on: bool) {
 }
 
 #[allow(dead_code)]
-pub fn nectar_island() -> bool {
-    NECTAR_ISLAND.load(std::sync::atomic::Ordering::Relaxed)
+pub fn tokkip_island() -> bool {
+    TOKKIP_ISLAND.load(std::sync::atomic::Ordering::Relaxed)
 }
 
-pub fn set_nectar_island(on: bool) {
-    NECTAR_ISLAND.store(on, std::sync::atomic::Ordering::Relaxed);
+pub fn set_tokkip_island(on: bool) {
+    TOKKIP_ISLAND.store(on, std::sync::atomic::Ordering::Relaxed);
 }
 
 #[allow(dead_code)]
@@ -238,7 +238,7 @@ pub fn set_obs_settings(port: u16, protected_password: Option<String>) {
 
 /// Encrypts an OBS password for storage (DPAPI on Windows, base64 for the file).
 pub fn protect_obs_password(password: &str) -> Option<String> {
-    let sealed = nectarlink_core::default_protector().protect(password.as_bytes()).ok()?;
+    let sealed = tokkiphone_core::default_protector().protect(password.as_bytes()).ok()?;
     Some(data_encoding::BASE64.encode(&sealed))
 }
 
@@ -246,7 +246,7 @@ pub fn protect_obs_password(password: &str) -> Option<String> {
 pub fn obs_password() -> Option<String> {
     let stored = obs_settings().1?;
     let sealed = data_encoding::BASE64.decode(stored.as_bytes()).ok()?;
-    let plain = nectarlink_core::default_protector().unprotect(&sealed).ok()?;
+    let plain = tokkiphone_core::default_protector().unprotect(&sealed).ok()?;
     String::from_utf8(plain).ok()
 }
 
@@ -367,7 +367,7 @@ pub struct Settings {
     /// doesn't.
     #[serde(skip_serializing_if = "Option::is_none", alias = "start_with_windows")]
     pub start_with_windows: Option<bool>,
-    /// Where voice recordings from phones are saved (`None` = `Documents\Nectarlink Recordings`).
+    /// Where voice recordings from phones are saved (`None` = `Documents\Tokkip Phone Recordings`).
     #[serde(skip_serializing_if = "Option::is_none", alias = "recordings_folder")]
     pub recordings_folder: Option<PathBuf>,
     /// Output format for saved voice recordings (`m4a`, `mp3`, `wav`, or `flac`).
@@ -427,20 +427,20 @@ pub struct Settings {
     #[serde(default, skip_serializing_if = "Vec::is_empty", alias = "folder_sync_rules")]
     pub folder_sync_rules: Vec<crate::folder_sync::FolderSyncRule>,
     /// Show the optional top-of-screen Tokkip Island status pill when phone activity is ongoing.
-    #[serde(default, alias = "nectar_island")]
-    pub nectar_island: bool,
+    #[serde(default, alias = "nectar_island", alias = "nectarIsland")]
+    pub tokkip_island: bool,
     /// Trigger Tokkip Island for incoming and active phone calls.
-    #[serde(default = "default_true", alias = "nectar_island_calls")]
-    pub nectar_island_calls: bool,
+    #[serde(default = "default_true", alias = "nectar_island_calls", alias = "nectarIslandCalls")]
+    pub tokkip_island_calls: bool,
     /// Trigger Tokkip Island for active file transfers.
-    #[serde(default = "default_true", alias = "nectar_island_transfers")]
-    pub nectar_island_transfers: bool,
+    #[serde(default = "default_true", alias = "nectar_island_transfers", alias = "nectarIslandTransfers")]
+    pub tokkip_island_transfers: bool,
     /// Trigger Tokkip Island for active media playback.
-    #[serde(default = "default_true", alias = "nectar_island_media")]
-    pub nectar_island_media: bool,
+    #[serde(default = "default_true", alias = "nectar_island_media", alias = "nectarIslandMedia")]
+    pub tokkip_island_media: bool,
     /// Trigger Tokkip Island for phone notifications.
-    #[serde(default, alias = "nectar_island_notifications")]
-    pub nectar_island_notifications: bool,
+    #[serde(default, alias = "nectar_island_notifications", alias = "nectarIslandNotifications")]
+    pub tokkip_island_notifications: bool,
     /// Configured "When X, Do Y" automation rules.
     #[serde(default, skip_serializing_if = "Vec::is_empty", alias = "automation_rules")]
     pub automation_rules: Vec<crate::automations::AutomationRule>,
@@ -534,11 +534,11 @@ impl Default for Settings {
             open_shared_files: false,
             flow_follow_clipboard: true,
             folder_sync_rules: Vec::new(),
-            nectar_island: false,
-            nectar_island_calls: true,
-            nectar_island_transfers: true,
-            nectar_island_media: true,
-            nectar_island_notifications: false,
+            tokkip_island: false,
+            tokkip_island_calls: true,
+            tokkip_island_transfers: true,
+            tokkip_island_media: true,
+            tokkip_island_notifications: false,
             automation_rules: Vec::new(),
             stream_pc_audio_to_phone: false,
             share_pc_storage: false,
@@ -607,7 +607,7 @@ impl Settings {
             if self.obs_port == 0 { crate::obs::DEFAULT_PORT } else { self.obs_port },
             self.obs_password.clone(),
         );
-        set_nectar_island(self.nectar_island);
+        set_tokkip_island(self.tokkip_island);
         set_automation_rules(self.automation_rules.clone());
         set_stream_pc_audio_to_phone(self.stream_pc_audio_to_phone);
         set_share_pc_storage(self.share_pc_storage);
@@ -675,7 +675,7 @@ mod tests {
         assert_eq!(def.local_api_port, 53320);
         def.apply_runtime();
         assert!(flow_follow_clipboard());
-        assert!(!nectar_island());
+        assert!(!tokkip_island());
         assert!(!stream_pc_audio_to_phone());
 
         let settings = Settings {
@@ -718,11 +718,11 @@ mod tests {
             open_shared_files: true,
             flow_follow_clipboard: false,
             folder_sync_rules: Vec::new(),
-            nectar_island: true,
-            nectar_island_calls: true,
-            nectar_island_transfers: true,
-            nectar_island_media: true,
-            nectar_island_notifications: false,
+            tokkip_island: true,
+            tokkip_island_calls: true,
+            tokkip_island_transfers: true,
+            tokkip_island_media: true,
+            tokkip_island_notifications: false,
             automation_rules: Vec::new(),
             stream_pc_audio_to_phone: true,
             share_pc_storage: true,

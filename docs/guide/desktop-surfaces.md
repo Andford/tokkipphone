@@ -1,9 +1,9 @@
 # Desktop Surfaces and Automation
 
-Beyond the main window, NectarLink integrates into Windows 11 with fast, low-overhead desktop surfaces and automation tools: the slide-out **`Shelf`** edge panel, **`Nectar Island`** at the top of your screen, the searchable cross-device **`Timeline`**, the global **`Command Palette`** (`Ctrl+Alt+Space`), rich **`Handoff`** for links, maps, videos, and documents, **`notify-when`** process completion alerts, a trigger-action **Rules Engine**, a local authenticated **HTTP API**, a **PowerToys Command Palette** extension, and the `nectarlink` command-line client.
+Beyond the main window, Tokkip Phone integrates into Windows 11 with fast, low-overhead desktop surfaces and automation tools: the slide-out **`Shelf`** edge panel, **`Tokkip Island`** at the top of your screen, the searchable cross-device **`Timeline`**, the global **`Command Palette`** (`Ctrl+Alt+Space`), rich **`Handoff`** for links, maps, videos, and documents, **`notify-when`** process completion alerts, a trigger-action **Rules Engine**, a local authenticated **HTTP API**, a **PowerToys Command Palette** extension, and the `tokkiphone` command-line client.
 
 <p align="center">
-  <img src="images/command-palette.png" alt="Global Command Palette open over the NectarLink window on Windows 11" width="760">
+  <img src="images/command-palette.png" alt="Global Command Palette open over the Tokkip Phone window on Windows 11" width="760">
 </p>
 
 ## What You Need
@@ -11,11 +11,11 @@ Beyond the main window, NectarLink integrates into Windows 11 with fast, low-ove
 | Feature | Requirements |
 | :--- | :--- |
 | **`Shelf` edge panel (`Ctrl+Alt+S`)** | Windows 11 app running (window open or in the system tray). |
-| **`Nectar Island`** | Turn on **Nectar Island** in PC **Settings › General** (off by default). |
+| **`Tokkip Island`** | Turn on **Tokkip Island** in PC **Settings › General** (off by default). |
 | **`Timeline`** | Enabled by default on both Windows and Android (retains up to 5,000 items or 90 days by default). |
 | **`Command Palette` (`Ctrl+Alt+Space`)** | Windows 11 app running (window open or in the system tray). |
 | **Rich `Handoff` (links, maps, video timestamps, documents)** | `Standard` power level. **Files** toggle enabled in **Settings › Devices**. |
-| **`notify-when` task alerts & CLI (`nectarlink`)** | Windows 11 app running in the same user session. |
+| **`notify-when` task alerts & CLI (`tokkiphone`)** | Windows 11 app running in the same user session. |
 | **Trigger-action automations** | Configured in PC **Settings › Shortcuts & Rules › Trigger-action rules**. |
 | **Local automation API (`127.0.0.1:53320`)** | Turn on **Local automation API** in PC **Settings › Connection & About** (off by default). |
 
@@ -39,17 +39,17 @@ The `Shelf` is a lightweight edge panel on your PC that gives you instant drag-a
 4. **Drop or Flick in to send**: Drag any file, folder, image, or text selection from your PC into the `Shelf` (or flick a file toward the `Shelf` screen edge) to send it straight to your phone, with a 3-second **Undo** option.
 5. Press **Escape** or click outside the `Shelf` to hide it. When hidden, the `Shelf` unloads its QML surface completely so it uses zero background GPU or memory overhead.
 
-### 2. `Nectar Island`
+### 2. `Tokkip Island`
 
-`Nectar Island` is an optional compact pill at the top center of your primary monitor that surfaces live phone activity without covering your workspace in notification popups:
+`Tokkip Island` is an optional compact pill at the top center of your primary monitor that surfaces live phone activity without covering your workspace in notification popups:
 
-1. Turn on **Nectar Island** in PC **Settings › General** (it is **off by default**).
+1. Turn on **Tokkip Island** in PC **Settings › General** (it is **off by default**).
 2. In the **Island triggers** row right below it, choose which activities appear in the pill:
    - **Calls** (on by default): Incoming caller ID with Answer/Decline buttons and live call duration.
    - **Transfers** (on by default): Live file transfer progress bars and `Waiting to send` count.
    - **Media** (on by default): Now-playing track artwork, title, and transport controls.
    - **Alerts** (off by default): Phone notifications, one-time verification codes, active timers/Live Updates, and incoming voice recordings.
-3. Hover over or click `Nectar Island` to expand its interactive controls, or let it collapse back into a minimal pill when idle. `Nectar Island` automatically hides itself when you are running a full-screen game or video, or when Windows Do Not Disturb is active.
+3. Hover over or click `Tokkip Island` to expand its interactive controls, or let it collapse back into a minimal pill when idle. `Tokkip Island` automatically hides itself when you are running a full-screen game or video, or when Windows Do Not Disturb is active.
 
 ### 3. Cross-Device `Timeline`
 
@@ -72,7 +72,7 @@ The `Timeline` gives you one searchable local log of everything that has moved b
 
 ### 4. Global `Command Palette` (`Ctrl+Alt+Space`)
 
-Press **`Ctrl+Alt+Space`** from anywhere in Windows to open NectarLink's `Command Palette` over your current window:
+Press **`Ctrl+Alt+Space`** from anywhere in Windows to open Tokkip Phone's `Command Palette` over your current window:
 
 1. Start typing to fuzzy-search every action, paired device, recent file, or setting:
    - **Mirror phone screen**
@@ -91,22 +91,22 @@ Press **`Ctrl+Alt+Space`** from anywhere in Windows to open NectarLink's `Comman
 
 `Handoff` lets you start reading, watching, navigating, or editing on one device and continue immediately on the other:
 
-- **Web links**: Share any URL from your phone's browser to your PC via the Android share sheet (or send a URL from your PC via the `Command Palette` or `nectarlink send <url>`). The link opens immediately in the default browser on the receiving device.
+- **Web links**: Share any URL from your phone's browser to your PC via the Android share sheet (or send a URL from your PC via the `Command Palette` or `tokkiphone send <url>`). The link opens immediately in the default browser on the receiving device.
 - **Maps and street addresses**: Share a Google Maps link or `geo:` location URI between devices to open that location directly in Maps.
-- **Video links with playback timestamp**: When you share a YouTube, Vimeo, or Twitch link (or run `nectarlink send <url> --at-seconds 142`), NectarLink attaches the current playback position so the receiving device offers a **Continue watching** action that resumes the video at the exact second you left off.
-- **Documents (`--open` / `Shift+Drop`)**: Hold **`Shift`** while dropping a document onto NectarLink (or run `nectarlink send report.pdf --open`) to transfer the file and open it automatically in the default viewer on the receiving device as soon as the transfer finishes.
+- **Video links with playback timestamp**: When you share a YouTube, Vimeo, or Twitch link (or run `tokkiphone send <url> --at-seconds 142`), Tokkip Phone attaches the current playback position so the receiving device offers a **Continue watching** action that resumes the video at the exact second you left off.
+- **Documents (`--open` / `Shift+Drop`)**: Hold **`Shift`** while dropping a document onto Tokkip Phone (or run `tokkiphone send report.pdf --open`) to transfer the file and open it automatically in the default viewer on the receiving device as soon as the transfer finishes.
 
-### 6. Task Completion Alerts (`nectarlink notify-when`)
+### 6. Task Completion Alerts (`tokkiphone notify-when`)
 
 When you start a long build, test run, render, or download on your PC and want to step away with your phone:
 
 1. In any Windows terminal (PowerShell, Command Prompt, or Windows Terminal), wrap a command or attach to an existing process ID (`PID`):
    ```powershell
    # Run a command and alert your phone when it finishes or fails
-   nectarlink notify-when -- cargo test --workspace
+   tokkiphone notify-when -- cargo test --workspace
 
    # Or watch an already-running process by its PID
-   nectarlink notify-when 14820
+   tokkiphone notify-when 14820
    ```
 2. While the command or process is running on your PC, your phone displays a live ongoing notification (**Running on `<PC>`**) with a ticking chronometer timer.
 3. As soon as the process exits, your phone receives a completion alert showing whether it succeeded or failed, its exit code, and how long it took (for example, `cargo test finished / Took 1m 42s` or `cargo build failed (exit 101)`). If your phone briefly goes offline while the task finishes, the completion alert waits in the `Waiting to send` queue and arrives on reconnect.
@@ -123,10 +123,10 @@ You can automate routine actions between your phone and PC without writing scrip
 
 ### 8. Local Authenticated HTTP API and PowerToys Extension
 
-For power users who use **PowerToys Command Palette**, **AutoHotkey**, **Raycast**, **Flow Launcher**, or custom PowerShell/Python scripts, NectarLink includes an opt-in local HTTP/JSON API:
+For power users who use **PowerToys Command Palette**, **AutoHotkey**, **Raycast**, **Flow Launcher**, or custom PowerShell/Python scripts, Tokkip Phone includes an opt-in local HTTP/JSON API:
 
 1. Open PC **Settings › Connection & About** and turn on **Local automation API** (default port `53320`).
-2. NectarLink binds strictly to loopback (`127.0.0.1:53320`, never exposed on LAN) and writes a random 256-bit Bearer token to `%LOCALAPPDATA%\Nectarlink\api-token.json`.
+2. Tokkip Phone binds strictly to loopback (`127.0.0.1:53320`, never exposed on LAN) and writes a random 256-bit Bearer token to `%LOCALAPPDATA%\Tokkip Phone\api-token.json`.
 3. Every request must include `Authorization: Bearer <token>`, and any request carrying a browser `Origin` header is rejected with `403 Forbidden` to prevent cross-site browser attacks.
 4. Available endpoints (see [`docs/api.md`](../api.md) for full request/response schemas and PowerShell/`curl` examples):
    - `GET /v1/devices`: List paired devices, connection status, and battery level.
@@ -137,11 +137,11 @@ For power users who use **PowerToys Command Palette**, **AutoHotkey**, **Raycast
    - `POST /v1/play-on-phone`: Play what this PC plays on the phone.
    - `POST /v1/camera`: Trigger Continuity Camera (`"photo"` or `"scan"`).
    - `GET /v1/timeline`: Query recent cross-device `Timeline` entries.
-5. A companion **PowerToys Command Palette** extension in `tools/powertoys-cmdpal/` connects to this API so you can invoke NectarLink actions directly from PowerToys.
+5. A companion **PowerToys Command Palette** extension in `tools/powertoys-cmdpal/` connects to this API so you can invoke Tokkip Phone actions directly from PowerToys.
 
 ## What the Options Do
 
-- **Nectar Island** and **Island triggers** (`Settings › General` on PC, default: **Off**): Enables the top-of-screen activity pill and selects which triggers (`Calls`, `Transfers`, `Media`, `Alerts`) expand it.
+- **Tokkip Island** and **Island triggers** (`Settings › General` on PC, default: **Off**): Enables the top-of-screen activity pill and selects which triggers (`Calls`, `Transfers`, `Media`, `Alerts`) expand it.
 - **Command palette / File shelf / Take photo / Scan document shortcuts** (`Settings › Shortcuts & Rules` on PC): Customizes the global Windows hotkeys (`Ctrl+Alt+Space`, `Ctrl+Alt+S`, `Ctrl+Alt+C`, `Ctrl+Alt+D`), with a **Reset** button next to each.
 - **Trigger-action rules** (`Settings › Shortcuts & Rules` on PC): Manages "When X, Do Y" automation rules.
 - **Cross-device timeline** (`Settings › Storage & Privacy` on PC and `Settings › Features & Data › Data & storage` on Android, default: **90d**): Sets auto-purge retention (**30d**, **90d**, **1y**, or **All** up to 5,000 items) and provides a **Clear** button.
@@ -149,10 +149,10 @@ For power users who use **PowerToys Command Palette**, **AutoHotkey**, **Raycast
 
 ## Data and Privacy
 
-- **Local-only `Timeline`**: `Timeline` entries are stored exclusively in your local SQLite database (`nectarlink.db`) on each device and are automatically pruned according to your chosen retention period (**30 days**, **90 days**, **1 year**, or **5,000 items**). Clipboard entries in `Timeline` store only a pointer to your encrypted `clipboard_history.enc` file so clip text is never stored in plain text inside SQLite.
+- **Local-only `Timeline`**: `Timeline` entries are stored exclusively in your local SQLite database (`tokkiphone.db`) on each device and are automatically pruned according to your chosen retention period (**30 days**, **90 days**, **1 year**, or **5,000 items**). Clipboard entries in `Timeline` store only a pointer to your encrypted `clipboard_history.enc` file so clip text is never stored in plain text inside SQLite.
 - **Zero network exposure for the Local API**: The Local automation API is off by default, binds only to `127.0.0.1`, requires a 256-bit CSPRNG Bearer token readable only by your Windows user account, and deletes `api-token.json` immediately when turned off.
 
 ## Limits
 
 - **Global Hotkey Conflicts**: If another Windows application has already registered `Ctrl+Alt+Space`, `Ctrl+Alt+S`, `Ctrl+Alt+C`, or `Ctrl+Alt+D` as a system-wide hotkey, you can assign any non-conflicting `Ctrl`/`Alt`/`Shift`/`Win` key combination in **Settings › Shortcuts & Rules**.
-- **Windows Widgets Board Provider (`NectarlinkPhoneStatus`)**: NectarLink includes a Windows App SDK Widget Provider (`desktop/app/src/win/widget.rs`), plus the taskbar **Jump List** that works on all installs. Appearing inside the Windows 11 `Win+W` Widgets board requires the app's sparse package manifest to be registered with a trusted code-signing certificate or Windows Developer Mode enabled. On Android, the **PC quick actions** home-screen widget works on all devices out of the box.
+- **Windows Widgets Board Provider (`TokkipPhonePhoneStatus`)**: Tokkip Phone includes a Windows App SDK Widget Provider (`desktop/app/src/win/widget.rs`), plus the taskbar **Jump List** that works on all installs. Appearing inside the Windows 11 `Win+W` Widgets board requires the app's sparse package manifest to be registered with a trusted code-signing certificate or Windows Developer Mode enabled. On Android, the **PC quick actions** home-screen widget works on all devices out of the box.

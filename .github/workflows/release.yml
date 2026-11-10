@@ -137,15 +137,15 @@ jobs:
           echo "APPIMAGE_RUNTIME=/tmp/runtime-x86_64" >> "$GITHUB_ENV"
       - name: Validate desktop entry and AppStream metadata
         run: |
-          desktop-file-validate desktop/packaging/linux/nectarlink.desktop
-          appstreamcli validate --no-net desktop/packaging/linux/org.nectarlink.desktop.metainfo.xml
+          desktop-file-validate desktop/packaging/linux/tokkiphone.desktop
+          appstreamcli validate --no-net desktop/packaging/linux/mx.loperstack.tokkiphone.desktop.metainfo.xml
       - name: Check the install script
         run: shellcheck -s sh desktop/packaging/linux/install.sh
       - name: Build and package (.deb, .rpm, AppImage, tarball)
         env:
           APPIMAGE_EXTRACT_AND_RUN: "1"
         run: |
-          cargo build --release -p nectarlink-desktop
+          cargo build --release -p tokkiphone-desktop
           ./desktop/packaging/linux/build-deb.sh
           ./desktop/packaging/linux/build-rpm.sh
           ./desktop/packaging/linux/build-appimage.sh
@@ -158,28 +158,28 @@ jobs:
           docker run --rm -v "$PWD/dist:/dist:ro" ubuntu:24.04 bash -euc '
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends /dist/*.deb >/dev/null
-            nectarlink-desktop --version'
+            tokkiphone-desktop --version'
           docker run --rm -v "$PWD/dist:/dist:ro" fedora:40 bash -euc '
             dnf install -y -q --nogpgcheck /dist/*.rpm >/dev/null
-            nectarlink-desktop --version'
+            tokkiphone-desktop --version'
           APPIMAGE_EXTRACT_AND_RUN=1 ./dist/*.AppImage --version
           mkdir -p /tmp/tarball && tar -xzf dist/*.tar.gz -C /tmp/tarball
-          /tmp/tarball/*/nectarlink-desktop --version
+          /tmp/tarball/*/tokkiphone-desktop --version
       - name: Check that install.sh installs and removes each package
         # The one-line install, from these files instead of GitHub: the .deb on
         # Ubuntu, the .rpm on Fedora, and the tarball in a home folder.
         run: |
           (cd dist && sha256sum *.deb *.rpm *.tar.gz > SHA256SUMS.txt)
           for image in ubuntu:24.04 fedora:40; do
-            docker run --rm -v "$PWD/dist:/dist:ro" -e NECTARLINK_ASSETS_DIR=/dist "$image" sh -euc '
+            docker run --rm -v "$PWD/dist:/dist:ro" -e TOKKIPPHONE_ASSETS_DIR=/dist "$image" sh -euc '
               sh /dist/install.sh
-              nectarlink-desktop --version
+              tokkiphone-desktop --version
               sh /dist/install.sh --uninstall
-              ! command -v nectarlink-desktop'
+              ! command -v tokkiphone-desktop'
           done
           docker run --rm -v "$PWD/dist:/dist:ro" ubuntu:24.04 sh -euc '
             useradd -m user
-            su user -c "NECTARLINK_ASSETS_DIR=/dist sh /dist/install.sh && ~/.local/bin/nectarlink-desktop --version"'
+            su user -c "TOKKIPPHONE_ASSETS_DIR=/dist sh /dist/install.sh && ~/.local/bin/tokkiphone-desktop --version"'
           rm dist/SHA256SUMS.txt
       - uses: actions/upload-artifact@v7
         with:
@@ -221,16 +221,16 @@ jobs:
       - name: Build
         working-directory: android
         env:
-          NECTARLINK_KEYSTORE: ${{ runner.temp }}/release.jks
-          NECTARLINK_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TOKKIPPHONE_KEYSTORE: ${{ runner.temp }}/release.jks
+          TOKKIPPHONE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         # Phones: 64-bit ARM, and 32-bit ARM for older ones.
-        run: ./gradlew --no-daemon assembleRelease -Pnectarlink.abis=arm64-v8a,armeabi-v7a
+        run: ./gradlew --no-daemon assembleRelease -Ptokkiphone.abis=arm64-v8a,armeabi-v7a
       - name: Check the signature, and name the app
         run: |
           apk=android/app/build/outputs/apk/release/app-release.apk
           "$ANDROID_HOME/build-tools/37.0.0/apksigner" verify --print-certs "$apk"
           mkdir -p out
-          cp "$apk" "out/Nectarlink-${GITHUB_REF_NAME#v}-android.apk"
+          cp "$apk" "out/TokkipPhone-${GITHUB_REF_NAME#v}-android.apk"
       - name: Forget the key
         if: always()
         run: rm -f "$RUNNER_TEMP/release.jks"
@@ -263,6 +263,10 @@ jobs:
           name=$(awk '/^\[workspace.metadata.release\]/{f=1;next} /^\[/{f=0} f && /^name = /{print $3}' source/Cargo.toml | tr -d '"')
           title="Tokkip Phone ${GITHUB_REF_NAME#v}${name:+ $name}"
           cd files
+          # Copies under the 0.1 name, so a PC still on 0.1.x (whose updater
+          # looks for "Nectarlink-…-setup.exe") finds this release. Drop them
+          # once every PC is on 0.2.
+          for f in TokkipPhone-*-setup.exe; do cp "$f" "Nectarlink-${f#TokkipPhone-}"; done
           sha256sum *.exe *.deb *.rpm *.AppImage *.tar.gz *.apk install.sh > SHA256SUMS.txt
           cat SHA256SUMS.txt
           # The notes: this version's section of CHANGELOG.md ("## <version> ..."),

@@ -12,7 +12,7 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
-use nectarlink_core::{MediaAction, MediaError, MediaPlayer};
+use tokkiphone_core::{MediaAction, MediaError, MediaPlayer};
 use windows::{
     ApplicationModel::AppInfo,
     Foundation::TypedEventHandler,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Dialogs
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Settings: two-pane categorized layout for appearance, general behavior,
 // paired devices & permissions, camera & audio, notifications, files & sync,
@@ -1021,8 +1021,8 @@ Item {
                                 description: qsTr("Top-screen pill for calls, transfers & media.")
                                 Toggle {
                                     label: qsTr("Tokkip Island")
-                                    checked: Preferences.nectarIsland
-                                    onToggled: (on) => Preferences.nectarIsland = on
+                                    checked: Preferences.tokkipIsland
+                                    onToggled: (on) => Preferences.tokkipIsland = on
                                 }
                             }
 
@@ -1062,7 +1062,7 @@ Item {
                         // Sub-row: Granular Tokkip Island triggers (Calls, Transfers, Media, Notifications)
                         Column {
                             id: islandTriggersBlock
-                            visible: Preferences.nectarIsland
+                            visible: Preferences.tokkipIsland
                             width: parent.width
                             spacing: 0
 
@@ -1089,16 +1089,16 @@ Item {
                                             id: trigChip
                                             required property var modelData
                                             readonly property bool active: {
-                                                if (modelData.key === "calls") return Preferences.nectarIslandCalls
-                                                if (modelData.key === "transfers") return Preferences.nectarIslandTransfers
-                                                if (modelData.key === "media") return Preferences.nectarIslandMedia
-                                                return Preferences.nectarIslandNotifications
+                                                if (modelData.key === "calls") return Preferences.tokkipIslandCalls
+                                                if (modelData.key === "transfers") return Preferences.tokkipIslandTransfers
+                                                if (modelData.key === "media") return Preferences.tokkipIslandMedia
+                                                return Preferences.tokkipIslandNotifications
                                             }
                                             function toggleTrigger(nextVal) {
-                                                if (modelData.key === "calls") Preferences.nectarIslandCalls = nextVal
-                                                else if (modelData.key === "transfers") Preferences.nectarIslandTransfers = nextVal
-                                                else if (modelData.key === "media") Preferences.nectarIslandMedia = nextVal
-                                                else Preferences.nectarIslandNotifications = nextVal
+                                                if (modelData.key === "calls") Preferences.tokkipIslandCalls = nextVal
+                                                else if (modelData.key === "transfers") Preferences.tokkipIslandTransfers = nextVal
+                                                else if (modelData.key === "media") Preferences.tokkipIslandMedia = nextVal
+                                                else Preferences.tokkipIslandNotifications = nextVal
                                             }
                                             height: 30
                                             width: trigChipRow.implicitWidth + 16

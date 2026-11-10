@@ -15,10 +15,10 @@ use std::{
     },
 };
 
-use nectarlink_core::{
+use serde_json::{Value, json};
+use tokkiphone_core::{
     CallCommand, CallLogEntry, CallState, Contact, DeviceId, Error, FeatureState, LinkState, NodeEvent,
 };
-use serde_json::{Value, json};
 
 use crate::{
     bridge::app::{describe, show_message},
@@ -984,7 +984,7 @@ mod tests {
 
     #[test]
     fn call_log_and_contacts_view_matches_numbers_and_formats_json() {
-        use nectarlink_core::ContactNumber;
+        use tokkiphone_core::ContactNumber;
 
         page_state(|s| {
             *s = PageState {

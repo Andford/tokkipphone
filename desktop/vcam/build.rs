@@ -26,9 +26,9 @@ BEGIN
       VALUE "CompanyName", "The Tokkip Phone contributors"
       VALUE "FileDescription", "Tokkip Phone virtual camera"
       VALUE "FileVersion", "{version}"
-      VALUE "InternalName", "nectarlink_vcam"
+      VALUE "InternalName", "tokkiphone_vcam"
       VALUE "LegalCopyright", "GPL-3.0-or-later"
-      VALUE "OriginalFilename", "nectarlink_vcam.dll"
+      VALUE "OriginalFilename", "tokkiphone_vcam.dll"
       VALUE "ProductName", "Tokkip Phone"
       VALUE "ProductVersion", "{version}"
     END
@@ -40,7 +40,7 @@ BEGIN
 END
 "#
     );
-    let rc_path = out.join("nectarlink_vcam.rc");
+    let rc_path = out.join("tokkiphone_vcam.rc");
     if std::fs::read_to_string(&rc_path).ok().as_deref() != Some(rc.as_str()) {
         std::fs::write(&rc_path, rc).expect("write resource script");
     }

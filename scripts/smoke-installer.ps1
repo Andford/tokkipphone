@@ -20,11 +20,11 @@ if (-not $Setup) {
     if ($match) { $Setup = $match.FullName }
 }
 if (-not $Setup -or -not (Test-Path $Setup)) { throw "no setup installer found to test under target\package" }
-$dir = Join-Path $env:ProgramFiles 'Nectarlink'
-$exe = Join-Path $dir 'nectarlink-desktop.exe'
-$uninstallKey = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Nectarlink'
+$dir = Join-Path $env:ProgramFiles 'Tokkip Phone'
+$exe = Join-Path $dir 'tokkiphone-desktop.exe'
+$uninstallKey = 'HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\Tokkip Phone'
 $shortcut = Join-Path $env:ProgramData 'Microsoft\Windows\Start Menu\Programs\Tokkip Phone.lnk'
-$data = if ($env:RUNNER_TEMP) { Join-Path $env:RUNNER_TEMP 'nectarlink-smoke' } else { Join-Path $env:TEMP 'nectarlink-smoke' }
+$data = if ($env:RUNNER_TEMP) { Join-Path $env:RUNNER_TEMP 'tokkiphone-smoke' } else { Join-Path $env:TEMP 'tokkiphone-smoke' }
 
 function Check($what, [bool]$ok) {
     if (-not $ok) { throw "FAILED: $what" }

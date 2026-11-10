@@ -16,15 +16,15 @@ use std::{
     time::Duration,
 };
 
-use nectarlink_vcam::{DEFAULT_MAPPING_NAME, LOCAL_MAPPING_NAME, SharedFrameMapping};
+use tokkiphone_vcam::{DEFAULT_MAPPING_NAME, LOCAL_MAPPING_NAME, SharedFrameMapping};
 
 pub const CLSID_STR: &str = "{8E6C3B74-5D4A-4B9E-9A12-7C8F1E2D3A40}";
 pub const FRIENDLY_NAME: &str = "Tokkip Phone Webcam";
 pub const REGISTER_ARG: &str = "--register-vcam";
 pub const UNREGISTER_ARG: &str = "--unregister-vcam";
 
-const MODULES_LOAD_CONF: &str = "/etc/modules-load.d/nectarlink-vcam.conf";
-const MODPROBE_CONF: &str = "/etc/modprobe.d/nectarlink-vcam.conf";
+const MODULES_LOAD_CONF: &str = "/etc/modules-load.d/tokkiphone-vcam.conf";
+const MODPROBE_CONF: &str = "/etc/modprobe.d/tokkiphone-vcam.conf";
 
 const V4L2_BUF_TYPE_VIDEO_OUTPUT: u32 = 2;
 const V4L2_PIX_FMT_YUYV: u32 = 0x5659_5559; // 'Y' 'U' 'Y' 'V'
@@ -82,7 +82,7 @@ pub fn find_v4l2loopback_in_sysfs(sysfs_root: &Path, dev_root: &Path) -> Option<
                 continue;
             };
             let lower = card_name.to_ascii_lowercase();
-            if lower.contains("nectarlink") || lower.contains("tokkip") {
+            if lower.contains("tokkiphone") || lower.contains("tokkip") {
                 candidates.push((0, dev_name, dev_node));
             } else if lower.contains("dummy video device") || lower.contains("v4l2loopback") {
                 candidates.push((1, dev_name, dev_node));
@@ -228,7 +228,7 @@ pub fn unregister_hklm() -> Result<(), String> {
     run_modprobe(&["-r", "v4l2loopback"])
 }
 
-/// Launches `nectarlink-desktop <arg>` under `pkexec` and invokes `on_done` when it exits.
+/// Launches `tokkiphone-desktop <arg>` under `pkexec` and invokes `on_done` when it exits.
 pub fn run_elevated(arg: &'static str, on_done: impl FnOnce(bool) + Send + 'static) {
     thread::spawn(move || {
         let Ok(exe) = std::env::current_exe() else {
@@ -440,7 +440,7 @@ mod tests {
     }
 
     #[test]
-    fn find_v4l2loopback_in_sysfs_prefers_nectarlink_and_matches_loopback() {
+    fn find_v4l2loopback_in_sysfs_prefers_tokkiphone_and_matches_loopback() {
         let dir = tempfile::tempdir().unwrap();
         let sysfs = dir.path().join("sys");
         let dev = dir.path().join("dev");

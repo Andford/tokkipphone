@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma Singleton
 import QtQuick
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // The active theme: Bloom (Material You, seed presets, Tokkip's teal by
 // default), Galletita ("hive" inside: Tokkip's teal on cream or night teal), Glass, or Graphite (paper and slate), light

@@ -13,7 +13,7 @@ Flex, the shapes), Tokkip himself, and Spanish. We maintain it ourselves; fixes
 from NectarLink are brought over by hand when they matter.
 
 ## Where things are
-- `core/` — the shared Rust engine (MPL-2.0): `nectarlink-core`, `-protocol`, `-adb`, `-ffi` (UniFFI for Android), `-cli`.
+- `core/` — the shared Rust engine (MPL-2.0): `tokkiphone-core`, `-protocol`, `-adb`, `-ffi` (UniFFI for Android), `-cli`.
 - `desktop/app/` — the PC app: Qt Quick (QML in `qml/`) + Rust (`src/`, bridged with cxx-qt). Theme in `qml/Theme.qml` and `qml/Tokens.qml` (generated from `docs/design/tokens.json` by `cargo xtask tokens`). Icon drawn by `src/mark.rs` from `assets/brand/tokkip-256.rgba`.
 - `desktop/installer/` — the NSIS installer. `desktop/vcam/` — the virtual camera.
 - `android/app/` — the Android app: Kotlin + Compose + Material 3 Expressive (`ui/theme/`).
@@ -21,7 +21,8 @@ from NectarLink are brought over by hand when they matter.
 
 ## Rules
 - Licenses stay: apps GPL-3.0-or-later, `core/` MPL-2.0, SPDX header on every source file (`scripts/check-headers.ps1`). Credit NectarLink in About and README.
-- Never "NectarLink" or Bee's mark in what users see. Internal names (`nectarlink_core`, `app.nectarlink.android` packages, the QML module `app.nectarlink`, kernel object names) stay unless renaming them is the task.
+- Never "NectarLink" or Bee's mark in what users see, nor in our own names: crates are `tokkiphone-*`, the Android code is `mx.loperstack.tokkiphone`, the QML module `mx.loperstack.tokkiphone`.
+- What still says `nectarlink` on purpose (changing it breaks pairing, identity or data): the wire labels (ALPN `nectarlink/0` and `nectarlink-pair/0`, the pairing and SAS labels, mDNS service `nectarlink`, LocalSend fingerprint), the identity derivation labels, the Android Keystore alias `nectarlink.identity.v1`, the APK signing key alias, the sync-root provider prefix `Nectarlink!`, the phone-speaker output id, and the code that reads 0.x names once (old data folder, `nectarlink.db`, Run value, firewall rule, Download/Nectarlink, `nectarlink:` links).
 - App identifiers: Android `mx.loperstack.tokkiphone`. Updates come from Andford/tokkiphone releases only.
 - Generated files must stay current: `cargo xtask tokens --check`, `cargo xtask strings --check`.
 - Commits as Andy (`soportemacrobit001@gmail.com`).

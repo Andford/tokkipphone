@@ -10,7 +10,7 @@ use std::sync::{
     atomic::{AtomicU64, Ordering},
 };
 
-use nectarlink_core::DeviceId;
+use tokkiphone_core::DeviceId;
 
 use crate::{core_host, settings};
 

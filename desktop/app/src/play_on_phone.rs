@@ -18,7 +18,7 @@ mod imp {
         time::{Duration, Instant},
     };
 
-    use nectarlink_core::{DeviceId, Error, FeatureState, LinkState, MediaAction, PlayOnPhone};
+    use tokkiphone_core::{DeviceId, Error, FeatureState, LinkState, MediaAction, PlayOnPhone};
     #[cfg(windows)]
     use windows::Win32::{
         Foundation::{HWND, RECT},
@@ -164,7 +164,7 @@ mod imp {
                 .as_ref()
                 .filter(|w| browser::is_browser(&w.program))
                 .and_then(|w| Automation::new().ok()?.page_url(w));
-            let plan = nectarlink_core::play_on_phone::plan(url.as_deref(), position);
+            let plan = tokkiphone_core::play_on_phone::plan(url.as_deref(), position);
             let Some(node) = core_host::node() else { return };
             core_host::spawn(async move {
                 if let Some(file) = file {
@@ -380,7 +380,7 @@ mod imp {
 mod imp {
     #![allow(dead_code)]
 
-    use nectarlink_core::DeviceId;
+    use tokkiphone_core::DeviceId;
 
     pub fn phone() -> Option<(DeviceId, String)> {
         None

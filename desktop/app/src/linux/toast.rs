@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use std::sync::{Arc, Mutex, OnceLock, mpsc};
 use std::time::Duration;
 
-pub const AUMID: &str = "Nectarlink.Desktop";
+pub const AUMID: &str = "TokkipPhone.Desktop";
 pub const CALL_ANSWER: &str = "answer";
 pub const CALL_DECLINE: &str = "decline";
 pub const CALL_END: &str = "end";
@@ -756,7 +756,7 @@ fn build_hints_map(
     image_path: Option<&str>,
 ) -> HashMap<&'static str, zbus::zvariant::Value<'static>> {
     let mut hints = HashMap::new();
-    hints.insert("desktop-entry", zbus::zvariant::Value::from("nectarlink"));
+    hints.insert("desktop-entry", zbus::zvariant::Value::from("tokkiphone"));
     if call {
         hints.insert("category", zbus::zvariant::Value::from("call.incoming"));
         hints.insert("urgency", zbus::zvariant::Value::U8(2));
@@ -940,14 +940,14 @@ mod tests {
 
         let prog = Progress { status: "Transferring".to_string(), value: Some(0.42), label: String::new() };
         let hints = build_hints_map(Some(&prog), true, false, Some("/tmp/photo.jpg"));
-        assert_eq!(hints.get("desktop-entry"), Some(&zbus::zvariant::Value::from("nectarlink")));
+        assert_eq!(hints.get("desktop-entry"), Some(&zbus::zvariant::Value::from("tokkiphone")));
         assert_eq!(hints.get("urgency"), Some(&zbus::zvariant::Value::U8(0)));
         assert_eq!(hints.get("suppress-sound"), Some(&zbus::zvariant::Value::Bool(true)));
         assert_eq!(hints.get("value"), Some(&zbus::zvariant::Value::I32(42)));
         assert_eq!(hints.get("image-path"), Some(&zbus::zvariant::Value::from("/tmp/photo.jpg")));
 
         let call_hints = build_hints_map(None, false, true, None);
-        assert_eq!(call_hints.get("desktop-entry"), Some(&zbus::zvariant::Value::from("nectarlink")));
+        assert_eq!(call_hints.get("desktop-entry"), Some(&zbus::zvariant::Value::from("tokkiphone")));
         assert_eq!(call_hints.get("category"), Some(&zbus::zvariant::Value::from("call.incoming")));
         assert_eq!(call_hints.get("urgency"), Some(&zbus::zvariant::Value::U8(2)));
         assert_eq!(call_hints.get("resident"), Some(&zbus::zvariant::Value::Bool(true)));

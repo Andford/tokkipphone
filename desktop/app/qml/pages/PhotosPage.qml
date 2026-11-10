@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Dialogs
-import app.nectarlink
+import mx.loperstack.tokkiphone
 
 // Photos: the phone's gallery on the PC. Albums on the left, a virtualized
 // GridView of thumbnails grouped by day on the right, multi-select, Save (to

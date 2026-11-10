@@ -77,18 +77,18 @@ mod tests {
     #[test]
     fn starts_minimized_from_the_exe() {
         assert_eq!(
-            command(Path::new(r"C:\Program Files\Nectarlink\nectarlink-desktop.exe")),
-            r#""C:\Program Files\Nectarlink\nectarlink-desktop.exe" --minimized"#
+            command(Path::new(r"C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe")),
+            r#""C:\Program Files\Tokkip Phone\tokkiphone-desktop.exe" --minimized"#
         );
     }
 
     #[test]
     fn builds_are_not_installed_copies() {
         assert!(!is_installed(Path::new(
-            r"C:\Users\me\src\nectarlink\target\release\nectarlink-desktop.exe"
+            r"C:\Users\me\src\tokkiphone\target\release\tokkiphone-desktop.exe"
         )));
         if let Ok(dir) = std::env::var("ProgramFiles") {
-            assert!(is_installed(&Path::new(&dir).join("Nectarlink").join("nectarlink-desktop.exe")));
+            assert!(is_installed(&Path::new(&dir).join("Tokkip Phone").join("tokkiphone-desktop.exe")));
         }
     }
 }

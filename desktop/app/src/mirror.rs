@@ -18,7 +18,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use nectarlink_core::{
+use tokkiphone_core::{
     DeviceId, Error, MIRROR_SCREEN, MirrorAudioConfig, MirrorConfig, MirrorSink, MirrorStart, NodeEvent,
 };
 
@@ -451,7 +451,7 @@ pub fn screenshot_file(window: Window) {
     let file_name = path.file_name().and_then(|n| n.to_str()).unwrap_or(&base_name).to_owned();
     if let Some(node) = core_host::node() {
         node.record_timeline(
-            nectarlink_core::TimelineKind::Photo,
+            tokkiphone_core::TimelineKind::Photo,
             window.device,
             true,
             file_name.clone(),
@@ -602,7 +602,7 @@ pub fn stop_recording(window: Window) {
                 let size_bytes = std::fs::metadata(&path).map_or(0, |m| m.len());
                 if let Some(node) = core_host::node() {
                     node.record_timeline(
-                        nectarlink_core::TimelineKind::Recording,
+                        tokkiphone_core::TimelineKind::Recording,
                         window.device,
                         true,
                         file_name.clone(),
@@ -804,10 +804,10 @@ pub fn set_remote_keyboard(device: Option<DeviceId>) {
         return;
     }
     if let Some(old) = prev {
-        input(Window::screen(old), nectarlink_core::MirrorInput::Key { key: "keyboard_off".into() });
+        input(Window::screen(old), tokkiphone_core::MirrorInput::Key { key: "keyboard_off".into() });
     }
     if let Some(new) = device {
-        input(Window::screen(new), nectarlink_core::MirrorInput::Key { key: "keyboard_on".into() });
+        input(Window::screen(new), tokkiphone_core::MirrorInput::Key { key: "keyboard_on".into() });
     }
     core_host::host().hub.changed(Changes::MIRROR);
 }
@@ -825,7 +825,7 @@ pub fn toggle_remote_keyboard(device: DeviceId) {
 /// to `device` while remote keyboard mode is active.
 pub fn keyboard_press(device: DeviceId, key_name: String) {
     if keyboard_device() == Some(device) {
-        input(Window::screen(device), nectarlink_core::MirrorInput::Key { key: key_name });
+        input(Window::screen(device), tokkiphone_core::MirrorInput::Key { key: key_name });
     }
 }
 
@@ -837,13 +837,13 @@ pub fn keyboard_text(device: DeviceId, text: String) {
     let window = Window::screen(device);
     let mut piece = String::new();
     for c in text.chars() {
-        if piece.len() + c.len_utf8() > nectarlink_core::MIRROR_MAX_TEXT_BYTES {
-            input(window, nectarlink_core::MirrorInput::Text { text: std::mem::take(&mut piece) });
+        if piece.len() + c.len_utf8() > tokkiphone_core::MIRROR_MAX_TEXT_BYTES {
+            input(window, tokkiphone_core::MirrorInput::Text { text: std::mem::take(&mut piece) });
         }
         piece.push(c);
     }
     if !piece.is_empty() {
-        input(window, nectarlink_core::MirrorInput::Text { text: piece });
+        input(window, tokkiphone_core::MirrorInput::Text { text: piece });
     }
 }
 
@@ -1057,7 +1057,7 @@ pub fn on_event(event: &NodeEvent) {
             });
         }
         // A phone that went away takes its app list with it.
-        NodeEvent::LinkChanged { device, link: nectarlink_core::LinkState::Offline { .. } } => {
+        NodeEvent::LinkChanged { device, link: tokkiphone_core::LinkState::Offline { .. } } => {
             let cleared_kb = state(|s| {
                 s.apps.remove(device);
                 s.screen_off.remove(device);
@@ -1173,7 +1173,7 @@ fn saved_apps(data_dir: &Path, device: &DeviceId) -> Option<Vec<App>> {
     let saved: Vec<SavedApp> = serde_json::from_slice(&bytes).ok()?;
     let apps: Vec<App> = saved
         .into_iter()
-        .filter(|a| nectarlink_core::is_package_name(&a.pkg))
+        .filter(|a| tokkiphone_core::is_package_name(&a.pkg))
         .map(|a| App { icon: crate::icons::existing(data_dir, &a.pkg), pkg: a.pkg, label: a.label })
         .collect();
     (!apps.is_empty()).then_some(apps)
@@ -1203,9 +1203,9 @@ pub fn palette_apps(device: DeviceId) -> Vec<(String, String)> {
         let online = s
             .devices
             .iter()
-            .any(|d| d.id == device && matches!(d.link, nectarlink_core::LinkState::Online { .. }));
+            .any(|d| d.id == device && matches!(d.link, tokkiphone_core::LinkState::Online { .. }));
         let avail = s.matrices.get(&device).and_then(|m| m.state("mirroring.app_windows"))
-            == Some(nectarlink_core::FeatureState::Available);
+            == Some(tokkiphone_core::FeatureState::Available);
         (s.app_names.clone(), online && avail)
     });
 
@@ -1258,13 +1258,13 @@ pub fn palette_apps(device: DeviceId) -> Vec<(String, String)> {
 
 /// The PC's mouse, keyboard, and gamepad on a mirrored screen or app window,
 /// sent in order.
-pub fn input(window: Window, input: nectarlink_core::MirrorInput) {
+pub fn input(window: Window, input: tokkiphone_core::MirrorInput) {
     static QUEUE: std::sync::OnceLock<
-        tokio::sync::mpsc::UnboundedSender<(Window, nectarlink_core::MirrorInput)>,
+        tokio::sync::mpsc::UnboundedSender<(Window, tokkiphone_core::MirrorInput)>,
     > = std::sync::OnceLock::new();
     let queue = QUEUE.get_or_init(|| {
         let (queue, mut inputs) =
-            tokio::sync::mpsc::unbounded_channel::<(Window, nectarlink_core::MirrorInput)>();
+            tokio::sync::mpsc::unbounded_channel::<(Window, tokkiphone_core::MirrorInput)>();
         core_host::spawn(async move {
             while let Some((window, input)) = inputs.recv().await {
                 if let Some(node) = core_host::node()
@@ -1360,7 +1360,7 @@ pub fn request_control(key: &str) {
     set_notice(window, "On your phone, tap Allow / turn on Control from your PC in Tokkip Phone");
     input(
         window,
-        nectarlink_core::MirrorInput::Touch { action: nectarlink_core::TouchAction::Up, x: 0.5, y: 0.5 },
+        tokkiphone_core::MirrorInput::Touch { action: tokkiphone_core::TouchAction::Up, x: 0.5, y: 0.5 },
     );
 }
 
@@ -1393,7 +1393,7 @@ pub fn sync_clipboard_for_device(device: DeviceId) {
     let Some(node) = core_host::node() else { return };
     let can_send = core_host::host().hub.read(|s| {
         s.matrices.get(&device).and_then(|m| m.state("clipboard.pc_to_phone"))
-            == Some(nectarlink_core::FeatureState::Available)
+            == Some(tokkiphone_core::FeatureState::Available)
     });
     if !can_send {
         return;
@@ -1440,7 +1440,7 @@ pub const RIGHT_THUMB_DEADZONE: i16 = 8689;
 #[allow(dead_code)]
 pub const TRIGGER_THRESHOLD: u8 = 30;
 
-/// Normalized controller snapshot forwarded via [`nectarlink_core::MirrorInput::Gamepad`].
+/// Normalized controller snapshot forwarded via [`tokkiphone_core::MirrorInput::Gamepad`].
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct GamepadState {
     pub buttons: u16,
@@ -1453,9 +1453,9 @@ pub struct GamepadState {
 }
 
 impl GamepadState {
-    /// Converts this controller snapshot into a [`nectarlink_core::MirrorInput::Gamepad`] message.
-    pub fn to_mirror_input(self) -> nectarlink_core::MirrorInput {
-        nectarlink_core::MirrorInput::Gamepad {
+    /// Converts this controller snapshot into a [`tokkiphone_core::MirrorInput::Gamepad`] message.
+    pub fn to_mirror_input(self) -> tokkiphone_core::MirrorInput {
+        tokkiphone_core::MirrorInput::Gamepad {
             buttons: self.buttons,
             lx: self.lx,
             ly: self.ly,
@@ -1473,7 +1473,7 @@ fn deadzone_axis(val: i16, deadzone: i16) -> i16 {
 }
 
 /// Applies stick deadzones and trigger thresholds so idle controller noise does
-/// not generate redundant [`nectarlink_core::MirrorInput::Gamepad`] frames.
+/// not generate redundant [`tokkiphone_core::MirrorInput::Gamepad`] frames.
 #[allow(dead_code)]
 pub fn normalize_gamepad_state(raw: GamepadState) -> GamepadState {
     GamepadState {
@@ -2133,7 +2133,7 @@ mod tests {
         });
         assert_eq!(
             active.to_mirror_input(),
-            nectarlink_core::MirrorInput::Gamepad {
+            tokkiphone_core::MirrorInput::Gamepad {
                 buttons: 0x1001,
                 lx: 16_000,
                 ly: -24_000,
@@ -2151,7 +2151,7 @@ mod tests {
         let file_a = dir.path().join("alpha.txt");
         std::fs::write(&file_a, b"hello").unwrap();
         let file_url = format!("file:///{}", file_a.to_string_lossy().replace('\\', "/"));
-        let dev = nectarlink_core::DeviceId([0x11; 32]);
+        let dev = tokkiphone_core::DeviceId([0x11; 32]);
         let key = format!("{dev}/0");
 
         let (win, paths) = parse_dropped_file_urls(&[key, file_url]);
@@ -2162,7 +2162,7 @@ mod tests {
     #[test]
     fn a_phones_apps_are_kept_for_the_next_run_with_their_icons() {
         let dir = tempfile::tempdir().unwrap();
-        let phone = nectarlink_core::DeviceId([0x22; 32]);
+        let phone = tokkiphone_core::DeviceId([0x22; 32]);
         assert!(saved_apps(dir.path(), &phone).is_none(), "nothing saved yet");
 
         let png = b"\x89PNG\r\n\x1a\nicon";
@@ -2175,7 +2175,7 @@ mod tests {
         assert_eq!(saved_apps(dir.path(), &phone), Some(apps));
 
         // Another phone has its own list; a damaged file is no list.
-        assert!(saved_apps(dir.path(), &nectarlink_core::DeviceId([0x33; 32])).is_none());
+        assert!(saved_apps(dir.path(), &tokkiphone_core::DeviceId([0x33; 32])).is_none());
         std::fs::write(saved_apps_path(dir.path(), &phone), b"{not json").unwrap();
         assert!(saved_apps(dir.path(), &phone).is_none());
     }

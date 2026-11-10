@@ -26,5 +26,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Nectarlink"
+rootProject.name = "Tokkip Phone"
 include(":app")

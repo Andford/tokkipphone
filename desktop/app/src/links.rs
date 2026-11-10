@@ -7,7 +7,7 @@
 //! to sleep.
 
 use crate::i18n::tr;
-use nectarlink_core::{
+use tokkiphone_core::{
     ClipKind, DeviceId, Error, FeatureState, HandoffKind, HandoffLink, LinkState, PowerAction,
     address_to_geo_uri, classify_clip, extract_handoff_link, format_video_timestamp, geo_to_maps_https,
     with_video_timestamp,

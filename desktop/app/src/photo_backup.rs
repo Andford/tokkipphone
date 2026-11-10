@@ -20,9 +20,9 @@ use std::{
     time::{Duration, Instant, SystemTime, UNIX_EPOCH},
 };
 
-use nectarlink_core::{DeviceId, Error, LinkState, NodeEvent, PhotoItem, Transfer, TransferState};
 use serde::{Deserialize, Serialize};
 use tokio::sync::Notify;
+use tokkiphone_core::{DeviceId, Error, LinkState, NodeEvent, PhotoItem, Transfer, TransferState};
 
 use crate::{core_host, state::Changes};
 
@@ -313,11 +313,11 @@ pub fn claims(t: &Transfer) -> bool {
     let s = state();
     s.filing.contains(&t.id)
         || s.devices.get(&t.device).is_some_and(|b| b.pending.contains_key(&t.id))
-        || (s.asking.contains(&t.device) && t.direction == nectarlink_core::Direction::Incoming)
+        || (s.asking.contains(&t.device) && t.direction == tokkiphone_core::Direction::Incoming)
 }
 
 fn on_transfer(t: &Transfer) {
-    if t.direction != nectarlink_core::Direction::Incoming {
+    if t.direction != tokkiphone_core::Direction::Incoming {
         return;
     }
     let finished =
@@ -528,7 +528,7 @@ pub fn start() {
 }
 
 /// One pass for one phone: find what's new, then copy it, one item at a time.
-async fn run(node: &nectarlink_core::Node, device: DeviceId) {
+async fn run(node: &tokkiphone_core::Node, device: DeviceId) {
     let online = core_host::host()
         .hub
         .read(|s| s.devices.iter().any(|d| d.id == device && matches!(d.link, LinkState::Online { .. })));
@@ -600,7 +600,7 @@ async fn run(node: &nectarlink_core::Node, device: DeviceId) {
 }
 
 /// Asks for one item and waits until it's filed, or stops making progress.
-async fn copy_one(node: &nectarlink_core::Node, device: DeviceId, item: &PhotoItem) -> Result<(), Error> {
+async fn copy_one(node: &tokkiphone_core::Node, device: DeviceId, item: &PhotoItem) -> Result<(), Error> {
     let name = core_host::host().hub.read(|s| s.name_of(&device)).unwrap_or_default();
     let folder =
         state().devices.get(&device).map(|b| folder_of(b, &name)).unwrap_or_else(|| default_folder(&name));

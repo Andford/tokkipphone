@@ -1,5 +1,5 @@
 [package]
-name = "nectarlink-ptrun"
+name = "tokkiphone-ptrun"
 description = "PowerToys Run & Command Palette extension helper for Tokkip Phone"
 version = "0.0.1"
 edition = "2024"
@@ -9,7 +9,7 @@ publish = false
 [workspace]
 
 [[bin]]
-name = "nectarlink-ptrun"
+name = "tokkiphone-ptrun"
 path = "src/main.rs"
 
 [dependencies]
