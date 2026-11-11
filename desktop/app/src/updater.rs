@@ -46,7 +46,7 @@ use crate::{
     win::{autostart, http, toast},
 };
 
-const LATEST: &str = "https://api.github.com/repos/Andford/tokkiphone/releases/latest";
+const LATEST: &str = "https://api.github.com/repos/Andford/tokkipphone/releases/latest";
 const FIRST_CHECK: Duration = Duration::from_secs(30);
 const EVERY: Duration = Duration::from_secs(24 * 3600);
 const MAX_INSTALLER: u64 = 400 * 1024 * 1024;
@@ -1171,7 +1171,7 @@ mod tests {
     fn release(tag: &str) -> Release {
         Release {
             tag_name: tag.into(),
-            html_url: "https://github.com/Andford/tokkiphone/releases/tag/v9".into(),
+            html_url: "https://github.com/Andford/tokkipphone/releases/tag/v9".into(),
             draft: false,
             prerelease: false,
             assets: vec![

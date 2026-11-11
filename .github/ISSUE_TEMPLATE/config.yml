@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Question or idea
-    url: https://github.com/Andford/tokkiphone/discussions
+    url: https://github.com/Andford/tokkipphone/discussions
     about: Ask a question, talk through an idea, or show your setup.
   - name: Security issue
-    url: https://github.com/Andford/tokkiphone/security/advisories/new
+    url: https://github.com/Andford/tokkipphone/security/advisories/new
     about: Report security problems privately, never in a public issue.

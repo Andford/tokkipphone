@@ -7671,8 +7671,8 @@ What it needs
     </message>
     <message>
         <location filename="../qml/pages/SettingsPage.qml" line="3224"/>
-        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkiphone.</source>
-        <translation>基于 Bee 的 NectarLink（github.com/thtbee/nectarlink），采用 GPL 3.0 许可。Tokkip Phone 源代码：github.com/Andford/tokkiphone。</translation>
+        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkipphone.</source>
+        <translation>基于 Bee 的 NectarLink（github.com/thtbee/nectarlink），采用 GPL 3.0 许可。Tokkip Phone 源代码：github.com/Andford/tokkipphone。</translation>
     </message>
     <message>
         <location filename="../qml/pages/SettingsPage.qml" line="3230"/>

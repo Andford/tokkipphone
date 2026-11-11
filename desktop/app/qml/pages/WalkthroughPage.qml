@@ -981,7 +981,7 @@ FocusScope {
                                             variant: "tonal"
                                             size: "sm"
                                             Accessible.name: "Open Android release page in browser"
-                                            onClicked: Qt.openUrlExternally("https://github.com/Andford/tokkiphone/releases/latest")
+                                            onClicked: Qt.openUrlExternally("https://github.com/Andford/tokkipphone/releases/latest")
                                         }
 
                                         Button {
@@ -993,7 +993,7 @@ FocusScope {
                                             size: "sm"
                                             Accessible.name: "Copy Android release URL"
                                             onClicked: {
-                                                AppController.copyText("https://github.com/Andford/tokkiphone/releases/latest")
+                                                AppController.copyText("https://github.com/Andford/tokkipphone/releases/latest")
                                                 copied = true
                                                 resetCopyUrlTimer.restart()
                                             }

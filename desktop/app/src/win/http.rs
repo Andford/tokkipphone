@@ -340,7 +340,7 @@ mod tests {
     #[test]
     #[ignore = "needs the internet"]
     fn resumes_a_download() {
-        let url = "https://github.com/Andford/tokkiphone/releases/download/v0.1.0/SHA256SUMS.txt";
+        let url = "https://github.com/Andford/tokkipphone/releases/download/v0.1.0/SHA256SUMS.txt";
         let dir = tempfile::tempdir().unwrap();
         let whole = dir.path().join("whole");
         download(url, &whole, 1 << 20, |_, _| {}).unwrap();
@@ -359,7 +359,7 @@ mod release_download {
     #[ignore = "needs the internet"]
     fn downloads_a_release_installer() {
         let url =
-            "https://github.com/Andford/tokkiphone/releases/download/v0.1.2/TokkipPhone-0.1.2-x64-setup.exe";
+            "https://github.com/Andford/tokkipphone/releases/download/v0.1.2/TokkipPhone-0.1.2-x64-setup.exe";
         let dir = tempfile::tempdir().unwrap();
         let file = dir.path().join("setup.exe.part");
         let started = std::time::Instant::now();

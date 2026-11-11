@@ -7415,7 +7415,7 @@ What it needs
     </message>
     <message>
         <location filename="../../qml/pages/SettingsPage.qml" line="3224"/>
-        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkiphone.</source>
+        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkipphone.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

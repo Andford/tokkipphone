@@ -478,7 +478,7 @@ class AppUpdater(context: Context) {
 
     companion object {
         private const val TAG = "AppUpdater"
-        private const val LATEST = "https://api.github.com/repos/Andford/tokkiphone/releases/latest"
+        private const val LATEST = "https://api.github.com/repos/Andford/tokkipphone/releases/latest"
         private const val LAST_CHECK = "lastCheck"
         private const val AUTO_INSTALL = "autoInstall"
         private const val LAST_AUTOMATIC = "lastAutomatic"

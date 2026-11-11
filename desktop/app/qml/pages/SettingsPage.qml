@@ -3222,7 +3222,7 @@ Item {
                             width: parent.width
                             iconPath: Icons.info
                             title: qsTr("Made by Andy (LoperStack), with Tokkip")
-                            description: qsTr("Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone's source: github.com/Andford/tokkiphone.")
+                            description: qsTr("Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone's source: github.com/Andford/tokkipphone.")
                         }
                         Divider { width: parent.width }
                         ListRow {

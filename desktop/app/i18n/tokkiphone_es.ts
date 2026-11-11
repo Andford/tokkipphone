@@ -7680,8 +7680,8 @@ Qué necesita
     </message>
     <message>
         <location filename="../qml/pages/SettingsPage.qml" line="3224"/>
-        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkiphone.</source>
-        <translation>Basado en NectarLink de Bee (github.com/thtbee/nectarlink), bajo la GPL 3.0. Código de Tokkip Phone: github.com/Andford/tokkiphone.</translation>
+        <source>Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Tokkip Phone&apos;s source: github.com/Andford/tokkipphone.</source>
+        <translation>Basado en NectarLink de Bee (github.com/thtbee/nectarlink), bajo la GPL 3.0. Código de Tokkip Phone: github.com/Andford/tokkipphone.</translation>
     </message>
     <message>
         <location filename="../qml/pages/SettingsPage.qml" line="3230"/>

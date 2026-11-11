@@ -11,4 +11,4 @@
 - [ ] `./scripts/check.ps1` passes (or the CI equivalent for the parts I changed)
 - [ ] User-facing strings are translatable, and new UI works with keyboard and screen readers
 - [ ] No personal content (notification text, messages, file names, keys) is logged
-- [ ] Commits are signed off (`git commit -s`), see [CONTRIBUTING.md](https://github.com/Andford/tokkiphone/blob/main/CONTRIBUTING.md)
+- [ ] Commits are signed off (`git commit -s`), see [CONTRIBUTING.md](https://github.com/Andford/tokkipphone/blob/main/CONTRIBUTING.md)

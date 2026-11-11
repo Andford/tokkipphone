@@ -4,7 +4,7 @@
 # Installs Tokkip Phone on Linux, with everything it needs, and shows each step
 # as it goes:
 #
-#   curl -fsSL https://github.com/Andford/tokkiphone/releases/latest/download/install.sh | sh
+#   curl -fsSL https://github.com/Andford/tokkipphone/releases/latest/download/install.sh | sh
 #
 # It picks the package that fits this system (.deb with apt, .rpm with dnf
 # or zypper, the tarball elsewhere), checks it against the release's

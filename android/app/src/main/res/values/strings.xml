@@ -230,7 +230,7 @@
     <string name="mode_light">Light</string>
     <string name="mode_dark">Dark</string>
     <string name="about_version">Tokkip Phone %1$s</string>
-    <string name="about_credit">Made by Andy (LoperStack), with Tokkip. Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Source: github.com/Andford/tokkiphone.</string>
+    <string name="about_credit">Made by Andy (LoperStack), with Tokkip. Based on NectarLink by Bee (github.com/thtbee/nectarlink), under the GPL 3.0. Source: github.com/Andford/tokkipphone.</string>
     <string name="unpair_title">Unpair %1$s?</string>
     <string name="unpair_text">Both devices forget each other. You can pair them again any time.</string>
     <string name="core_failed">Tokkip Phone couldn\'t start: %1$s</string>

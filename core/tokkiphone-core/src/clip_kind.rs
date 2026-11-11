@@ -832,7 +832,7 @@ mod tests {
         let positives = [
             ("https://tokkiphone.app/docs?tab=1#top", "https://tokkiphone.app/docs?tab=1#top"),
             ("  http://example.com/path/to/page  ", "http://example.com/path/to/page"),
-            ("HTTPS://github.com/Andford/tokkiphone", "https://github.com/Andford/tokkiphone"),
+            ("HTTPS://github.com/Andford/tokkipphone", "https://github.com/Andford/tokkipphone"),
             (
                 "www.wikipedia.org/wiki/Rust_(programming_language)",
                 "https://www.wikipedia.org/wiki/Rust_(programming_language)",

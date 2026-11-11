@@ -21,8 +21,8 @@
     </ul>
   </description>
   <launchable type="desktop-id">tokkiphone.desktop</launchable>
-  <url type="homepage">https://github.com/Andford/tokkiphone</url>
-  <url type="bugtracker">https://github.com/Andford/tokkiphone/issues</url>
+  <url type="homepage">https://github.com/Andford/tokkipphone</url>
+  <url type="bugtracker">https://github.com/Andford/tokkipphone/issues</url>
   <provides>
     <binary>tokkiphone-desktop</binary>
     <mediatype>x-scheme-handler/tokkiphone</mediatype>
